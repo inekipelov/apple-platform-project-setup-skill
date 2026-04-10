@@ -1,0 +1,92 @@
+version: 1
+inventory_scope: curated_subset_not_exhaustive
+
+subagent_categories:
+  - review
+  - research
+  - docs
+  - workflow
+  - search
+
+subagents:
+  - id: reviewer
+    display_name: Reviewer
+    source_artifact: codex-subagents-awesome
+    category: review
+    use_when: The repo needs correctness, regression, and missing-test review after setup work lands.
+    recommend_when: Review risk is a bigger concern than broader orchestration or research work.
+    install_method: copy_selected_toml_files_project_local
+    source_path_or_file: categories/04-quality-security/reviewer.toml
+    upstream_url: https://github.com/VoltAgent/awesome-codex-subagents
+    alternative_ids:
+      - code-reviewer
+
+  - id: code-reviewer
+    display_name: Code Reviewer
+    source_artifact: codex-subagents-awesome
+    category: review
+    use_when: A second review-oriented option is useful when the team wants a simpler review persona than reviewer.
+    recommend_when: The user wants a review helper but prefers a narrower code-review framing.
+    install_method: copy_selected_toml_files_project_local
+    source_path_or_file: code-reviewer.toml
+    upstream_url: https://github.com/VoltAgent/awesome-codex-subagents
+    alternative_ids:
+      - reviewer
+
+  - id: docs-researcher
+    display_name: Docs Researcher
+    source_artifact: codex-subagents-awesome
+    category: research
+    use_when: The repo needs source-backed framework lookup, policy checks, or upstream reference gathering.
+    recommend_when: Research is needed before implementation choices or documentation updates.
+    install_method: copy_selected_toml_files_project_local
+    source_path_or_file: docs-researcher.toml
+    upstream_url: https://github.com/VoltAgent/awesome-codex-subagents
+    alternative_ids: []
+
+  - id: technical-writer
+    display_name: Technical Writer
+    source_artifact: codex-subagents-awesome
+    category: docs
+    use_when: The repo needs help refining AGENTS guidance, README text, or setup documentation.
+    recommend_when: Documentation quality is one of the immediate gaps after the setup contract is chosen.
+    install_method: copy_selected_toml_files_project_local
+    source_path_or_file: technical-writer.toml
+    upstream_url: https://github.com/VoltAgent/awesome-codex-subagents
+    alternative_ids:
+      - docs-researcher
+
+  - id: workflow-orchestrator
+    display_name: Workflow Orchestrator
+    source_artifact: codex-subagents-awesome
+    category: workflow
+    use_when: The setup requires sequencing multiple steps, checkpoints, or handoffs across the repo.
+    recommend_when: The main risk is losing the intended bootstrap order rather than missing a specific skill choice.
+    install_method: copy_selected_toml_files_project_local
+    source_path_or_file: workflow-orchestrator.toml
+    upstream_url: https://github.com/VoltAgent/awesome-codex-subagents
+    alternative_ids:
+      - task-distributor
+
+  - id: task-distributor
+    display_name: Task Distributor
+    source_artifact: codex-subagents-awesome
+    category: workflow
+    use_when: The repo needs workflow coordination focused on splitting work into concrete tasks.
+    recommend_when: The setup is broad and benefits from a more execution-oriented workflow agent than a pure orchestrator.
+    install_method: copy_selected_toml_files_project_local
+    source_path_or_file: task-distributor.toml
+    upstream_url: https://github.com/VoltAgent/awesome-codex-subagents
+    alternative_ids:
+      - workflow-orchestrator
+
+  - id: search-specialist
+    display_name: Search Specialist
+    source_artifact: codex-subagents-awesome
+    category: search
+    use_when: The repo needs fast context search across source files, docs, or external references before making setup decisions.
+    recommend_when: Search breadth is more important than review or documentation polish.
+    install_method: copy_selected_toml_files_project_local
+    source_path_or_file: search-specialist.toml
+    upstream_url: https://github.com/VoltAgent/awesome-codex-subagents
+    alternative_ids: []

@@ -1,0 +1,196 @@
+version: 1
+inventory_scope: curated_subset_not_exhaustive
+
+skill_categories:
+  - ui
+  - architecture
+  - package-design
+  - testing
+  - tooling
+  - ci-automation
+  - repo-automation
+  - apple-fallback
+
+skills:
+  - id: swiftui-pro
+    display_name: SwiftUI Pro
+    source_artifact: community-skills-twostraws
+    category: ui
+    use_when: SwiftUI view composition and Apple UI guidance are central to the workspace.
+    recommend_when: The repo is SwiftUI-first and needs one strong UI skill as the starting point.
+    install_method: skills_sh
+    install_name: swiftui-pro
+    install_command: npx skills add https://github.com/twostraws/swiftui-agent-skill --skill swiftui-pro
+    upstream_url: https://github.com/twostraws/SwiftUI-Agent-Skill
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swiftui-expert-skill
+      - swiftui-uikit-interop
+
+  - id: swiftdata-pro
+    display_name: SwiftData Pro
+    source_artifact: community-skills-twostraws
+    category: architecture
+    use_when: The project needs guidance on data flow, persistence, or SwiftData-backed app structure.
+    recommend_when: Data modeling and persistence architecture are shaping early repository decisions.
+    install_method: skills_sh
+    install_name: swiftdata-pro
+    install_command: npx skills add https://github.com/twostraws/swiftdata-agent-skill --skill swiftdata-pro
+    upstream_url: https://github.com/twostraws/SwiftData-Agent-Skill
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - core-data-expert
+      - swiftui-patterns
+
+  - id: swift-testing-pro
+    display_name: Swift Testing Pro
+    source_artifact: community-skills-twostraws
+    category: testing
+    use_when: The repo wants modern Swift Testing patterns and test-first Apple development guidance.
+    recommend_when: Testing strategy is a first-class concern and the project is already leaning on modern Swift tooling.
+    install_method: skills_sh
+    install_name: swift-testing-pro
+    install_command: npx skills add https://github.com/twostraws/swift-testing-agent-skill --skill swift-testing-pro
+    upstream_url: https://github.com/twostraws/Swift-Testing-Agent-Skill
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swift-testing-expert
+
+  - id: swiftui-expert-skill
+    display_name: SwiftUI Expert Skill
+    source_artifact: community-skills-avdlee
+    category: ui
+    use_when: SwiftUI architecture and production UI patterns matter more than a generic Apple fallback.
+    recommend_when: The repo needs UI guidance with a strong engineering bias rather than a broader Apple patterns catalog.
+    install_method: skills_sh
+    install_name: swiftui-expert-skill
+    install_command: npx skills add https://github.com/avdlee/swiftui-agent-skill --skill swiftui-expert-skill
+    upstream_url: https://github.com/avdlee/swiftui-agent-skill
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swiftui-pro
+      - swiftui-uikit-interop
+
+  - id: core-data-expert
+    display_name: Core Data Expert
+    source_artifact: community-skills-avdlee
+    category: architecture
+    use_when: The project uses Core Data or needs persistence design guidance with Apple framework depth.
+    recommend_when: Persistence architecture is central and Core Data is more relevant than SwiftData.
+    install_method: skills_sh
+    install_name: core-data-expert
+    upstream_url: https://skills.sh/avdlee
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swiftdata-pro
+      - swiftui-patterns
+
+  - id: swift-testing-expert
+    display_name: Swift Testing Expert
+    source_artifact: community-skills-avdlee
+    category: testing
+    use_when: The repo needs Apple-focused testing guidance with strong emphasis on verification discipline.
+    recommend_when: Testing matters early and the team wants a testing-specific expert rather than a broader UI or architecture skill.
+    install_method: skills_sh
+    install_name: swift-testing-expert
+    upstream_url: https://github.com/avdlee/swift-testing-agent-skill
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swift-testing-pro
+
+  - id: swift-concurrency
+    display_name: Swift Concurrency
+    source_artifact: community-skills-avdlee
+    category: tooling
+    use_when: The repo needs structured concurrency guardrails, actor discipline, and async correctness during setup.
+    recommend_when: Tooling and code-quality concerns are centered on concurrency mistakes rather than CI or repo automation.
+    install_method: skills_sh
+    install_name: swift-concurrency
+    upstream_url: https://skills.sh/avdlee
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids: []
+
+  - id: github
+    display_name: GitHub
+    source_artifact: community-skills-dimillian
+    category: ci-automation
+    use_when: The project needs GitHub workflow guidance, CI setup, or automation-aware repository operations.
+    recommend_when: CI automation is one of the top capability gaps and GitHub is the chosen platform.
+    install_method: skills_sh
+    install_name: github
+    install_command: npx skills add https://github.com/dimillian/github --skill github
+    upstream_url: https://skills.sh/dimillian/skills
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - gh-issue-fix-flow
+
+  - id: gh-issue-fix-flow
+    display_name: GH Issue Fix Flow
+    source_artifact: community-skills-dimillian
+    category: repo-automation
+    use_when: The team wants repeatable GitHub issue-to-fix workflow discipline inside the repository.
+    recommend_when: Repo automation and contributor flow matter more than general CI setup.
+    install_method: skills_sh
+    install_name: gh-issue-fix-flow
+    install_command: npx skills add https://github.com/dimillian/gh-issue-fix-flow --skill gh-issue-fix-flow
+    upstream_url: https://skills.sh/dimillian/skills
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - github
+
+  - id: macos-spm-app-packaging
+    display_name: macOS SPM App Packaging
+    source_artifact: community-skills-dimillian
+    category: package-design
+    use_when: The workspace is package-first and packaging or distribution shape affects the project structure.
+    recommend_when: Package design is a top concern and the repo is closer to an SPM product than a classic Xcode app.
+    install_method: skills_sh
+    install_name: macos-spm-app-packaging
+    install_command: npx skills add https://github.com/dimillian/macos-spm-app-packaging --skill macos-spm-app-packaging
+    upstream_url: https://skills.sh/dimillian/skills
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids: []
+
+  - id: swiftui-patterns
+    display_name: SwiftUI Patterns
+    source_artifact: community-skills-dpearson
+    category: architecture
+    use_when: The project needs Apple-specific architecture and composition guidance but no better catalog fit exists.
+    recommend_when: The repo needs a fallback Apple architecture skill after higher-priority catalogs were considered.
+    install_method: upstream_npx_catalog
+    install_name: swiftui-patterns
+    install_command: npx skills add dpearson2699/swift-ios-skills --skill swiftui-patterns
+    upstream_url: https://github.com/dpearson2699/swift-ios-skills
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swiftdata-pro
+      - core-data-expert
+
+  - id: swiftui-uikit-interop
+    display_name: SwiftUI UIKit Interop
+    source_artifact: community-skills-dpearson
+    category: ui
+    use_when: The repo mixes SwiftUI with UIKit and needs concrete interop guidance.
+    recommend_when: UI work is important, but the project is not pure SwiftUI and needs Apple-specific interop patterns.
+    install_method: upstream_npx_catalog
+    install_name: swiftui-uikit-interop
+    install_command: npx skills add dpearson2699/swift-ios-skills --skill swiftui-uikit-interop
+    upstream_url: https://github.com/dpearson2699/swift-ios-skills
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swiftui-pro
+      - swiftui-expert-skill
+
+  - id: ios-networking
+    display_name: iOS Networking
+    source_artifact: community-skills-dpearson
+    category: apple-fallback
+    use_when: The project needs Apple mobile guidance in an area not covered better by the primary skills.sh catalogs.
+    recommend_when: A concrete Apple-specific fallback is needed and networking or service integration is already in scope.
+    install_method: upstream_npx_catalog
+    install_name: ios-networking
+    install_command: npx skills add dpearson2699/swift-ios-skills --skill ios-networking
+    upstream_url: https://github.com/dpearson2699/swift-ios-skills
+    local_install_support: installer_dependent_prefer_project_local
+    alternative_ids:
+      - swiftui-patterns

@@ -1,0 +1,31 @@
+name: Gitlint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gitlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install gitlint
+        run: pip install gitlint
+
+      - name: Lint latest commit on push
+        if: github.event_name == 'push'
+        run: gitlint --config .gitlint --commit "${{ github.sha }}"
+
+      - name: Lint pull request commits
+        if: github.event_name == 'pull_request'
+        run: gitlint --config .gitlint --commits "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"

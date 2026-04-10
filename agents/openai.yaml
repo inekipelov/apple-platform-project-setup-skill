@@ -1,0 +1,4 @@
+interface:
+  display_name: "Apple Workspace Setup"
+  short_description: "Bootstrap Apple workspaces with SPM or Xcode, AGENTS guidance, lint, CI, skills, and subagents."
+  default_prompt: "Use $apple-platform-project-setup-skill to set up an Apple workspace. Install superpowers first, interview me about the project, choose SPM or Xcode, ask whether typed SF Symbols should use SFSafeSymbols, resolve one inventory-backed skill and subagent recommendation per capability gap, apply repo files using catalog-defined copy or merge rules, then generate AGENTS.md last."

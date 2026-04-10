@@ -1,0 +1,62 @@
+# Skill Verification
+
+This file records the baseline failure evidence and the expected post-change behavior for this repository.
+
+## RED Baseline Evidence
+
+Initial repository state before this change:
+
+- no `SKILL.md`
+- no `catalog.yaml`
+- no `references/`
+- no `snippets/`
+- no install policy
+- no `AGENTS.md` bootstrap content
+- no discovery metadata beyond a placeholder `README.md`
+
+Because the repository had no workflow contract, each planned failure mode was effectively possible:
+
+1. An agent could skip `superpowers` and start workspace setup immediately.
+2. An agent could install `gitlint` or `swiftlint` globally without an explicit policy telling it to stop.
+3. An agent could generate `AGENTS.md` before the interview, installation choices, and final setup decisions are complete.
+4. An agent could ignore `skills.sh` because no precedence rule existed.
+5. An agent could choose `SPM` or `Xcode` without running a project interview.
+6. An agent could present a recommended skill or subagent as if that recommendation overrode the user's final choice.
+7. An agent could enable the `No raw SF Symbol strings` rule without asking whether the project should add `SFSafeSymbols`.
+8. An agent could treat a relevant skills source link as a reason to install the whole catalog instead of choosing a category first.
+9. An agent could guess a concrete skill or subagent id without a verified curated inventory entry.
+10. An agent could overwrite or merge snippet-backed files without a declared target path or conflict policy.
+
+## GREEN Verification Targets
+
+After the repo contract is present, verify that:
+
+1. `SKILL.md` makes `superpowers` the mandatory first step.
+2. `SKILL.md` blocks global installs and user-home changes until explicit confirmation.
+3. `SKILL.md` requires `AGENTS.md` to be generated only after the interview and after selected skills and subagents are installed or intentionally skipped.
+4. `SKILL.md` requires the project interview before choosing `SPM` or `Xcode`.
+5. `references/source-precedence.md` gives `skills.sh` higher priority than upstream fallback when available.
+6. `catalog.yaml` maps every managed artifact to snippets, prerequisites, install strategy, sources, and snippet apply semantics where relevant.
+7. `inventory/skills.yaml` and `inventory/subagents.yaml` exist as curated concrete recommendation layers.
+8. `snippets/` contains common plus `SPM` and `Xcode` file sets.
+9. The selection contract recommends one best-fit skill or subagent while preserving user ownership of the final choice.
+10. The SF Symbols SwiftLint rule appears only when the user accepted `SFSafeSymbols` for the project.
+11. Skills sources are treated as catalogs, category selection happens before skill selection, and the whole catalog is never installed by default.
+12. Concrete skill and subagent recommendations come from the curated inventory or remain explicit source-level fallbacks when the inventory is not seeded.
+13. Snippet-backed artifacts declare deterministic target paths, apply modes, and overwrite or merge policies.
+
+## REFACTOR Watchlist
+
+Look for these rationalizations in future revisions:
+
+- "This tool install is harmless, so confirmation is unnecessary."
+- "This is obviously an Xcode project."
+- "I already know which skills Apple projects need."
+- "I can treat external repos as templates instead of using the repo snippets."
+- "I already recommended the best option, so the user does not need to decide."
+- "The typed SF Symbols rule is harmless, so I can enable it before deciding on SFSafeSymbols."
+- "The source catalog is relevant, so installing all of it is the fastest path."
+- "I can guess the concrete skill id from the catalog without checking the curated inventory."
+- "Copy or merge behavior is obvious, so I do not need an explicit apply contract."
+
+If any of these reappear, add explicit counters in `SKILL.md` and update this note.

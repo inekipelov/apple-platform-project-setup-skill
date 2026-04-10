@@ -1,0 +1,316 @@
+version: 1
+
+inventory_refs:
+  skills: inventory/skills.yaml
+  subagents: inventory/subagents.yaml
+
+artifacts:
+  - artifact: superpowers
+    applies_to: common
+    snippet_paths: []
+    prerequisites:
+      - git
+      - explicit_confirmation_for_user_home_changes
+    install_strategy: official_user_level_clone_and_symlink
+    upstream_sources:
+      - https://github.com/obra/superpowers
+      - https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md
+    selection_hints:
+      - Mandatory first step for every workspace setup run.
+      - Stop after proposing the install until the user confirms.
+
+  - artifact: agents-bootstrap
+    applies_to: common
+    snippet_paths:
+      - snippets/common/AGENTS.bootstrap.md
+    target_path: AGENTS.md
+    apply_mode: generate_from_template
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - superpowers_present
+      - project_interview_complete
+      - selected_skills_and_subagents_installed_or_intentionally_skipped
+    install_strategy: copy_and_customize_after_install_selection_is_final
+    upstream_sources:
+      - https://developers.openai.com/codex/learn/best-practices#turn-repeatable-work-into-skills
+      - https://developers.openai.com/codex/config-reference#configtoml
+    agents_rendering:
+      skill_reference_syntax: "$skill-name"
+      subagent_reference_syntax: "@agent-name"
+      recommendation_mode: one_recommended_choice_user_decides
+      require_usage_rule: true
+      require_rationale: true
+      final_decision_owner: user
+    selection_hints:
+      - Create AGENTS.md after the interview and after the selected skills and subagents are installed or intentionally skipped.
+      - Render skill references as $skill-name and subagent references as @agent-name.
+      - Recommend one best-fit item per capability gap and explain why it is recommended now.
+      - Move the rest into conditional alternatives.
+      - Keep the final decision with the user.
+
+  - artifact: gitlint-config
+    applies_to: common
+    snippet_paths:
+      - snippets/common/.gitlint
+    target_path: .gitlint
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - gitlint_or_user_confirmed_install
+    install_strategy: project_file_with_confirmation_gated_global_tool_install
+    upstream_sources: []
+    selection_hints:
+      - Apply to every repo that uses Git and local commit policy.
+
+  - artifact: swiftlint-config
+    applies_to: common
+    snippet_paths:
+      - snippets/common/.swiftlint.yml
+    target_path: .swiftlint.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - swift_source_in_scope
+      - swiftlint_or_user_confirmed_install
+    install_strategy: project_file_with_confirmation_gated_global_tool_install
+    upstream_sources: []
+    selection_hints:
+      - Apply only when Swift source will exist in the target workspace.
+
+  - artifact: sfsafesymbols-package
+    applies_to: common
+    snippet_paths: []
+    prerequisites:
+      - swift_source_in_scope
+      - workspace_shape_chosen
+      - user_opted_in_to_sfsafesymbols
+    install_strategy: add_spm_dependency_matching_workspace_shape
+    upstream_sources:
+      - https://github.com/SFSafeSymbols/SFSafeSymbols
+    selection_hints:
+      - Ask whether typed SF Symbols should be enforced before adding this dependency.
+      - Add only when the user explicitly wants SFSafeSymbols in the project.
+
+  - artifact: swiftlint-sfsafesymbols-rule
+    applies_to: common
+    snippet_paths:
+      - snippets/common/.swiftlint.sfsafesymbols.yml
+    target_path: .swiftlint.yml
+    apply_mode: merge_yaml_fragment
+    conflict_policy: ask_before_merge_existing
+    merge_strategy: swiftlint_custom_rules_merge_by_key
+    prerequisites:
+      - swift_source_in_scope
+      - user_opted_in_to_sfsafesymbols
+      - sfsafesymbols_package_added_or_planned
+    install_strategy: merge_into_swiftlint_config_when_sfsafesymbols_enabled
+    upstream_sources:
+      - https://github.com/SFSafeSymbols/SFSafeSymbols
+    selection_hints:
+      - Skip this rule when the user does not want SFSafeSymbols.
+      - Add only together with the SFSafeSymbols package decision.
+
+  - artifact: gitlint-workflow
+    applies_to: common
+    snippet_paths:
+      - snippets/common/workflows/gitlint.yml
+    target_path: .github/workflows/gitlint.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - github_actions_enabled
+    install_strategy: copy_from_snippet
+    upstream_sources: []
+    selection_hints:
+      - Apply when the target repository uses GitHub Actions.
+
+  - artifact: spm-gitignore
+    applies_to: spm
+    snippet_paths:
+      - snippets/spm/.gitignore
+    target_path: .gitignore
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites: []
+    install_strategy: copy_from_snippet
+    upstream_sources: []
+
+  - artifact: spm-build-workflow
+    applies_to: spm
+    snippet_paths:
+      - snippets/spm/workflows/build.yml
+    target_path: .github/workflows/build.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - github_actions_enabled
+    install_strategy: copy_from_snippet
+    upstream_sources: []
+
+  - artifact: spm-test-workflow
+    applies_to: spm
+    snippet_paths:
+      - snippets/spm/workflows/test.yml
+    target_path: .github/workflows/test.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - github_actions_enabled
+    install_strategy: copy_from_snippet
+    upstream_sources: []
+
+  - artifact: xcode-gitignore
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode/.gitignore
+    target_path: .gitignore
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites: []
+    install_strategy: copy_from_snippet
+    upstream_sources: []
+
+  - artifact: xcode-build-workflow
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode/workflows/build.yml
+    target_path: .github/workflows/build.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - github_actions_enabled
+    install_strategy: copy_from_snippet
+    upstream_sources: []
+
+  - artifact: xcode-test-workflow
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode/workflows/test.yml
+    target_path: .github/workflows/test.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - github_actions_enabled
+    install_strategy: copy_from_snippet
+    upstream_sources: []
+
+  - artifact: community-skills-twostraws
+    applies_to: common
+    snippet_paths: []
+    source_kind: multi_skill_catalog
+    skill_categories:
+      - ui
+      - architecture
+      - testing
+    prerequisites:
+      - project_interview_complete
+      - npx_or_user_confirmed_node_install
+    install_strategy: skills_sh_preferred_fallback_to_upstream
+    upstream_sources:
+      - https://skills.sh/twostraws
+      - https://github.com/twostraws/Swift-Agent-Skills
+    recommendation_mode: one_recommended_choice_user_decides
+    selection_hints:
+      - Prefer when the project needs ui, architecture, or testing categories this catalog covers.
+      - Resolve the concrete skill from inventory/skills.yaml after category selection.
+      - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
+      - If multiple Twostraws skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
+
+  - artifact: community-skills-avdlee
+    applies_to: common
+    snippet_paths: []
+    source_kind: multi_skill_catalog
+    skill_categories:
+      - ui
+      - architecture
+      - tooling
+      - testing
+    prerequisites:
+      - project_interview_complete
+      - npx_or_user_confirmed_node_install
+    install_strategy: skills_sh_preferred_fallback_to_upstream
+    upstream_sources:
+      - https://skills.sh/avdlee
+    recommendation_mode: one_recommended_choice_user_decides
+    selection_hints:
+      - Prefer when the project needs ui, architecture, tooling, or testing categories this catalog covers.
+      - Resolve the concrete skill from inventory/skills.yaml after category selection.
+      - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
+      - If multiple avdlee skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
+
+  - artifact: community-skills-dimillian
+    applies_to: common
+    snippet_paths: []
+    source_kind: multi_skill_catalog
+    skill_categories:
+      - package-design
+      - ci-automation
+      - repo-automation
+    prerequisites:
+      - project_interview_complete
+      - npx_or_user_confirmed_node_install
+    install_strategy: skills_sh_preferred_fallback_to_upstream
+    upstream_sources:
+      - https://skills.sh/dimillian/skills
+    recommendation_mode: one_recommended_choice_user_decides
+    selection_hints:
+      - Prefer when the project needs package-design, ci-automation, or repo-automation categories this catalog covers.
+      - Resolve the concrete skill from inventory/skills.yaml after category selection.
+      - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
+      - If multiple dimillian skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
+
+  - artifact: community-skills-dpearson
+    applies_to: common
+    snippet_paths: []
+    source_kind: multi_skill_catalog
+    skill_categories:
+      - apple-fallback
+      - ui
+      - architecture
+    prerequisites:
+      - project_interview_complete
+      - npx_or_user_confirmed_node_install
+    install_strategy: skills_sh_preferred_fallback_to_upstream
+    upstream_sources:
+      - https://github.com/dpearson2699/swift-ios-skills
+    recommendation_mode: one_recommended_choice_user_decides
+    selection_hints:
+      - Use as upstream fallback when apple-fallback, ui, or architecture guidance is needed and no better catalog match exists.
+      - Resolve the concrete skill from inventory/skills.yaml after category selection.
+      - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
+      - If multiple dpearson skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
+
+  - artifact: codex-subagents-awesome
+    applies_to: common
+    snippet_paths: []
+    source_kind: multi_subagent_catalog
+    subagent_categories:
+      - review
+      - research
+      - docs
+      - workflow
+      - search
+    prerequisites:
+      - project_interview_complete
+    install_strategy: copy_selected_toml_files_project_local
+    upstream_sources:
+      - https://github.com/VoltAgent/awesome-codex-subagents
+      - https://developers.openai.com/codex/subagents#custom-agents
+    recommendation_mode: one_recommended_choice_user_decides
+    selection_hints:
+      - Resolve the concrete subagent from inventory/subagents.yaml after category selection.
+      - Copy only the chosen .toml files into .codex/agents/.
+      - Do not install the whole collection.
+      - If multiple subagents fit, recommend one best-fit subagent, explain why, and keep the final decision with the user.
+
+  - artifact: sosumi-cli
+    applies_to: common
+    snippet_paths: []
+    prerequisites:
+      - apple_docs_lookup_requested
+      - explicit_confirmation_for_global_install
+    install_strategy: propose_global_install_only_after_confirmation
+    upstream_sources:
+      - https://sosumi.ai
+    selection_hints:
+      - Optional helper for Apple documentation lookup.

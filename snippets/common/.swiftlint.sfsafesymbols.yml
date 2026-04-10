@@ -1,0 +1,6 @@
+custom_rules:
+  no_raw_sfsymbol_strings:
+    name: "No raw SF Symbol strings"
+    regex: '(?m)^(?!\s*//).*\b(?:systemName|systemImage)\s*:\s*"[^"]+"'
+    message: "Use SFSafeSymbols instead of raw SF Symbol string literals."
+    severity: error
