@@ -48,6 +48,55 @@ artifacts:
       - Move the rest into conditional alternatives.
       - Keep the final decision with the user.
 
+  - artifact: project-codex-config
+    applies_to: common
+    snippet_paths: []
+    prerequisites:
+      - project_interview_complete
+      - workspace_shape_chosen
+    install_strategy: create_or_refine_project_codex_config_toml
+    upstream_sources:
+      - https://developers.openai.com/codex/config-reference#configtoml
+    selection_hints:
+      - Prefer project-scoped `.codex/config.toml` for repo-local Codex setup.
+      - Register the local skill with `[[skills.config]]`.
+      - Use `developer_instructions` only as a thin wrapper, not as a replacement for the skill itself.
+      - Use `model_instructions_file` only as an explicit alternative when the repo wants a dedicated instructions file.
+      - Project-scoped `.codex/config.toml` loads only when the project is trusted.
+
+  - artifact: sosumi-mcp-config
+    applies_to: common
+    snippet_paths: []
+    prerequisites:
+      - apple_docs_lookup_requested
+      - project_codex_config_in_scope
+    install_strategy: configure_remote_http_mcp_server_preferred_stdio_proxy_fallback
+    upstream_sources:
+      - https://developers.openai.com/codex/config-reference#configtoml
+      - https://sosumi.ai
+    selection_hints:
+      - Prefer remote HTTP MCP with `mcp_servers.sosumi.url = \"https://sosumi.ai/mcp\"`.
+      - Use the stdio proxy via `mcp-remote` only when HTTP MCP is not a viable client path.
+      - Do not require a global `sosumi` CLI install when MCP already covers the docs use case.
+
+  - artifact: xcode-mcp-config
+    applies_to: xcode
+    snippet_paths: []
+    prerequisites:
+      - workspace_shape_is_xcode
+      - user_requested_xcode_mcp
+      - xcode_external_agents_permission_enabled
+      - xcode_project_open_in_xcode
+    install_strategy: configure_xcrun_mcpbridge_after_xcode_permission_enabled
+    upstream_sources:
+      - https://developers.openai.com/codex/config-reference#configtoml
+      - https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode
+    selection_hints:
+      - Offer only for `xcode` workspaces.
+      - Never configure this artifact for `spm` workspaces in this skill.
+      - Require `Xcode > Settings > Intelligence > Allow external agents to use Xcode tools`.
+      - Prefer the Apple-supported `codex mcp add xcode -- xcrun mcpbridge` path or the equivalent TOML config.
+
   - artifact: gitlint-config
     applies_to: common
     snippet_paths:
@@ -307,10 +356,11 @@ artifacts:
     applies_to: common
     snippet_paths: []
     prerequisites:
-      - apple_docs_lookup_requested
+      - user_chose_sosumi_cli_path
       - explicit_confirmation_for_global_install
     install_strategy: propose_global_install_only_after_confirmation
     upstream_sources:
       - https://sosumi.ai
     selection_hints:
-      - Optional helper for Apple documentation lookup.
+      - Optional helper for Apple documentation lookup outside MCP.
+      - Do not treat this CLI as required when `sosumi` HTTP MCP already solves the use case.

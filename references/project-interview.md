@@ -13,6 +13,8 @@ Collect the information needed to decide:
 - which concrete skills are worth installing
 - which subagents are worth copying
 - which skill and subagent should be recommended first
+- whether the repo should carry a project `.codex/config.toml`
+- which MCP integrations are useful
 - which rules and constraints belong in `AGENTS.md`
 
 ## Required Questions
@@ -68,6 +70,9 @@ Ask about these topics in order.
 - `gitlint` required?
 - `SwiftLint` required?
 - Apple docs lookup via `sosumi` desired?
+- configure a project `.codex/config.toml`?
+- use `sosumi` via remote HTTP MCP?
+- use `xcode` MCP via `xcrun mcpbridge`? Only ask this if the workspace shape is likely `Xcode`.
 - project-local subagents desired?
 - should the project add `SFSafeSymbols` and enforce typed SF Symbols?
 
@@ -95,6 +100,9 @@ After the interview, the skill should be able to produce:
 - one recommended skill per capability gap, with rationale and conditional alternatives
 - one recommended subagent per capability gap, with rationale and conditional alternatives
 - the common snippets to apply
+- whether the repo should carry `.codex/config.toml`
+- whether `sosumi` MCP should be configured
+- whether `xcode` MCP is allowed and desired
 - whether `SFSafeSymbols` should be added and whether the SF Symbols SwiftLint rule should exist
 - a point where the user can confirm or override the final selection
 - the final inputs needed to generate `AGENTS.md`

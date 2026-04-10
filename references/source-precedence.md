@@ -16,6 +16,7 @@ These sources decide:
 - where custom agents live
 - which fields a custom agent file must define
 - how project-level guidance is discovered
+- which `config.toml` keys are valid for project config and MCP setup
 
 ## 2. Official `obra/superpowers` Installation
 
@@ -64,7 +65,14 @@ Primary fallbacks for this repo:
 - <https://github.com/dpearson2699/swift-ios-skills>
 - <https://github.com/VoltAgent/awesome-codex-subagents>
 - <https://github.com/SFSafeSymbols/SFSafeSymbols>
+- <https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode>
 - <https://sosumi.ai>
+
+For external integrations:
+
+- Apple decides how `xcrun mcpbridge` is exposed from Xcode.
+- `sosumi.ai` decides the remote MCP endpoint and CLI usage.
+- This repo may narrow those options as policy. For v1, `xcode` MCP is only allowed for `xcode` workspaces.
 
 ## 5. Community Examples
 
@@ -124,3 +132,6 @@ Do not invent overwrite or merge behavior outside this contract.
 - Never treat a relevant source link as permission to install the whole catalog.
 - Never list multiple skills or subagents as equal defaults for the same capability gap.
 - Never treat the recommendation as replacing the user's final choice.
+- Never invent `config.toml` keys or MCP server fields outside the official Codex config reference.
+- Never configure `xcode` MCP for an `spm` workspace in this skill.
+- Never require the `sosumi` CLI when remote HTTP MCP is already available.

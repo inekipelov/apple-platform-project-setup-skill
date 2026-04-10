@@ -9,7 +9,7 @@ Bootstrap Apple workspaces in a strict order so the repo gets the right foundati
 
 **Core principle:** install the baseline workflow first, then interview and specialize, then generate `AGENTS.md` after the selected skills and subagents are already in place.
 
-**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), and the files under [`snippets/`](snippets/).
+**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), and the files under [`snippets/`](snippets/).
 
 ## When to Use
 
@@ -17,7 +17,7 @@ Use this skill when:
 
 - starting a new Apple platform repository or local workspace
 - deciding between `SPM` and `Xcode`
-- setting up `AGENTS.md`, `gitlint`, `SwiftLint`, GitHub Actions, skills, or subagents for Apple development
+- setting up `AGENTS.md`, `.codex/config.toml`, MCP, `gitlint`, `SwiftLint`, GitHub Actions, skills, or subagents for Apple development
 - standardizing repository bootstrap for iOS, macOS, watchOS, tvOS, or visionOS work
 
 Do not use this skill for:
@@ -38,6 +38,7 @@ digraph setup_order {
     choose [label="Choose SPM or Xcode"];
     tools [label="Check tool prerequisites"];
     install [label="Install skills / copy subagents\nwith confirmation rules"];
+    config [label="Configure .codex/config.toml\nand optional MCP"];
     apply [label="Apply snippets"];
     agents [label="Create AGENTS.md\nfrom bootstrap snippet"];
     summary [label="Summarize configured vs pending"];
@@ -49,7 +50,8 @@ digraph setup_order {
     interview -> choose;
     choose -> tools;
     tools -> install;
-    install -> apply;
+    install -> config;
+    config -> apply;
     apply -> agents;
     agents -> summary;
 }
@@ -68,6 +70,9 @@ Never reorder these steps.
 | Concrete selection source | `inventory/skills.yaml` and `inventory/subagents.yaml` |
 | Skill install preference | `skills.sh` first, upstream instructions second |
 | Subagent install location | `.codex/agents/` by default |
+| Project config | prefer project `.codex/config.toml` for skill registration and optional wrappers |
+| Sosumi integration | prefer HTTP MCP; CLI is optional |
+| Xcode MCP policy | only for `xcode` workspaces, never for `spm` |
 | Global tool install policy | propose only, never auto-install |
 | Project choice | decide `SPM` vs `Xcode` after interview, not before |
 | Snippet application | obey `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml` |
@@ -93,6 +98,8 @@ Never reorder these steps.
   - priority technologies
   - typed SF Symbols policy
   - testing and CI expectations
+  - project `.codex/config.toml` expectations
+  - optional MCP integrations
   - policy constraints
 
 Do not choose skills, subagents, or repo files before the interview is complete.
@@ -116,7 +123,9 @@ Check for:
 - `gitlint`
 - `swiftlint`
 - `gh` when GitHub automation is requested
-- `sosumi` when Apple documentation lookup is requested
+- `xcrun` when `xcode` MCP is selected for an `xcode` workspace
+- `sosumi` only when the user explicitly wants the CLI
+- `npx` with `mcp-remote` only when the user wants the `sosumi` stdio proxy fallback
 
 Use [`references/tool-install-policy.md`](references/tool-install-policy.md).
 
@@ -145,7 +154,23 @@ If a required tool is missing:
 - List other relevant candidates only as alternatives with explicit `choose instead if ...` rules.
 - Final selection still belongs to the user. The skill recommends; the user confirms or overrides.
 
-### 6. Apply common artifacts
+### 6. Configure project `.codex/config.toml` and optional MCP
+
+- Follow [`references/codex-config.md`](references/codex-config.md) and [`references/mcp-setup.md`](references/mcp-setup.md).
+- Prefer a project-scoped `.codex/config.toml` when the repo is meant to carry its own Codex setup.
+- Register the skill with `[[skills.config]]` using the installed local path.
+- Use `developer_instructions` only as a thin wrapper when the repo wants a short always-on reminder.
+- Use `model_instructions_file` only as an explicit alternative when the repo wants a dedicated instruction file instead of relying on `AGENTS.md`.
+- Prefer `sosumi` over HTTP MCP when Apple docs lookup is desired and the client supports remote MCP servers.
+- Treat the `sosumi` CLI as optional. Do not require a global CLI install when HTTP MCP already solves the need.
+- Offer `xcode` MCP only when the workspace shape is `xcode`.
+- Before configuring `xcode` MCP:
+  - require the user to enable external agents in `Xcode > Settings > Intelligence`
+  - require the project to be open in Xcode
+  - use the Apple-supported `xcrun mcpbridge` integration path
+- Never configure `xcode` MCP for `spm` workspaces in this skill, even if the package could be opened in Xcode manually.
+
+### 7. Apply common artifacts
 
 Apply or refine:
 
@@ -176,7 +201,7 @@ Before adding the `No raw SF Symbol strings` SwiftLint rule:
   - do not add the package dependency
   - do not add the `No raw SF Symbol strings` rule
 
-### 7. Create `AGENTS.md` last
+### 8. Create `AGENTS.md` last
 
 - Start from [`snippets/common/AGENTS.bootstrap.md`](snippets/common/AGENTS.bootstrap.md).
 - Use **REQUIRED SUB-SKILL:** `superpowers:writing-skills` when generating or reshaping the repo-specific `AGENTS.md`.
@@ -201,7 +226,7 @@ When refining `AGENTS.md`, use this rendering contract:
 - Add one short note making it explicit that the user makes the final choice.
 - Do not present multiple skills or subagents as equal defaults for the same gap.
 
-### 8. Summarize clearly
+### 9. Summarize clearly
 
 End by separating:
 
@@ -223,6 +248,10 @@ Wrong. The project role and technology priorities determine the correct shape.
 ### Installing missing tools automatically
 
 Wrong. Global installs must always be user-confirmed.
+
+### Inventing Codex config keys or paths
+
+Wrong. Use the official `config.toml` reference and the repo config guidance documents.
 
 ### Treating external catalogs as templates
 
@@ -258,7 +287,15 @@ Wrong. `catalog.yaml` defines the target path, apply mode, conflict policy, and 
 
 ### Treating the recommendation as the final decision
 
-Wrong. The skill may recommend one best-fit `$skill-name` or `@agent-name`, but the user keeps the final choice.
+Wrong. The user still decides what to install or enable.
+
+### Configuring `xcode` MCP for an `spm` workspace
+
+Wrong. In this skill, `xcode` MCP is a policy-approved path only for `xcode` workspaces.
+
+### Treating the `sosumi` CLI as required for `sosumi` MCP
+
+Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only when that specific path is wanted.
 
 ## Red Flags
 
@@ -299,11 +336,13 @@ Correct response shape:
 2. If missing, propose the official install and wait.
 3. Ask about platform targets, repo role, UI stack, testing, and CI expectations.
 4. Choose `Xcode`.
-5. Check `npx`, `gitlint`, `swiftlint`, and optionally `gh` / `sosumi`.
+5. Check `npx`, `gitlint`, `swiftlint`, and optionally `gh`, `xcrun`, or `sosumi` based on the chosen integrations.
 6. Ask whether typed SF Symbols should use `SFSafeSymbols`.
 7. Recommend one best-fit `$skill-name` and one best-fit `@agent-name` where needed, each with a short usage rule and rationale.
 8. Ask the user to confirm the final selection when multiple candidates are relevant.
 9. Install or copy only the confirmed skills and subagents.
-10. If the user accepted `SFSafeSymbols`, add that package dependency and merge the SF Symbols SwiftLint rule.
-11. Apply common snippets plus the `Xcode` snippets.
-12. Generate the repo-specific `AGENTS.md` from the bootstrap snippet.
+10. Configure project `.codex/config.toml` and any approved MCP servers.
+11. If the user accepted `SFSafeSymbols`, add that package dependency and merge the SF Symbols SwiftLint rule.
+12. If the workspace is `Xcode` and the user wants Xcode tools, configure `xcode` MCP through `xcrun mcpbridge`.
+13. Apply common snippets plus the `Xcode` snippets.
+14. Generate the repo-specific `AGENTS.md` from the bootstrap snippet.

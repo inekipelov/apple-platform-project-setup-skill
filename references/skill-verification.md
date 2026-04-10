@@ -26,6 +26,9 @@ Because the repository had no workflow contract, each planned failure mode was e
 8. An agent could treat a relevant skills source link as a reason to install the whole catalog instead of choosing a category first.
 9. An agent could guess a concrete skill or subagent id without a verified curated inventory entry.
 10. An agent could overwrite or merge snippet-backed files without a declared target path or conflict policy.
+11. An agent could invent project `.codex/config.toml` keys instead of following the official Codex config reference.
+12. An agent could require the `sosumi` CLI even when `sosumi` HTTP MCP would have been enough.
+13. An agent could configure `xcode` MCP for an `spm` workspace.
 
 ## GREEN Verification Targets
 
@@ -44,6 +47,9 @@ After the repo contract is present, verify that:
 11. Skills sources are treated as catalogs, category selection happens before skill selection, and the whole catalog is never installed by default.
 12. Concrete skill and subagent recommendations come from the curated inventory or remain explicit source-level fallbacks when the inventory is not seeded.
 13. Snippet-backed artifacts declare deterministic target paths, apply modes, and overwrite or merge policies.
+14. The repo documents valid project `.codex/config.toml` setup using official Codex keys only.
+15. `sosumi` MCP is documented as HTTP-first and does not require the CLI by default.
+16. `xcode` MCP is documented and enforced only for `xcode` workspaces, never for `spm`.
 
 ## REFACTOR Watchlist
 
@@ -58,5 +64,8 @@ Look for these rationalizations in future revisions:
 - "The source catalog is relevant, so installing all of it is the fastest path."
 - "I can guess the concrete skill id from the catalog without checking the curated inventory."
 - "Copy or merge behavior is obvious, so I do not need an explicit apply contract."
+- "I know how Codex config probably works, so I can invent the TOML from memory."
+- "The sosumi CLI is installed often enough that I can require it."
+- "SPM can open in Xcode, so enabling Xcode MCP there is harmless."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.

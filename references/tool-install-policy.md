@@ -8,6 +8,7 @@ This repository assumes prerequisite checks happen before the related tool is us
 - `gitlint`
 - `swiftlint`
 - `gh`
+- `xcrun`
 - `sosumi`
 
 ## Global Install Rule
@@ -72,6 +73,15 @@ Possible suggestion:
 npm i -g @nshipster/sosumi
 ```
 
+### `xcrun`
+
+Do not treat `xcrun` like a normal global package install.
+
+If `xcrun` is missing when `xcode` MCP is requested:
+
+- explain that `xcrun mcpbridge` comes from Xcode tooling
+- point the user to install or update Xcode instead of inventing a package-manager install
+
 ## Fallback Rule
 
 If no supported package manager is available, do not invent a workaround.
@@ -83,7 +93,9 @@ Instead:
 
 ## Optional vs Required
 
-- `npx` is required only when the selected skill source uses `skills.sh`.
+- `npx` is required only when the selected skill source uses `skills.sh` or when the user explicitly chooses an `mcp-remote` stdio proxy path.
 - `gitlint` and `swiftlint` are required only when those repo artifacts are selected.
 - `gh` is optional unless the user explicitly wants GitHub CLI workflow help.
+- `xcrun` matters only when `xcode` MCP is selected for an `xcode` workspace.
 - `sosumi` is optional unless the user explicitly wants Apple documentation lookup through that CLI.
+- `sosumi` HTTP MCP does not require the `sosumi` CLI.
