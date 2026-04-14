@@ -121,8 +121,8 @@ After the interview, the skill should be able to produce:
 - if the workspace is `Xcode`, one Xcode project strategy: `native` or `tuist`
 - the top 1-3 skill categories that matter for this project
 - the top 1-3 subagent categories that matter for this project
-- one recommended skill per capability gap, with rationale and conditional alternatives
-- one recommended subagent per capability gap, with rationale and conditional alternatives
+- the final selected skills to install, if any
+- the final selected subagents to copy, if any
 - the common snippets to apply
 - which workspace-specific `SwiftLint` snippet applies
 - which `Xcode` snippet set applies when the workspace is `Xcode`
@@ -130,5 +130,5 @@ After the interview, the skill should be able to produce:
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired
 - whether `SFSafeSymbols` should be added and whether the SF Symbols SwiftLint rule should exist
-- a point where the user can confirm or override the final selection
-- the final inputs needed to generate `AGENTS.md`
+- the exact repository rules and command set that must appear in `AGENTS.md`
+- the final inputs needed to generate a declarative `AGENTS.md`

@@ -43,10 +43,9 @@ Treat it as a catalog, not a bundle to install wholesale.
 - Skip subagents entirely when the repo is tiny or the user does not want them.
 - Resolve concrete subagent ids from [`../inventory/subagents.yaml`](../inventory/subagents.yaml).
 - In generated `AGENTS.md`, render subagents as `@agent-name`.
-- Recommend one best-fit subagent per capability gap and move other relevant candidates into conditional alternatives.
-- Every recommended `@agent-name` must include a short “when to use” rule.
-- Every recommended `@agent-name` must include a short “why recommended now” explanation.
-- The skill helps the user choose one, but the final choice remains with the user.
+- Final selection happens before `AGENTS.md` is generated.
+- In `AGENTS.md`, list only installed project-local subagents.
+- Every installed `@agent-name` must include a short “when to use” rule.
 - If no verified concrete entry exists for a category, do not invent one. Keep the source catalog as a fallback recommendation path.
 
 ## Suggested Roles for Apple Workspace Bootstraps
@@ -78,17 +77,16 @@ Treat it as a catalog, not a bundle to install wholesale.
 When this skill generates or refines `AGENTS.md` after the selected subagents are copied:
 
 - use `@agent-name` syntax
-- list one recommended subagent per capability gap
-- attach one short usage rule to that recommendation
-- attach one short “why recommended now” explanation
-- list other relevant subagents only in `Optional Alternatives` with `choose instead if ...` conditions
-- add one short note that the user makes the final subagent choice
-- do not present multiple subagents as equal defaults for the same need
+- use the section title `Installed Subagents`
+- list only installed project-local subagents
+- use the exact line format `- @agent-name: Use for <exact repository task>.`
+- if no project-local subagents were copied, use the exact line `- None installed.`
+- do not include recommendation prose, alternatives, rationale, or user-choice notes
+- do not mention subagents that were considered but not copied
 
 ## Things This Skill Must Not Do
 
 - Do not install every agent from an external collection.
 - Do not default to user-level `~/.codex/agents/`.
 - Do not invent custom agent file schemas.
-- Do not list multiple subagents as equal defaults for the same capability gap.
-- Do not treat the recommendation as the final decision.
+- Do not copy pre-install comparisons or alternatives into `AGENTS.md`.

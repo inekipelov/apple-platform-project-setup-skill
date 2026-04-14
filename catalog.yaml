@@ -37,16 +37,25 @@ artifacts:
     agents_rendering:
       skill_reference_syntax: "$skill-name"
       subagent_reference_syntax: "@agent-name"
-      recommendation_mode: one_recommended_choice_user_decides
+      mode: declarative_final_state_only
       require_usage_rule: true
-      require_rationale: true
-      final_decision_owner: user
+      require_exact_sections:
+        - Repository Purpose
+        - Workspace
+        - Project Structure Source Of Truth
+        - Core Commands
+        - Installed Skills
+        - Installed Subagents
+        - Repository Rules
+      installed_skill_line_format: "- $skill-name: Use for <exact repository task>."
+      installed_subagent_line_format: "- @agent-name: Use for <exact repository task>."
+      empty_section_line: "- None installed."
     selection_hints:
       - Create AGENTS.md after the interview and after the selected skills and subagents are installed or intentionally skipped.
       - Render skill references as $skill-name and subagent references as @agent-name.
-      - Recommend one best-fit item per capability gap and explain why it is recommended now.
-      - Move the rest into conditional alternatives.
-      - Keep the final decision with the user.
+      - Render AGENTS.md as a declarative final-state document with fixed section titles and exact line prefixes.
+      - List only the final installed skills and subagents. Do not include recommendations, alternatives, or rationale.
+      - Use `- None installed.` when a section has no installed project-local entries.
 
   - artifact: project-codex-config
     applies_to: common

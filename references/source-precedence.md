@@ -90,7 +90,7 @@ They may influence:
 - which skills to propose
 - which subagents to copy
 - which optional tools to mention
-- which alternative recommendations are worth surfacing
+- which candidate items are worth comparing before the user confirms
 
 They must not override:
 
@@ -99,11 +99,10 @@ They must not override:
 - repo-local snippets
 - explicit user preferences
 
-## Recommendation Collapsing Rule
+## Selection Narrowing Rule
 
 Source precedence resolves which catalog or upstream source to trust first.
 
-It does not mean every relevant item from that source should appear as a peer in `AGENTS.md`.
 It also does not mean the whole catalog should be installed.
 
 After precedence is resolved:
@@ -112,10 +111,9 @@ After precedence is resolved:
 - resolve one concrete candidate from `inventory/skills.yaml` or `inventory/subagents.yaml`
 - choose one recommended `$skill-name` per capability gap
 - choose one recommended `@agent-name` per capability gap
-- attach a short usage rule and short rationale to each recommendation
-- list other relevant candidates only as conditional alternatives for client choice
 - keep the final decision with the user
 - if the inventory is not seeded for that category yet, stop at the source-catalog recommendation level instead of inventing an id
+- after the user confirms the final selection, write only that final installed state into `AGENTS.md`
 
 ## Artifact Apply Contract
 
@@ -139,6 +137,7 @@ Do not invent overwrite or merge behavior outside this contract.
 - Never treat a relevant source link as permission to install the whole catalog.
 - Never list multiple skills or subagents as equal defaults for the same capability gap.
 - Never treat the recommendation as replacing the user's final choice.
+- Never copy pre-install comparisons, alternatives, or recommendation rationale into `AGENTS.md`.
 - Never invent `config.toml` keys or MCP server fields outside the official Codex config reference.
 - Never configure `xcode` MCP for an `spm` workspace in this skill.
 - Never require the `sosumi` CLI when remote HTTP MCP is already available.

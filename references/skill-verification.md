@@ -35,6 +35,7 @@ Because the repository had no workflow contract, each planned failure mode was e
 17. An agent could suggest `Tuist` while the repo is on the `SPM` path.
 18. An agent could choose `Tuist` and still apply native `Xcode` artifacts.
 19. An agent could configure `xcode` MCP for a Tuist repo without requiring a generated project to be open in Xcode.
+20. An agent could copy recommendations, alternatives, or selection rationale into the final `AGENTS.md` instead of recording only the final installed repo state.
 
 ## GREEN Verification Targets
 
@@ -63,6 +64,8 @@ After the repo contract is present, verify that:
 21. `catalog.yaml` contains both native `Xcode` artifacts and `Tuist`-specific `Xcode` artifacts.
 22. `xcode-swiftlint-config` stays shared across native and Tuist-managed `Xcode` repositories.
 23. Tuist-specific MCP guidance requires `tuist generate` and an open generated project or workspace before `xcode` MCP is configured.
+24. `AGENTS.md` is rendered as a declarative final-state document with fixed section titles and no recommendation or alternatives sections.
+25. `Installed Skills` and `Installed Subagents` use exact installed-item line formats or the exact fallback line `- None installed.`
 
 ## REFACTOR Watchlist
 
@@ -84,5 +87,6 @@ Look for these rationalizations in future revisions:
 - "These workflow snippets are simple enough that permissions and concurrency do not matter."
 - "Tuist is different enough that it should be a third workspace shape."
 - "Once Tuist is selected, I can keep using the native Xcode snippets."
+- "The recommendation process is useful context, so it belongs in the final AGENTS file."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.

@@ -16,11 +16,10 @@ Concrete skill selection is inventory-backed. Use [`../inventory/skills.yaml`](.
 8. Prefer project-local install under `.agents/skills/` when the installer supports it.
 9. If the installer only supports user-level install, explain that limitation and ask before proceeding.
 10. In generated `AGENTS.md`, render skills as `$skill-name`.
-11. For each capability gap, recommend one best-fit skill and move other relevant candidates into conditional alternatives.
-12. Every recommended `$skill-name` must include a short “when to use” rule.
-13. Every recommended `$skill-name` must include a short “why recommended now” explanation.
-14. The skill helps the user choose one, but the final choice remains with the user.
-15. If no verified concrete entry exists for a category, do not invent one. Keep the source catalog as a fallback recommendation path.
+11. Final selection happens before `AGENTS.md` is generated.
+12. In `AGENTS.md`, list only installed project-local skills.
+13. Every installed `$skill-name` must include a short “when to use” rule.
+14. If no verified concrete entry exists for a category, do not invent one. Keep the source catalog as a fallback recommendation path.
 
 ## Capability Categories
 
@@ -77,12 +76,12 @@ Interpret each source row above as a catalog, not as one skill.
 When this skill generates or refines `AGENTS.md` after the selected skills are installed:
 
 - use `$skill-name` syntax
-- list one recommended skill per capability gap
-- attach one short usage rule to that recommendation
-- attach one short “why recommended now” explanation
-- list other relevant skills only in `Optional Alternatives` with `choose instead if ...` conditions
-- add one short note that the user makes the final skill choice
-- do not present multiple skills as equal defaults for the same need
+- use the section title `Installed Skills`
+- list only installed project-local skills
+- use the exact line format `- $skill-name: Use for <exact repository task>.`
+- if no project-local skills were installed, use the exact line `- None installed.`
+- do not include recommendation prose, alternatives, rationale, or user-choice notes
+- do not mention skills that were considered but not installed
 
 ## Install Command Pattern
 
@@ -106,7 +105,7 @@ If it does not, stop and ask whether a user-level install is acceptable.
 | GitHub workflow and repo automation help | `dimillian` |
 | Apple mobile patterns with no matching `skills.sh` entry | `dpearson2699` fallback |
 
-If more than one catalog can help, choose the strongest fit as the recommendation, explain why, and keep the rest as conditional alternatives. The final decision still belongs to the user.
+If more than one catalog can help, narrow the comparison before install and keep only the final selected installed skill in `AGENTS.md`.
 
 Do not install an entire source catalog just because its category is relevant.
 

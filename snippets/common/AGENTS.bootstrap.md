@@ -15,9 +15,9 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 
 - Reference skills as `$skill-name`.
 - Reference subagents as `@agent-name`.
-- Every referenced `$skill-name` or `@agent-name` must include a short rule that says when to apply it.
-- If several candidates are relevant for the same need, recommend one best-fit option, explain why it is recommended now, and place the others under conditional alternatives.
-- The final choice still belongs to the user.
+- This file must describe only the final installed repo state.
+- Do not include recommendation prose, alternatives, rationale, or user-choice notes.
+- Every installed `$skill-name` or `@agent-name` must include a short rule that says when to apply it.
 
 ## Current Unknowns To Resolve
 
@@ -42,27 +42,46 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 - Project-local skills: `.agents/skills/`
 - Project-local subagents: `.codex/agents/`
 
-## Recommended AGENTS.md Composition
+## Required AGENTS.md Structure
 
-### Recommended Skills
+Use these exact section titles in this exact order.
 
-- `$skill-name`: when to use it for this repository
-- Why recommended now: why it is the strongest starting point for the current repo state
+### Repository Purpose
 
-### Recommended Subagents
+- `- Purpose: <one-sentence repository purpose>`
 
-- `@agent-name`: when to use it for this repository
-- Why recommended now: why it is the strongest starting point for the current repo state
+### Workspace
 
-### Optional Alternatives
+- `- Shape: SPM` or `- Shape: Xcode`
+- `- Target platforms: <platform list>`
+- `- Xcode project strategy: native xcodeproj` or `- Xcode project strategy: Tuist-generated` only when the shape is `Xcode`
 
-- `$other-skill-name`: choose instead if the recommended skill is not the best fit
-- `@other-agent-name`: choose instead if the recommended subagent is not the best fit
+### Project Structure Source Of Truth
 
-### Decision Note
+- `- Source of truth: <exact project-structure source of truth>`
+- `- Xcode generation: Not required.` or `- Xcode generation: Run \`tuist generate\` before opening in Xcode when needed.`
 
-- The items under `Recommended Skills` and `Recommended Subagents` are recommendations, not forced selections.
-- The user confirms the final skill and subagent choice.
+### Core Commands
+
+- `- Setup: <command>` or `- Setup: Not defined.`
+- `- Build: <command>`
+- `- Test: <command>`
+- `- Lint: <command>` or `- Lint: Not configured.`
+- `- Project generation: Not required.` or `- Project generation: tuist generate`
+
+### Installed Skills
+
+- Exact line format for each installed skill: `- $skill-name: Use for <exact repository task>.`
+- If none were installed: `- None installed.`
+
+### Installed Subagents
+
+- Exact line format for each installed subagent: `- @agent-name: Use for <exact repository task>.`
+- If none were installed: `- None installed.`
+
+### Repository Rules
+
+- Exact line prefix for every rule: `- Rule: <non-negotiable repository rule>`
 
 ## Follow-Up
 
@@ -72,12 +91,8 @@ After the interview and after the selected skills and subagents are installed or
 - workspace shape
 - if `Xcode`, the chosen Xcode project strategy
 - core commands
-- required skills
-- required subagents
-- why each recommended `$skill-name` and `@agent-name` applies
-- why each recommendation is the best current starting point
-- alternatives the user may choose instead
-- a short note that the final choice belongs to the user
+- installed project-local skills
+- installed project-local subagents
 - non-negotiable repo rules
 
 For Tuist-based repositories, the final `AGENTS.md` should also capture:

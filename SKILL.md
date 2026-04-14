@@ -69,6 +69,7 @@ Never reorder these steps.
 | Baseline prerequisite | `obra/superpowers` always comes first |
 | AGENTS timing | generate after selected skills and subagents are installed |
 | AGENTS syntax | skills as `$skill-name`, subagents as `@agent-name` |
+| AGENTS mode | declarative final-state only; no recommendations or alternatives |
 | Selection model | recommend one best-fit option, user keeps the final choice |
 | Concrete selection source | `inventory/skills.yaml` and `inventory/subagents.yaml` |
 | Skill install preference | `skills.sh` first, upstream instructions second |
@@ -170,6 +171,7 @@ If a required tool is missing:
 - Explain why that recommended `$skill-name` or `@agent-name` is the strongest fit for the current repository state.
 - List other relevant candidates only as alternatives with explicit `choose instead if ...` rules.
 - Final selection still belongs to the user. The skill recommends; the user confirms or overrides.
+- Once the user confirms the selection, treat that installed set as final repo state and carry only that final state into `AGENTS.md`.
 
 ### 6. Configure project `.codex/config.toml` and optional MCP
 
@@ -235,19 +237,41 @@ Before adding the `No raw SF Symbol strings` SwiftLint rule:
   - the common repo artifacts are already applied
 - Treat the bootstrap file as the starting structure for the final repo-local `AGENTS.md`, not as an early placeholder.
 - Any generated `AGENTS.md` must reference skills as `$skill-name` and subagents as `@agent-name`.
-- Every recommended `$skill-name` or `@agent-name` in `AGENTS.md` must include one short rule explaining when to apply it.
+- `AGENTS.md` is a declarative document about the final chosen repo state, not a recommendation document.
 
 When refining `AGENTS.md`, use this rendering contract:
 
-- `Recommended Skills` contains one recommended `$skill-name` per capability gap plus:
-  - one short usage rule
-  - one short “why this is recommended now” explanation
-- `Recommended Subagents` contains one recommended `@agent-name` per capability gap plus:
-  - one short usage rule
-  - one short “why this is recommended now” explanation
-- `Optional Alternatives` may list other relevant `$skill-name` and `@agent-name` options only with explicit `choose instead if ...` rules.
-- Add one short note making it explicit that the user makes the final choice.
-- Do not present multiple skills or subagents as equal defaults for the same gap.
+- Use these exact section titles in this exact order:
+  - `Repository Purpose`
+  - `Workspace`
+  - `Project Structure Source Of Truth`
+  - `Core Commands`
+  - `Installed Skills`
+  - `Installed Subagents`
+  - `Repository Rules`
+- Under `Repository Purpose`, use the exact line prefix `- Purpose:`.
+- Under `Workspace`, use the exact line prefixes:
+  - `- Shape:`
+  - `- Target platforms:`
+  - `- Xcode project strategy:` only when the shape is `Xcode`
+- Under `Project Structure Source Of Truth`, use the exact line prefixes:
+  - `- Source of truth:`
+  - `- Xcode generation:`
+- Under `Core Commands`, use the exact line prefixes:
+  - `- Setup:`
+  - `- Build:`
+  - `- Test:`
+  - `- Lint:`
+  - `- Project generation:`
+- Under `Installed Skills`, each installed skill line must use the exact format `- $skill-name: Use for <exact repository task>.`
+- If no project-local skills were installed, `Installed Skills` must contain the exact line `- None installed.`
+- Under `Installed Subagents`, each installed subagent line must use the exact format `- @agent-name: Use for <exact repository task>.`
+- If no project-local subagents were installed, `Installed Subagents` must contain the exact line `- None installed.`
+- Under `Repository Rules`, every rule line must use the exact prefix `- Rule:`.
+- Do not include `Recommended Skills`, `Recommended Subagents`, `Optional Alternatives`, `Decision Note`, `Why recommended now`, or any equivalent recommendation section.
+- Do not mention candidates that were considered but not installed.
+- Do not include user-choice language in `AGENTS.md`; by this stage the choice has already been made.
+- For `Xcode + Tuist`, `Project Structure Source Of Truth` must explicitly say that `Project.swift` and `Tuist.swift` are the project-structure source of truth and that `tuist generate` may be required before opening the project in Xcode.
 
 ### 9. Summarize clearly
 
@@ -320,9 +344,9 @@ Wrong. Recommend one best-fit option for the current task and move the rest into
 
 Wrong. `catalog.yaml` defines the target path, apply mode, conflict policy, and merge strategy for snippet-backed artifacts.
 
-### Treating the recommendation as the final decision
+### Copying recommendations or alternatives into `AGENTS.md`
 
-Wrong. The user still decides what to install or enable.
+Wrong. `AGENTS.md` must list only the final installed repo state, not the earlier comparison process.
 
 ### Configuring `xcode` MCP for an `spm` workspace
 
@@ -347,6 +371,7 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 - "I can infer the right skills without asking about the project."
 - "I'll list three relevant skills and let the client decide without a recommendation."
 - "I picked the best option, so the user does not need to decide anymore."
+- "I can keep the recommendation language in `AGENTS.md`; the reader will infer what is actually installed."
 - "I can enable the SF Symbols string rule now and decide about typed symbols later."
 
 **All of these mean: stop and return to the mandatory order.**
@@ -362,6 +387,7 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 | "The source link looks relevant, so I can install everything it exposes." | External skill links are catalogs. Choose a category first, then one concrete skill. |
 | "All three skills are relevant, so I should list all three as peers." | Recommend one best-fit option and keep the others as conditional alternatives. |
 | "I already recommended the best skill, so I can decide for the user." | The skill recommends one; the final decision stays with the user. |
+| "The recommendation process is useful context, so it should stay in `AGENTS.md`." | `AGENTS.md` records only the final installed repo state. Keep selection reasoning out of it. |
 | "Typed SF Symbols are a pure lint concern, so I can enable the rule without asking." | Ask about `SFSafeSymbols` first. Add the rule only if the dependency is accepted. |
 
 ## Example

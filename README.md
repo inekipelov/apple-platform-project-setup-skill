@@ -92,10 +92,10 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Inside `Xcode`, `native xcodeproj` stays the default and `Tuist` stays optional.
 - `SwiftLint` is shape-specific: `SPM` and `Xcode` get different `.swiftlint.yml` snippets.
 - GitHub Actions snippets include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
-- Concrete recommended skills come from `inventory/skills.yaml`.
-- Concrete recommended subagents come from `inventory/subagents.yaml`.
-- `AGENTS.md` must reference skills as `$skill-name` and subagents as `@agent-name`.
-- If multiple options fit, the skill recommends one best-fit option and explains why, but the user makes the final decision.
+- Final selected skills come from `inventory/skills.yaml`.
+- Final selected subagents come from `inventory/subagents.yaml`.
+- `AGENTS.md` is declarative final-state only. It must reference skills as `$skill-name` and subagents as `@agent-name`.
+- `AGENTS.md` uses fixed sections and lists only installed project-local skills and subagents.
 - Snippet-backed files follow `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml`.
 
 ## Source of truth
