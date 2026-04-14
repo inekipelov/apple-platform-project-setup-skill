@@ -6,30 +6,14 @@ It does not ship a project template. It orchestrates setup: checks the baseline 
 
 ## Install
 
-### Recommended: project-local skill
-
-Keep the skill inside the target repository so the version is pinned with the project.
+Keep the skill inside the target repository so the version stays pinned with the project.
 
 ```bash
 mkdir -p .codex/skills
 git clone https://github.com/inekipelov/apple-platform-project-setup-skill.git .codex/skills/apple-platform-project-setup-skill
 ```
 
-Register it in the project config:
-
-```toml
-[[skills.config]]
-path = ".codex/skills/apple-platform-project-setup-skill"
-enabled = true
-```
-
-Codex loads project-scoped `.codex/config.toml` only for trusted projects.
-
-## Configure project `.codex/config.toml`
-
-### Recommended: minimal project config
-
-Use the official Codex project config format:
+Register it in `.codex/config.toml`:
 
 ```toml
 #:schema https://developers.openai.com/codex/config-schema.json
@@ -39,27 +23,11 @@ path = ".codex/skills/apple-platform-project-setup-skill"
 enabled = true
 ```
 
-This keeps the skill project-local and matches the OpenAI `config.toml` reference.
+Codex loads project-scoped `.codex/config.toml` only for trusted projects.
 
-### Alternative config options
+This is the only install path you need for this repo.
 
-#### Thin wrapper with `developer_instructions`
-
-Use this only for a short routing reminder:
-
-```toml
-developer_instructions = """
-Use $apple-platform-project-setup-skill when bootstrapping or standardizing an Apple platform workspace.
-"""
-```
-
-#### Dedicated `model_instructions_file`
-
-Use this when the repo wants a separate reusable instruction document:
-
-```toml
-model_instructions_file = ".codex/instructions/apple-workspace-setup.md"
-```
+For advanced `.codex/config.toml`, MCP setup, or wrapper instructions, see [`references/codex-config.md`](references/codex-config.md) and [`references/mcp-setup.md`](references/mcp-setup.md).
 
 ## Configure MCP
 
@@ -74,19 +42,7 @@ url = "https://sosumi.ai/mcp"
 
 This works for both `spm` and `xcode` workspaces and does not require the `sosumi` CLI.
 
-### Alternative MCP methods
-
-#### `sosumi` stdio proxy
-
-Use this only when HTTP MCP is not a viable client path:
-
-```toml
-[mcp_servers.sosumi]
-command = "npx"
-args = ["-y", "mcp-remote", "https://sosumi.ai/mcp"]
-```
-
-#### `xcode` MCP for `xcode` workspaces only
+### `xcode` MCP for `xcode` workspaces only
 
 This skill treats `xcode` MCP as an `xcode`-only integration.
 
@@ -111,83 +67,6 @@ args = ["mcpbridge"]
 ```
 
 Do not configure `xcode` MCP for `spm` workspaces in this repo contract.
-
-### Alternative install methods
-
-#### User-level install
-
-Install once for your local Codex environment:
-
-```bash
-mkdir -p ~/.codex/skills
-git clone https://github.com/inekipelov/apple-platform-project-setup-skill.git ~/.codex/skills/apple-platform-project-setup-skill
-```
-
-```toml
-[[skills.config]]
-path = "/absolute/path/to/.codex/skills/apple-platform-project-setup-skill"
-enabled = true
-```
-
-#### Existing checkout or symlink
-
-Any local directory that contains [`SKILL.md`](SKILL.md) can be registered directly:
-
-```toml
-[[skills.config]]
-path = "/absolute/path/to/apple-platform-project-setup-skill"
-enabled = true
-```
-
-#### Git submodule
-
-If you want project-local pinning without copying the repo:
-
-```bash
-git submodule add https://github.com/inekipelov/apple-platform-project-setup-skill.git .codex/skills/apple-platform-project-setup-skill
-```
-
-Use the same project-local `skills.config` entry shown above.
-
-#### Published catalog installer
-
-This repo is not currently published as a `skills.sh` package. If that changes, documenting the published `npx skills add ...` command would become another supported install path.
-
-## Use as remote instruction
-
-### Recommended: project `AGENTS.md` wrapper
-
-Use `AGENTS.md` as the thin routing layer and keep this repo as the real skill implementation:
-
-```md
-Use $apple-platform-project-setup-skill when bootstrapping or standardizing an Apple platform workspace. Install `obra/superpowers` first, interview before choosing `SPM` or `Xcode`, prefer `skills.sh` when available, and generate `AGENTS.md` last.
-```
-
-### Alternative remote instruction methods
-
-#### Project `.codex/config.toml`
-
-Use project-scoped `developer_instructions` when you want the reminder outside `AGENTS.md`:
-
-```toml
-developer_instructions = """
-Use $apple-platform-project-setup-skill when bootstrapping or standardizing an Apple platform workspace.
-"""
-```
-
-#### Project or user `model_instructions_file`
-
-Use an instructions file when your team wants a dedicated reusable wrapper document:
-
-```toml
-model_instructions_file = ".codex/instructions/apple-workspace-setup.md"
-```
-
-The file can contain the same thin routing instruction that points back to `$apple-platform-project-setup-skill`.
-
-#### User or profile-level wrapper
-
-Use `~/.codex/config.toml` or a profile-specific config when you want this reminder available in every Apple repo you open.
 
 ## How it works
 
