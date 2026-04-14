@@ -22,6 +22,7 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 ## Current Unknowns To Resolve
 
 - final project purpose
+- agent personalization profile
 - target Apple platforms
 - `SPM` vs `Xcode`
 - if `Xcode`, native `xcodeproj` vs `Tuist-generated`
@@ -49,6 +50,15 @@ Use these exact section titles in this exact order.
 ### Repository Purpose
 
 - `- Purpose: <one-sentence repository purpose>`
+
+### Agent Personalization
+
+- `- Communication language: <final chosen language or Use the language the client used to contact the agent.>`
+- `- Pushback policy: Challenge user decisions that introduce hacks, security weaknesses, or long-term technical debt; do not silently agree with them.`
+- `- Quality priority: Favor quality, security, and maintainability over speed.`
+- `- Long-term priority: Prefer scalable and maintainable solutions over short-term speed.`
+- `- Temporary fixes policy: Do not accept "temporary" solutions without an explicit cleanup plan.`
+- `- Risk disclosure: If a risky shortcut is chosen, state the risks explicitly in the final response.`
 
 ### Workspace
 
@@ -88,6 +98,7 @@ Use these exact section titles in this exact order.
 After the interview and after the selected skills and subagents are installed or intentionally skipped, turn this bootstrap template into a project-specific `AGENTS.md` that captures:
 
 - repo purpose
+- final agent personalization lines
 - workspace shape
 - if `Xcode`, the chosen Xcode project strategy
 - core commands

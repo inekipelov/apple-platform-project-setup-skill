@@ -74,7 +74,7 @@ Do not configure `xcode` MCP for `spm` workspaces in this repo contract.
 
 It starts with `obra/superpowers`. If that baseline is missing, the skill stops and asks for confirmation before any user-level install or home-directory change.
 
-Once the baseline is available, the skill interviews the user about project purpose, Apple platforms, UI stack, CI needs, repository policy, project config, and MCP needs. Only then does it choose `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default and offers an optional `Tuist-generated` path for app-first repositories that want declarative manifests and generated projects. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
+Once the baseline is available, the skill interviews the user about project purpose, agent personalization, Apple platforms, UI stack, CI needs, repository policy, project config, and MCP needs. Only then does it choose `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default and offers an optional `Tuist-generated` path for app-first repositories that want declarative manifests and generated projects. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
 
 After the selection is confirmed, the skill installs or copies only the chosen items, applies the repo snippets, and generates the repo-specific `AGENTS.md` from the bootstrap snippet.
 
@@ -95,7 +95,9 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Final selected skills come from `inventory/skills.yaml`.
 - Final selected subagents come from `inventory/subagents.yaml`.
 - `AGENTS.md` is declarative final-state only. It must reference skills as `$skill-name` and subagents as `@agent-name`.
-- `AGENTS.md` uses fixed sections and lists only installed project-local skills and subagents.
+- `AGENTS.md` uses fixed sections, including a required `Agent Personalization` section with exact line prefixes.
+- The skill explicitly asks which communication language should be fixed in `AGENTS.md`; if the user does not choose one, the fallback is the language the client used to contact the agent.
+- `AGENTS.md` lists only installed project-local skills and subagents.
 - Snippet-backed files follow `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml`.
 
 ## Source of truth

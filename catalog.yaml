@@ -41,12 +41,36 @@ artifacts:
       require_usage_rule: true
       require_exact_sections:
         - Repository Purpose
+        - Agent Personalization
         - Workspace
         - Project Structure Source Of Truth
         - Core Commands
         - Installed Skills
         - Installed Subagents
         - Repository Rules
+      personalization_line_prefixes:
+        - "- Communication language:"
+        - "- Pushback policy:"
+        - "- Quality priority:"
+        - "- Long-term priority:"
+        - "- Temporary fixes policy:"
+        - "- Risk disclosure:"
+      default_personalization_profile: strict-quality-client-language-default
+      canonical_personalization_profiles:
+        strict-quality-russian:
+          communication_language: "Russian."
+          pushback_policy: "Challenge user decisions that introduce hacks, security weaknesses, or long-term technical debt; do not silently agree with them."
+          quality_priority: "Favor quality, security, and maintainability over speed."
+          long_term_priority: "Prefer scalable and maintainable solutions over short-term speed."
+          temporary_fixes_policy: "Do not accept \"temporary\" solutions without an explicit cleanup plan."
+          risk_disclosure: "If a risky shortcut is chosen, state the risks explicitly in the final response."
+        strict-quality-client-language-default:
+          communication_language: "Use the language the client used to contact the agent."
+          pushback_policy: "Challenge user decisions that introduce hacks, security weaknesses, or long-term technical debt; do not silently agree with them."
+          quality_priority: "Favor quality, security, and maintainability over speed."
+          long_term_priority: "Prefer scalable and maintainable solutions over short-term speed."
+          temporary_fixes_policy: "Do not accept \"temporary\" solutions without an explicit cleanup plan."
+          risk_disclosure: "If a risky shortcut is chosen, state the risks explicitly in the final response."
       installed_skill_line_format: "- $skill-name: Use for <exact repository task>."
       installed_subagent_line_format: "- @agent-name: Use for <exact repository task>."
       empty_section_line: "- None installed."
@@ -54,7 +78,12 @@ artifacts:
       - Create AGENTS.md after the interview and after the selected skills and subagents are installed or intentionally skipped.
       - Render skill references as $skill-name and subagent references as @agent-name.
       - Render AGENTS.md as a declarative final-state document with fixed section titles and exact line prefixes.
+      - Render `Agent Personalization` as a separate section before `Workspace`.
+      - Always ask which communication language should be fixed in AGENTS.md.
+      - Use the client-language strict-quality fallback profile when the interview does not provide an explicit communication-language choice.
       - List only the final installed skills and subagents. Do not include recommendations, alternatives, or rationale.
+      - Do not use first-person wording or the word `Report` in AGENTS.md.
+      - Do not duplicate `Agent Personalization` lines in `Repository Rules`.
       - Use `- None installed.` when a section has no installed project-local entries.
 
   - artifact: project-codex-config

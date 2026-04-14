@@ -9,7 +9,7 @@ Bootstrap Apple workspaces in a strict order so the repo gets the right foundati
 
 **Core principle:** install the baseline workflow first, then interview and specialize, then generate `AGENTS.md` after the selected skills and subagents are already in place.
 
-**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), [`references/tuist-setup.md`](references/tuist-setup.md), and the files under [`snippets/`](snippets/).
+**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), [`references/tuist-setup.md`](references/tuist-setup.md), [`references/agents-personalization.md`](references/agents-personalization.md), and the files under [`snippets/`](snippets/).
 
 ## When to Use
 
@@ -70,6 +70,7 @@ Never reorder these steps.
 | AGENTS timing | generate after selected skills and subagents are installed |
 | AGENTS syntax | skills as `$skill-name`, subagents as `@agent-name` |
 | AGENTS mode | declarative final-state only; no recommendations or alternatives |
+| AGENTS personalization | fixed `Agent Personalization` section with exact prefixes and strict-quality fallback |
 | Selection model | recommend one best-fit option, user keeps the final choice |
 | Concrete selection source | `inventory/skills.yaml` and `inventory/subagents.yaml` |
 | Skill install preference | `skills.sh` first, upstream instructions second |
@@ -98,8 +99,10 @@ Never reorder these steps.
 ### 2. Run the project interview
 
 - Ask questions from [`references/project-interview.md`](references/project-interview.md).
+- Use [`references/agents-personalization.md`](references/agents-personalization.md) to collect and render the final `Agent Personalization` section.
 - Determine:
   - project role
+  - agent personalization profile
   - target platforms
   - delivery shape
   - if `Xcode`, the Xcode project strategy
@@ -110,6 +113,11 @@ Never reorder these steps.
   - project `.codex/config.toml` expectations
   - optional MCP integrations
   - policy constraints
+
+For communication language:
+
+- always ask which language should be fixed in `AGENTS.md`
+- if the user does not choose a preferred communication language, set `- Communication language: Use the language the client used to contact the agent.`
 
 Do not choose skills, subagents, or repo files before the interview is complete.
 
@@ -243,6 +251,7 @@ When refining `AGENTS.md`, use this rendering contract:
 
 - Use these exact section titles in this exact order:
   - `Repository Purpose`
+  - `Agent Personalization`
   - `Workspace`
   - `Project Structure Source Of Truth`
   - `Core Commands`
@@ -250,6 +259,14 @@ When refining `AGENTS.md`, use this rendering contract:
   - `Installed Subagents`
   - `Repository Rules`
 - Under `Repository Purpose`, use the exact line prefix `- Purpose:`.
+- Under `Agent Personalization`, use these exact line prefixes in this exact order:
+  - `- Communication language:`
+  - `- Pushback policy:`
+  - `- Quality priority:`
+  - `- Long-term priority:`
+  - `- Temporary fixes policy:`
+  - `- Risk disclosure:`
+- If no preferred communication language was explicitly chosen, the exact fallback line must be `- Communication language: Use the language the client used to contact the agent.`
 - Under `Workspace`, use the exact line prefixes:
   - `- Shape:`
   - `- Target platforms:`
@@ -268,9 +285,13 @@ When refining `AGENTS.md`, use this rendering contract:
 - Under `Installed Subagents`, each installed subagent line must use the exact format `- @agent-name: Use for <exact repository task>.`
 - If no project-local subagents were installed, `Installed Subagents` must contain the exact line `- None installed.`
 - Under `Repository Rules`, every rule line must use the exact prefix `- Rule:`.
+- `Agent Personalization` stores communication and behavior policy. `Repository Rules` stores repo-specific constraints, commands, and operating rules.
+- Do not duplicate the same rule in both `Agent Personalization` and `Repository Rules`.
 - Do not include `Recommended Skills`, `Recommended Subagents`, `Optional Alternatives`, `Decision Note`, `Why recommended now`, or any equivalent recommendation section.
 - Do not mention candidates that were considered but not installed.
 - Do not include user-choice language in `AGENTS.md`; by this stage the choice has already been made.
+- Do not use first-person wording inside `Agent Personalization`.
+- Do not use the word `Report` anywhere in `AGENTS.md`.
 - For `Xcode + Tuist`, `Project Structure Source Of Truth` must explicitly say that `Project.swift` and `Tuist.swift` are the project-structure source of truth and that `tuist generate` may be required before opening the project in Xcode.
 
 ### 9. Summarize clearly
@@ -348,6 +369,14 @@ Wrong. `catalog.yaml` defines the target path, apply mode, conflict policy, and 
 
 Wrong. `AGENTS.md` must list only the final installed repo state, not the earlier comparison process.
 
+### Mixing personalization rules into `Repository Rules`
+
+Wrong. `Agent Personalization` and `Repository Rules` have different jobs. Keep communication and pushback policy separate from repo operating rules.
+
+### Using first-person wording or `Report` in `AGENTS.md`
+
+Wrong. The generated file must stay declarative and repo-local. Use exact prefixes and final-response wording instead.
+
 ### Configuring `xcode` MCP for an `spm` workspace
 
 Wrong. In this skill, `xcode` MCP is a policy-approved path only for `xcode` workspaces.
@@ -372,6 +401,9 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 - "I'll list three relevant skills and let the client decide without a recommendation."
 - "I picked the best option, so the user does not need to decide anymore."
 - "I can keep the recommendation language in `AGENTS.md`; the reader will infer what is actually installed."
+- "I can put personalization anywhere in the file; the intent is obvious."
+- "Using first-person voice will make the file feel more personal."
+- "I can keep the word `Report`; people will understand what it means."
 - "I can enable the SF Symbols string rule now and decide about typed symbols later."
 
 **All of these mean: stop and return to the mandatory order.**
@@ -388,6 +420,9 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 | "All three skills are relevant, so I should list all three as peers." | Recommend one best-fit option and keep the others as conditional alternatives. |
 | "I already recommended the best skill, so I can decide for the user." | The skill recommends one; the final decision stays with the user. |
 | "The recommendation process is useful context, so it should stay in `AGENTS.md`." | `AGENTS.md` records only the final installed repo state. Keep selection reasoning out of it. |
+| "Repository Rules can absorb the personalization text." | Personalization must live in the fixed `Agent Personalization` section, not as free-form rules. |
+| "First-person voice is harmless in AGENTS." | The contract is declarative. Keep the file repo-local and exact. |
+| "The word `Report` is close enough." | Use the exact risk-disclosure line and refer to the final response, not an undefined report artifact. |
 | "Typed SF Symbols are a pure lint concern, so I can enable the rule without asking." | Ask about `SFSafeSymbols` first. Add the rule only if the dependency is accepted. |
 
 ## Example

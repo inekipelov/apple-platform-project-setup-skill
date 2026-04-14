@@ -8,6 +8,7 @@ Collect the information needed to decide:
 
 - `SPM` vs `Xcode`
 - if `Xcode`, `native xcodeproj` vs `Tuist-generated`
+- which `Agent Personalization` profile applies
 - which snippets apply
 - which skill categories are relevant
 - which subagent categories are relevant
@@ -16,7 +17,7 @@ Collect the information needed to decide:
 - which skill and subagent should be recommended first
 - whether the repo should carry a project `.codex/config.toml`
 - which MCP integrations are useful
-- which rules and constraints belong in `AGENTS.md`
+- which exact personalization lines and repo rules belong in `AGENTS.md`
 
 ## Required Questions
 
@@ -75,7 +76,24 @@ Ask this only after `Xcode` is the likely workspace choice.
 - release workflow
 - dependency policy
 
-### 7. Optional Tooling
+### 7. Agent Personalization
+
+- which communication language should be fixed in `AGENTS.md`?
+- should the agent challenge hacks, security weaknesses, and long-term technical debt?
+- should quality, security, and maintainability outrank speed?
+- should temporary fixes require an explicit cleanup plan?
+- should risky shortcuts always be called out in the final response?
+
+If the user gives no explicit communication-language answer:
+
+- use `- Communication language: Use the language the client used to contact the agent.`
+- keep the strict-quality baseline for the other five personalization lines
+
+If the user gives no other explicit personalization answers:
+
+- keep the strict-quality baseline for the other five personalization lines
+
+### 8. Optional Tooling
 
 - GitHub Actions required?
 - `gitlint` required?
@@ -123,6 +141,7 @@ After the interview, the skill should be able to produce:
 - the top 1-3 subagent categories that matter for this project
 - the final selected skills to install, if any
 - the final selected subagents to copy, if any
+- the final `Agent Personalization` lines
 - the common snippets to apply
 - which workspace-specific `SwiftLint` snippet applies
 - which `Xcode` snippet set applies when the workspace is `Xcode`
@@ -130,5 +149,5 @@ After the interview, the skill should be able to produce:
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired
 - whether `SFSafeSymbols` should be added and whether the SF Symbols SwiftLint rule should exist
-- the exact repository rules and command set that must appear in `AGENTS.md`
+- the exact repository rules and command set that must appear in `Repository Rules`
 - the final inputs needed to generate a declarative `AGENTS.md`

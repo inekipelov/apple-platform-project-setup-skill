@@ -138,6 +138,9 @@ Do not invent overwrite or merge behavior outside this contract.
 - Never list multiple skills or subagents as equal defaults for the same capability gap.
 - Never treat the recommendation as replacing the user's final choice.
 - Never copy pre-install comparisons, alternatives, or recommendation rationale into `AGENTS.md`.
+- `Agent Personalization` stores communication and behavior policy. `Repository Rules` stores repo-specific constraints and process rules.
+- Never duplicate the same policy line in both `Agent Personalization` and `Repository Rules`.
+- Never use first-person wording or the word `Report` in generated `AGENTS.md`.
 - Never invent `config.toml` keys or MCP server fields outside the official Codex config reference.
 - Never configure `xcode` MCP for an `spm` workspace in this skill.
 - Never require the `sosumi` CLI when remote HTTP MCP is already available.
