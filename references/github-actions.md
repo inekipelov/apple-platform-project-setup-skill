@@ -27,7 +27,8 @@ Keep these guardrails aligned across:
 
 - `gitlint`
 - `SPM` build and test
-- `Xcode` build and test
+- native `Xcode` build and test
+- `Xcode + Tuist` build and test
 
 ## `gitlint` Workflow
 
@@ -50,9 +51,9 @@ The `SPM` workflow snippets should:
 
 These snippets are package-first and should stay free of Xcode-project-specific assumptions.
 
-## `Xcode` Build and Test Workflows
+## Native `Xcode` Build and Test Workflows
 
-The `Xcode` workflow snippets should:
+The native `Xcode` workflow snippets should:
 
 - run on `macos-15`
 - select the latest stable Xcode
@@ -60,4 +61,18 @@ The `Xcode` workflow snippets should:
 - resolve Swift package dependencies into a known source packages directory before build or test
 - disable code signing in CI by passing `CODE_SIGNING_ALLOWED=NO`
 
-These snippets are app-first and may assume Xcode project or scheme inputs.
+These snippets are app-first and may assume checked-in Xcode project or scheme inputs.
+
+## `Xcode + Tuist` Build and Test Workflows
+
+The `Xcode + Tuist` workflow snippets should:
+
+- run on `macos-15`
+- select the latest stable Xcode
+- install Tuist before invoking Tuist commands
+- use `jdx/mise-action@v2` when the repo pins Tuist through `.tool-versions`
+- use the Homebrew install path when the repo does not pin Tuist
+- run `tuist install` before `tuist build` or `tuist test`
+- use explicit env vars such as `TUIST_SCHEME` instead of relying on all-schemes behavior
+
+For this repo contract, the Tuist workflow path uses `tuist build <scheme>` and `tuist test <scheme>` as the default CI commands for generated-project repositories.

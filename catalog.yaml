@@ -87,6 +87,7 @@ artifacts:
       - user_requested_xcode_mcp
       - xcode_external_agents_permission_enabled
       - xcode_project_open_in_xcode
+      - tuist_generated_project_open_in_xcode
     install_strategy: configure_xcrun_mcpbridge_after_xcode_permission_enabled
     upstream_sources:
       - https://developers.openai.com/codex/config-reference#configtoml
@@ -94,6 +95,8 @@ artifacts:
     selection_hints:
       - Offer only for `xcode` workspaces.
       - Never configure this artifact for `spm` workspaces in this skill.
+      - For native `xcodeproj`, require the checked-in project to be open in Xcode.
+      - If the selected Xcode strategy is `Tuist`, require `tuist generate` first and open the generated project or workspace in Xcode.
       - Require `Xcode > Settings > Intelligence > Allow external agents to use Xcode tools`.
       - Prefer the Apple-supported `codex mcp add xcode -- xcrun mcpbridge` path or the equivalent TOML config.
 
@@ -144,6 +147,22 @@ artifacts:
       - Apply only when Swift source will exist in the target workspace.
       - Use for `xcode` workspaces only.
       - Keep the config app-oriented and include typed asset rules.
+      - Share this config across native `xcodeproj` and `Tuist`-generated `Xcode` repositories.
+
+  - artifact: tuist-cli
+    applies_to: xcode
+    snippet_paths: []
+    prerequisites:
+      - xcode_project_strategy_is_tuist
+      - explicit_confirmation_for_global_install
+    install_strategy: propose_tuist_install_with_homebrew_or_optional_mise_pin
+    upstream_sources:
+      - https://docs.tuist.dev/en/guides/install-tuist
+      - https://docs.tuist.dev/en/guides/features/projects/adoption/new-project
+    selection_hints:
+      - Check only when the selected Xcode strategy is `Tuist`.
+      - Prefer the official Homebrew install path for the simplest local setup.
+      - Offer `mise use --pin tuist@latest` only when the repo wants a tracked Tuist version.
 
   - artifact: sfsafesymbols-package
     applies_to: common
@@ -239,18 +258,21 @@ artifacts:
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Cache SwiftPM dependency directories rather than arbitrary build outputs.
 
-  - artifact: xcode-gitignore
+  - artifact: xcode-native-gitignore
     applies_to: xcode
     snippet_paths:
       - snippets/xcode/.gitignore
     target_path: .gitignore
     apply_mode: copy_file
     conflict_policy: ask_before_replace_existing_nonempty
-    prerequisites: []
+    prerequisites:
+      - xcode_project_strategy_is_native
     install_strategy: copy_from_snippet
     upstream_sources: []
+    selection_hints:
+      - Use only for native checked-in `xcodeproj` repositories.
 
-  - artifact: xcode-build-workflow
+  - artifact: xcode-native-build-workflow
     applies_to: xcode
     snippet_paths:
       - snippets/xcode/workflows/build.yml
@@ -259,14 +281,15 @@ artifacts:
     conflict_policy: ask_before_replace_existing_nonempty
     prerequisites:
       - github_actions_enabled
+      - xcode_project_strategy_is_native
     install_strategy: copy_from_snippet
     upstream_sources: []
     selection_hints:
-      - Keep the workflow app-first and Xcode-oriented.
+      - Keep the workflow app-first, Xcode-oriented, and native-`xcodeproj` based.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Use a repo-local DerivedData path and disable code signing in CI.
 
-  - artifact: xcode-test-workflow
+  - artifact: xcode-native-test-workflow
     applies_to: xcode
     snippet_paths:
       - snippets/xcode/workflows/test.yml
@@ -275,12 +298,84 @@ artifacts:
     conflict_policy: ask_before_replace_existing_nonempty
     prerequisites:
       - github_actions_enabled
+      - xcode_project_strategy_is_native
     install_strategy: copy_from_snippet
     upstream_sources: []
     selection_hints:
-      - Keep the workflow app-first and Xcode-oriented.
+      - Keep the workflow app-first, Xcode-oriented, and native-`xcodeproj` based.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Use a repo-local DerivedData path and disable code signing in CI.
+
+  - artifact: xcode-tuist-gitignore
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode-tuist/.gitignore
+    target_path: .gitignore
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - xcode_project_strategy_is_tuist
+    install_strategy: copy_from_snippet
+    upstream_sources:
+      - https://docs.tuist.dev/en/guides/features/projects/adoption/new-project
+    selection_hints:
+      - Use only when the selected Xcode strategy is `Tuist`.
+      - Ignore generated Xcode artifacts and Tuist local state.
+
+  - artifact: xcode-tuist-manifests
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode-tuist/Project.swift
+      - snippets/xcode-tuist/Tuist.swift
+    target_path: .
+    apply_mode: copy_files_preserving_names
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - xcode_project_strategy_is_tuist
+      - tuist_or_user_confirmed_install
+    install_strategy: copy_from_snippet
+    upstream_sources:
+      - https://docs.tuist.dev/en/guides/features/projects/adoption/new-project
+      - https://docs.tuist.dev/en/references/project-description/structs/tuist
+    selection_hints:
+      - Use `Project.swift` and `Tuist.swift` as the repository source of truth for the Xcode project structure.
+      - Do not add `Workspace.swift` or `Config.swift` in v1.
+
+  - artifact: xcode-tuist-build-workflow
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode-tuist/workflows/build.yml
+    target_path: .github/workflows/build.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - github_actions_enabled
+      - xcode_project_strategy_is_tuist
+    install_strategy: copy_from_snippet
+    upstream_sources:
+      - https://docs.tuist.dev/en/guides/automate/continuous-integration
+    selection_hints:
+      - Keep the workflow app-first and Tuist-generated.
+      - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+      - Install Tuist, run `tuist install`, and then run `tuist build` with an explicit scheme env var.
+
+  - artifact: xcode-tuist-test-workflow
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode-tuist/workflows/test.yml
+    target_path: .github/workflows/test.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - github_actions_enabled
+      - xcode_project_strategy_is_tuist
+    install_strategy: copy_from_snippet
+    upstream_sources:
+      - https://docs.tuist.dev/en/guides/automate/continuous-integration
+    selection_hints:
+      - Keep the workflow app-first and Tuist-generated.
+      - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+      - Install Tuist, run `tuist install`, and then run `tuist test` with an explicit scheme env var.
 
   - artifact: community-skills-twostraws
     applies_to: common

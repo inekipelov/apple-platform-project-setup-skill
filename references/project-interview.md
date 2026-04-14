@@ -7,6 +7,7 @@ Run this interview before generating the repo-specific `AGENTS.md`.
 Collect the information needed to decide:
 
 - `SPM` vs `Xcode`
+- if `Xcode`, `native xcodeproj` vs `Tuist-generated`
 - which snippets apply
 - which skill categories are relevant
 - which subagent categories are relevant
@@ -42,7 +43,17 @@ Ask about these topics in order.
 - mixed app plus packages
 - Xcode-managed assets or schemes required?
 
-### 4. Priority Technologies
+### 4. Xcode Project Strategy
+
+Ask this only after `Xcode` is the likely workspace choice.
+
+- keep a checked-in `xcodeproj`?
+- use a generated-project workflow through `Tuist`?
+- is there pain around merge conflicts in Xcode project files?
+- does the team want declarative manifests as the project source of truth?
+- if `Tuist` is chosen, should the repo pin the version with `mise`, or is a simple local CLI install enough?
+
+### 5. Priority Technologies
 
 - SwiftUI
 - UIKit
@@ -55,7 +66,7 @@ Ask about these topics in order.
 - automation and CI tools
 - typed SF Symbols via `SFSafeSymbols`
 
-### 5. Repository and Team Policy
+### 6. Repository and Team Policy
 
 - commit convention
 - branch strategy
@@ -64,7 +75,7 @@ Ask about these topics in order.
 - release workflow
 - dependency policy
 
-### 6. Optional Tooling
+### 7. Optional Tooling
 
 - GitHub Actions required?
 - `gitlint` required?
@@ -90,17 +101,31 @@ Ask about these topics in order.
 - app lifecycle targets matter
 - asset catalogs, schemes, or project settings are central
 
+### Choose `Tuist` inside `Xcode` when:
+
+- the team wants generated projects instead of checked-in `xcodeproj` files
+- declarative manifests are preferred as the project source of truth
+- merge conflicts in project files are a meaningful pain point
+
+### Keep native `xcodeproj` inside `Xcode` when:
+
+- the repository wants the simplest Xcode setup
+- the team does not want an extra project-generation tool
+- there is no strong reason to move away from checked-in Xcode project files
+
 ## Outputs to Produce
 
 After the interview, the skill should be able to produce:
 
 - one workspace choice: `SPM` or `Xcode`
+- if the workspace is `Xcode`, one Xcode project strategy: `native` or `tuist`
 - the top 1-3 skill categories that matter for this project
 - the top 1-3 subagent categories that matter for this project
 - one recommended skill per capability gap, with rationale and conditional alternatives
 - one recommended subagent per capability gap, with rationale and conditional alternatives
 - the common snippets to apply
 - which workspace-specific `SwiftLint` snippet applies
+- which `Xcode` snippet set applies when the workspace is `Xcode`
 - whether the repo should carry `.codex/config.toml`
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired

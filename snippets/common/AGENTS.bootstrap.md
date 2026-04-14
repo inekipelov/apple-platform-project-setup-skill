@@ -24,6 +24,7 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 - final project purpose
 - target Apple platforms
 - `SPM` vs `Xcode`
+- if `Xcode`, native `xcodeproj` vs `Tuist-generated`
 - UI stack and priority technologies
 - testing strategy
 - CI expectations
@@ -69,6 +70,7 @@ After the interview and after the selected skills and subagents are installed or
 
 - repo purpose
 - workspace shape
+- if `Xcode`, the chosen Xcode project strategy
 - core commands
 - required skills
 - required subagents
@@ -77,3 +79,9 @@ After the interview and after the selected skills and subagents are installed or
 - alternatives the user may choose instead
 - a short note that the final choice belongs to the user
 - non-negotiable repo rules
+
+For Tuist-based repositories, the final `AGENTS.md` should also capture:
+
+- that `Project.swift` and `Tuist.swift` are the project-structure source of truth
+- that `tuist generate` may be required before working in Xcode
+- that build and test commands go through `tuist build` and `tuist test`

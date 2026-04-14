@@ -1,6 +1,6 @@
 ---
 name: apple-platform-project-setup-skill
-description: Use when bootstrapping a new Apple platform workspace, choosing between Swift Package Manager and Xcode setup, and establishing project-local skills, subagents, lint, CI, and AGENTS guidance.
+description: Use when bootstrapping a new Apple platform workspace, choosing between Swift Package Manager and Xcode setup, optionally choosing a native or Tuist-generated Xcode path, and establishing project-local skills, subagents, lint, CI, and AGENTS guidance.
 ---
 
 # Apple Platform Project Setup
@@ -9,7 +9,7 @@ Bootstrap Apple workspaces in a strict order so the repo gets the right foundati
 
 **Core principle:** install the baseline workflow first, then interview and specialize, then generate `AGENTS.md` after the selected skills and subagents are already in place.
 
-**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), and the files under [`snippets/`](snippets/).
+**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), [`references/tuist-setup.md`](references/tuist-setup.md), and the files under [`snippets/`](snippets/).
 
 ## When to Use
 
@@ -17,6 +17,7 @@ Use this skill when:
 
 - starting a new Apple platform repository or local workspace
 - deciding between `SPM` and `Xcode`
+- if `Xcode`, deciding between native `xcodeproj` and `Tuist-generated`
 - setting up `AGENTS.md`, `.codex/config.toml`, MCP, `gitlint`, `SwiftLint`, GitHub Actions, skills, or subagents for Apple development
 - standardizing repository bootstrap for iOS, macOS, watchOS, tvOS, or visionOS work
 
@@ -36,6 +37,7 @@ digraph setup_order {
     stop [label="Propose official install\nand wait for confirmation"];
     interview [label="Interview user"];
     choose [label="Choose SPM or Xcode"];
+    xcodestrategy [label="If Xcode, choose\nnative or Tuist"];
     tools [label="Check tool prerequisites"];
     install [label="Install skills / copy subagents\nwith confirmation rules"];
     config [label="Configure .codex/config.toml\nand optional MCP"];
@@ -48,7 +50,8 @@ digraph setup_order {
     confirm -> interview [label="no"];
     stop -> interview [label="after confirmation"];
     interview -> choose;
-    choose -> tools;
+    choose -> xcodestrategy;
+    xcodestrategy -> tools;
     tools -> install;
     install -> config;
     config -> apply;
@@ -73,6 +76,8 @@ Never reorder these steps.
 | Project config | prefer project `.codex/config.toml` for skill registration and optional wrappers |
 | Sosumi integration | prefer HTTP MCP; CLI is optional |
 | Xcode MCP policy | only for `xcode` workspaces, never for `spm` |
+| Xcode strategy | after `Xcode` is chosen, default to native `xcodeproj` unless `Tuist` is explicitly selected or clearly justified |
+| Tuist policy | `Tuist` is an optional `Xcode` sub-mode, not a third workspace shape |
 | SwiftLint policy | choose the `SPM` or `Xcode` SwiftLint snippet after the workspace shape is known |
 | GitHub Actions policy | every workflow keeps `workflow_dispatch`, least-privilege permissions, and concurrency |
 | Global tool install policy | propose only, never auto-install |
@@ -96,6 +101,7 @@ Never reorder these steps.
   - project role
   - target platforms
   - delivery shape
+  - if `Xcode`, the Xcode project strategy
   - preferred UI stack
   - priority technologies
   - typed SF Symbols policy
@@ -112,10 +118,18 @@ Do not choose skills, subagents, or repo files before the interview is complete.
 - Use `Xcode` when the project is app-first, uses app lifecycle targets, or depends on Xcode-managed assets and schemes.
 - If the user already made a valid choice, honor it and continue.
 
+If the workspace choice is `Xcode`:
+
+- Keep native checked-in `xcodeproj` as the default.
+- Offer `Tuist` only as an optional Xcode strategy for generated-project workflows.
+- Use `Tuist` when the repository wants declarative manifests, generated projects, or relief from project-file merge conflicts.
+- Do not treat `Tuist` as a third workspace shape.
+
 Then use the matching snippet set:
 
 - `SPM`: [`snippets/spm/.gitignore`](snippets/spm/.gitignore), [`snippets/spm/.swiftlint.yml`](snippets/spm/.swiftlint.yml), [`snippets/spm/workflows/build.yml`](snippets/spm/workflows/build.yml), [`snippets/spm/workflows/test.yml`](snippets/spm/workflows/test.yml)
-- `Xcode`: [`snippets/xcode/.gitignore`](snippets/xcode/.gitignore), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode/workflows/build.yml`](snippets/xcode/workflows/build.yml), [`snippets/xcode/workflows/test.yml`](snippets/xcode/workflows/test.yml)
+- `Xcode + native`: [`snippets/xcode/.gitignore`](snippets/xcode/.gitignore), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode/workflows/build.yml`](snippets/xcode/workflows/build.yml), [`snippets/xcode/workflows/test.yml`](snippets/xcode/workflows/test.yml)
+- `Xcode + Tuist`: [`snippets/xcode-tuist/.gitignore`](snippets/xcode-tuist/.gitignore), [`snippets/xcode-tuist/Project.swift`](snippets/xcode-tuist/Project.swift), [`snippets/xcode-tuist/Tuist.swift`](snippets/xcode-tuist/Tuist.swift), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode-tuist/workflows/build.yml`](snippets/xcode-tuist/workflows/build.yml), [`snippets/xcode-tuist/workflows/test.yml`](snippets/xcode-tuist/workflows/test.yml)
 
 ### 4. Check tool prerequisites
 
@@ -124,6 +138,7 @@ Check for:
 - `npx`
 - `gitlint`
 - `swiftlint`
+- `tuist` when the selected Xcode strategy is `Tuist`
 - `gh` when GitHub automation is requested
 - `xcrun` when `xcode` MCP is selected for an `xcode` workspace
 - `sosumi` only when the user explicitly wants the CLI
@@ -159,6 +174,7 @@ If a required tool is missing:
 ### 6. Configure project `.codex/config.toml` and optional MCP
 
 - Follow [`references/codex-config.md`](references/codex-config.md) and [`references/mcp-setup.md`](references/mcp-setup.md).
+- If the selected Xcode strategy is `Tuist`, also follow [`references/tuist-setup.md`](references/tuist-setup.md).
 - Prefer a project-scoped `.codex/config.toml` when the repo is meant to carry its own Codex setup.
 - Register the skill with `[[skills.config]]` using the installed local path.
 - Use `developer_instructions` only as a thin wrapper when the repo wants a short always-on reminder.
@@ -169,6 +185,7 @@ If a required tool is missing:
 - Before configuring `xcode` MCP:
   - require the user to enable external agents in `Xcode > Settings > Intelligence`
   - require the project to be open in Xcode
+  - if the repo uses `Tuist`, require `tuist generate` first and an open generated project or workspace
   - use the Apple-supported `xcrun mcpbridge` integration path
 - Never configure `xcode` MCP for `spm` workspaces in this skill, even if the package could be opened in Xcode manually.
 
@@ -180,6 +197,7 @@ Apply or refine:
 - the selected workspace SwiftLint snippet from [`references/swiftlint-setup.md`](references/swiftlint-setup.md) when Swift source is in scope
 - [`snippets/common/.swiftlint.sfsafesymbols.yml`](snippets/common/.swiftlint.sfsafesymbols.yml) only when the user chose `SFSafeSymbols`
 - [`snippets/common/workflows/gitlint.yml`](snippets/common/workflows/gitlint.yml)
+- if `Xcode + Tuist`, the selected Tuist manifests from [`references/tuist-setup.md`](references/tuist-setup.md)
 - the selected `.gitignore`
 - the selected build and test workflows
 
@@ -188,7 +206,7 @@ Use [`references/github-actions.md`](references/github-actions.md) when refining
 Always apply snippet-backed artifacts using the contract in [`catalog.yaml`](catalog.yaml):
 
 - `target_path` decides where the artifact lands in the target repo.
-- `apply_mode` decides whether the artifact is copied, generated from a template, or merged as a fragment.
+- `apply_mode` decides whether the artifact is copied, copied as multiple named files, generated from a template, or merged as a fragment.
 - `conflict_policy` decides whether existing non-empty files require confirmation before replace or merge.
 - `merge_strategy` is used only when the artifact is merged into an existing file.
 
@@ -250,6 +268,10 @@ Wrong. This skill must establish the baseline workflow first or stop for confirm
 
 Wrong. The project role and technology priorities determine the correct shape.
 
+### Treating `Tuist` as a third workspace shape
+
+Wrong. In this repository, `Tuist` is an optional strategy inside the `Xcode` path.
+
 ### Installing missing tools automatically
 
 Wrong. Global installs must always be user-confirmed.
@@ -286,6 +308,10 @@ Wrong. The `No raw SF Symbol strings` rule only makes sense after the user accep
 
 Wrong. SwiftLint selection is shape-specific in this repository. Choose the workspace first, then apply the matching `.swiftlint.yml`.
 
+### Applying native Xcode artifacts after choosing `Tuist`
+
+Wrong. Once `Tuist` is selected inside `Xcode`, apply the Tuist manifests and Tuist workflows instead of the native Xcode project snippets.
+
 ### Listing multiple relevant skills or subagents as equal defaults
 
 Wrong. Recommend one best-fit option for the current task and move the rest into conditional alternatives.
@@ -302,6 +328,10 @@ Wrong. The user still decides what to install or enable.
 
 Wrong. In this skill, `xcode` MCP is a policy-approved path only for `xcode` workspaces.
 
+### Configuring `xcode` MCP for a Tuist repo before `tuist generate`
+
+Wrong. The generated project or workspace must exist and be open in Xcode first.
+
 ### Treating the `sosumi` CLI as required for `sosumi` MCP
 
 Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only when that specific path is wanted.
@@ -310,6 +340,7 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 
 - "I can skip `superpowers` because the user only asked for SwiftLint."
 - "I already know this is an Xcode project."
+- "Tuist is different enough that I should treat it as a third workspace shape."
 - "I'll install `gitlint` first and ask later."
 - "I'll install all suggested subagents now and clean up later."
 - "This `skills.sh` link is relevant, so I should install the whole catalog."
@@ -345,13 +376,14 @@ Correct response shape:
 2. If missing, propose the official install and wait.
 3. Ask about platform targets, repo role, UI stack, testing, and CI expectations.
 4. Choose `Xcode`.
-5. Check `npx`, `gitlint`, `swiftlint`, and optionally `gh`, `xcrun`, or `sosumi` based on the chosen integrations.
-6. Ask whether typed SF Symbols should use `SFSafeSymbols`.
-7. Recommend one best-fit `$skill-name` and one best-fit `@agent-name` where needed, each with a short usage rule and rationale.
-8. Ask the user to confirm the final selection when multiple candidates are relevant.
-9. Install or copy only the confirmed skills and subagents.
-10. Configure project `.codex/config.toml` and any approved MCP servers.
-11. If the user accepted `SFSafeSymbols`, add that package dependency and merge the SF Symbols SwiftLint rule.
-12. If the workspace is `Xcode` and the user wants Xcode tools, configure `xcode` MCP through `xcrun mcpbridge`.
-13. Apply common snippets plus the `Xcode` snippets, including the `Xcode` SwiftLint snippet and normalized workflow guardrails.
-14. Generate the repo-specific `AGENTS.md` from the bootstrap snippet.
+5. Keep native `xcodeproj` as the default unless the interview clearly points to `Tuist`.
+6. Check `npx`, `gitlint`, `swiftlint`, `tuist`, and optionally `gh`, `xcrun`, or `sosumi` based on the chosen integrations.
+7. Ask whether typed SF Symbols should use `SFSafeSymbols`.
+8. Recommend one best-fit `$skill-name` and one best-fit `@agent-name` where needed, each with a short usage rule and rationale.
+9. Ask the user to confirm the final selection when multiple candidates are relevant.
+10. Install or copy only the confirmed skills and subagents.
+11. Configure project `.codex/config.toml` and any approved MCP servers.
+12. If the user accepted `SFSafeSymbols`, add that package dependency and merge the SF Symbols SwiftLint rule.
+13. If the workspace is `Xcode` and the user wants Xcode tools, configure `xcode` MCP through `xcrun mcpbridge`. If the repo uses `Tuist`, require `tuist generate` first.
+14. Apply common snippets plus either the native `Xcode` snippets or the `Tuist` Xcode snippets, including the shared `Xcode` SwiftLint snippet and the matching workflow guardrails.
+15. Generate the repo-specific `AGENTS.md` from the bootstrap snippet.

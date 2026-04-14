@@ -2,7 +2,7 @@
 
 Codex-first skill for bootstrapping Apple workspaces.
 
-It does not ship a project template. It orchestrates setup: checks the baseline workflow, interviews the user, chooses `SPM` or `Xcode`, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
+It does not ship a project template. It orchestrates setup: checks the baseline workflow, interviews the user, chooses `SPM` or `Xcode`, optionally chooses `native xcodeproj` or `Tuist-generated` inside the `Xcode` path, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
 
 ## Install
 
@@ -66,13 +66,15 @@ command = "xcrun"
 args = ["mcpbridge"]
 ```
 
+If the repository uses `Tuist`, run `tuist generate` first and open the generated project or workspace in Xcode before enabling `xcode` MCP.
+
 Do not configure `xcode` MCP for `spm` workspaces in this repo contract.
 
 ## How it works
 
 It starts with `obra/superpowers`. If that baseline is missing, the skill stops and asks for confirmation before any user-level install or home-directory change.
 
-Once the baseline is available, the skill interviews the user about project purpose, Apple platforms, UI stack, CI needs, repository policy, project config, and MCP needs. Only then does it choose `SPM` or `Xcode`, check prerequisites such as `npx`, `gitlint`, and `swiftlint`, map the project to capability categories, resolve one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, choose the matching `SwiftLint` snippet, configure project `.codex/config.toml`, and leave the final choice with the user.
+Once the baseline is available, the skill interviews the user about project purpose, Apple platforms, UI stack, CI needs, repository policy, project config, and MCP needs. Only then does it choose `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default and offers an optional `Tuist-generated` path for app-first repositories that want declarative manifests and generated projects. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
 
 After the selection is confirmed, the skill installs or copies only the chosen items, applies the repo snippets, and generates the repo-specific `AGENTS.md` from the bootstrap snippet.
 
@@ -86,6 +88,8 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Prefer project `.codex/config.toml` for repo-local Codex setup.
 - `sosumi` HTTP MCP is preferred over the `sosumi` CLI.
 - `xcode` MCP is allowed only for `xcode` workspaces in this skill.
+- `Tuist` is an optional `Xcode` sub-mode, not a third workspace shape.
+- Inside `Xcode`, `native xcodeproj` stays the default and `Tuist` stays optional.
 - `SwiftLint` is shape-specific: `SPM` and `Xcode` get different `.swiftlint.yml` snippets.
 - GitHub Actions snippets include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
 - Concrete recommended skills come from `inventory/skills.yaml`.
