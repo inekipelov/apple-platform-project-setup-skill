@@ -37,6 +37,7 @@ artifacts:
     agents_rendering:
       skill_reference_syntax: "$skill-name"
       subagent_reference_syntax: "@agent-name"
+      project_local_skill_path: ".codex/skills/"
       mode: declarative_final_state_only
       require_usage_rule: true
       require_exact_sections:
@@ -74,6 +75,8 @@ artifacts:
       installed_skill_line_format: "- $skill-name: Use for <exact repository task>."
       installed_subagent_line_format: "- @agent-name: Use for <exact repository task>."
       empty_section_line: "- None installed."
+      commands_section: "Core Commands"
+      repository_rules_scope: non_command_repo_policy_only
     selection_hints:
       - Create AGENTS.md after the interview and after the selected skills and subagents are installed or intentionally skipped.
       - Render skill references as $skill-name and subagent references as @agent-name.
@@ -82,8 +85,11 @@ artifacts:
       - Always ask which communication language should be fixed in AGENTS.md.
       - Use the client-language strict-quality fallback profile when the interview does not provide an explicit communication-language choice.
       - List only the final installed skills and subagents. Do not include recommendations, alternatives, or rationale.
+      - Render workflow commands only under `Core Commands`.
+      - Keep `Repository Rules` limited to non-command repo policy.
       - Do not use first-person wording or the word `Report` in AGENTS.md.
       - Do not duplicate `Agent Personalization` lines in `Repository Rules`.
+      - Do not duplicate commands in `Repository Rules`.
       - Use `- None installed.` when a section has no installed project-local entries.
 
   - artifact: project-codex-config

@@ -85,6 +85,7 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Upstream instructions are fallback only.
 - Global installs and user-home changes always require explicit confirmation.
 - Project-local skills and subagents are preferred by default.
+- Project-local skills live under `.codex/skills/`; project-local subagents live under `.codex/agents/`.
 - Prefer project `.codex/config.toml` for repo-local Codex setup.
 - `sosumi` HTTP MCP is preferred over the `sosumi` CLI.
 - `xcode` MCP is allowed only for `xcode` workspaces in this skill.
@@ -96,6 +97,7 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Final selected subagents come from `inventory/subagents.yaml`.
 - `AGENTS.md` is declarative final-state only. It must reference skills as `$skill-name` and subagents as `@agent-name`.
 - `AGENTS.md` uses fixed sections, including a required `Agent Personalization` section with exact line prefixes.
+- In generated `AGENTS.md`, commands belong only in `Core Commands`; `Repository Rules` contains non-command repo policy only.
 - The skill explicitly asks which communication language should be fixed in `AGENTS.md`; if the user does not choose one, the fallback is the language the client used to contact the agent.
 - `AGENTS.md` lists only installed project-local skills and subagents.
 - Snippet-backed files follow `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml`.

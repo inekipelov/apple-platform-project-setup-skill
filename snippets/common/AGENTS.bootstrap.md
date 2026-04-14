@@ -40,7 +40,7 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 
 ## Local Skill and Subagent Locations
 
-- Project-local skills: `.agents/skills/`
+- Project-local skills: `.codex/skills/`
 - Project-local subagents: `.codex/agents/`
 
 ## Required AGENTS.md Structure
@@ -78,6 +78,7 @@ Use these exact section titles in this exact order.
 - `- Test: <command>`
 - `- Lint: <command>` or `- Lint: Not configured.`
 - `- Project generation: Not required.` or `- Project generation: tuist generate`
+- All workflow commands belong in this section.
 
 ### Installed Skills
 
@@ -92,6 +93,8 @@ Use these exact section titles in this exact order.
 ### Repository Rules
 
 - Exact line prefix for every rule: `- Rule: <non-negotiable repository rule>`
+- This section stores non-command repo policy only.
+- Do not place workflow commands here; commands belong in `Core Commands`.
 
 ## Follow-Up
 

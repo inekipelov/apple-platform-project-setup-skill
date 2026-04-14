@@ -92,7 +92,7 @@ Never reorder these steps.
 
 - Confirm whether `superpowers` is already installed.
 - If not installed, use [`references/install-superpowers.md`](references/install-superpowers.md).
-- If the step requires cloning into `~/.codex`, creating `~/.agents/skills`, changing dotfiles, or installing a global tool, stop and ask for confirmation.
+- If the step requires cloning into `~/.codex`, creating `~/.agents/skills` for the upstream `superpowers` symlink, changing dotfiles, or installing a global tool, stop and ask for confirmation.
 
 **No exceptions.**
 
@@ -170,7 +170,7 @@ If a required tool is missing:
 - Treat every external skills source as a catalog that may contain multiple skills, not as a single install target.
 - First map the project needs to one or more capability categories such as UI, architecture, package design, testing, tooling, CI, or repository automation.
 - Then map each selected category to a source catalog and resolve one concrete inventory-backed choice from that category.
-- Install community skills project-locally by default under `.agents/skills/` when the installer supports it.
+- Install community skills project-locally by default under `.codex/skills/` when the installer supports it.
 - If the installer only supports user-level install, explain the limitation and ask before proceeding.
 - Do not install an entire catalog because its source link is relevant. Only inspect and recommend skills from the categories that match the project.
 - If a category has no verified concrete entry in the inventory, do not invent one. Keep the source as a fallback recommendation path and tell the user the inventory is not seeded for that case yet.
@@ -285,8 +285,9 @@ When refining `AGENTS.md`, use this rendering contract:
 - Under `Installed Subagents`, each installed subagent line must use the exact format `- @agent-name: Use for <exact repository task>.`
 - If no project-local subagents were installed, `Installed Subagents` must contain the exact line `- None installed.`
 - Under `Repository Rules`, every rule line must use the exact prefix `- Rule:`.
-- `Agent Personalization` stores communication and behavior policy. `Repository Rules` stores repo-specific constraints, commands, and operating rules.
+- `Agent Personalization` stores communication and behavior policy. `Core Commands` stores workflow commands. `Repository Rules` stores repo-specific constraints and operating rules that are not commands.
 - Do not duplicate the same rule in both `Agent Personalization` and `Repository Rules`.
+- Do not repeat a command under `Repository Rules`.
 - Do not include `Recommended Skills`, `Recommended Subagents`, `Optional Alternatives`, `Decision Note`, `Why recommended now`, or any equivalent recommendation section.
 - Do not mention candidates that were considered but not installed.
 - Do not include user-choice language in `AGENTS.md`; by this stage the choice has already been made.
@@ -373,6 +374,10 @@ Wrong. `AGENTS.md` must list only the final installed repo state, not the earlie
 
 Wrong. `Agent Personalization` and `Repository Rules` have different jobs. Keep communication and pushback policy separate from repo operating rules.
 
+### Putting commands inside `Repository Rules`
+
+Wrong. All workflow commands belong in `Core Commands`. Keep `Repository Rules` for non-command repo policy only.
+
 ### Using first-person wording or `Report` in `AGENTS.md`
 
 Wrong. The generated file must stay declarative and repo-local. Use exact prefixes and final-response wording instead.
@@ -421,6 +426,7 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 | "I already recommended the best skill, so I can decide for the user." | The skill recommends one; the final decision stays with the user. |
 | "The recommendation process is useful context, so it should stay in `AGENTS.md`." | `AGENTS.md` records only the final installed repo state. Keep selection reasoning out of it. |
 | "Repository Rules can absorb the personalization text." | Personalization must live in the fixed `Agent Personalization` section, not as free-form rules. |
+| "Repository Rules can absorb the command list." | Commands must live in `Core Commands`. Keep `Repository Rules` for non-command repo policy only. |
 | "First-person voice is harmless in AGENTS." | The contract is declarative. Keep the file repo-local and exact. |
 | "The word `Report` is close enough." | Use the exact risk-disclosure line and refer to the final response, not an undefined report artifact. |
 | "Typed SF Symbols are a pure lint concern, so I can enable the rule without asking." | Ask about `SFSafeSymbols` first. Add the rule only if the dependency is accepted. |

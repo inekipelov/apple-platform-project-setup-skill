@@ -149,5 +149,6 @@ After the interview, the skill should be able to produce:
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired
 - whether `SFSafeSymbols` should be added and whether the SF Symbols SwiftLint rule should exist
-- the exact repository rules and command set that must appear in `Repository Rules`
+- the exact command set that must appear in `Core Commands`
+- the exact repository rules that must appear in `Repository Rules`
 - the final inputs needed to generate a declarative `AGENTS.md`

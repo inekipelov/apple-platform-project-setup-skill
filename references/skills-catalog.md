@@ -13,7 +13,7 @@ Concrete skill selection is inventory-backed. Use [`../inventory/skills.yaml`](.
 5. Choose a capability category before choosing a concrete skill.
 6. Do not install every skill from a relevant catalog.
 7. Do not install skills before the project interview.
-8. Prefer project-local install under `.agents/skills/` when the installer supports it.
+8. Prefer project-local install under `.codex/skills/` when the installer supports it.
 9. If the installer only supports user-level install, explain that limitation and ask before proceeding.
 10. In generated `AGENTS.md`, render skills as `$skill-name`.
 11. Final selection happens before `AGENTS.md` is generated.

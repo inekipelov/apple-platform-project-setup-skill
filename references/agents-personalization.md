@@ -23,7 +23,8 @@ It does not store:
 - install policy
 - workflow commands
 
-Those belong in `Repository Rules`.
+Workflow commands belong in `Core Commands`.
+Branch strategy, CI policy, source-of-truth rules, and install policy belong in `Repository Rules`.
 
 Do not duplicate the same rule in both sections.
 

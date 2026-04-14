@@ -40,6 +40,8 @@ Because the repository had no workflow contract, each planned failure mode was e
 22. An agent could use first-person wording or the word `Report` inside the generated `AGENTS.md`.
 23. An agent could duplicate the same behavioral rule in both `Agent Personalization` and `Repository Rules`.
 24. An agent could skip asking which communication language should be fixed and silently invent a language policy.
+25. An agent could mix the canonical `.codex/skills/` path with a legacy project-local skill path.
+26. An agent could place commands in `Repository Rules` or duplicate them outside `Core Commands`.
 
 ## GREEN Verification Targets
 
@@ -75,6 +77,8 @@ After the repo contract is present, verify that:
 28. `Agent Personalization` and `Repository Rules` are documented as separate responsibilities and do not duplicate the same policy text.
 29. The interview always asks which communication language should be fixed in `AGENTS.md`.
 30. If the user does not choose a communication language, the exact fallback line is `- Communication language: Use the language the client used to contact the agent.`
+31. Project-local skills are documented under `.codex/skills/`, and `~/.agents/skills/` appears only as the upstream `superpowers` user-level exception.
+32. `Core Commands` is the only command-owning section in generated `AGENTS.md`, and `Repository Rules` is documented as non-command repo policy only.
 
 ## REFACTOR Watchlist
 
@@ -101,5 +105,7 @@ Look for these rationalizations in future revisions:
 - "First-person wording is close enough to the intended behavior."
 - "Using `Report` is harmless even if the repo does not define that term."
 - "If the user did not pick a language, I can assume English or Russian from context."
+- "Project-local skills can live under either the canonical path or a legacy local path; the reader will infer the intended one."
+- "Repository Rules can absorb the command list; a separate `Core Commands` section is optional."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.
