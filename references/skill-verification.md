@@ -29,6 +29,8 @@ Because the repository had no workflow contract, each planned failure mode was e
 11. An agent could invent project `.codex/config.toml` keys instead of following the official Codex config reference.
 12. An agent could require the `sosumi` CLI even when `sosumi` HTTP MCP would have been enough.
 13. An agent could configure `xcode` MCP for an `spm` workspace.
+14. An agent could apply one shared SwiftLint config without respecting the chosen workspace shape.
+15. An agent could ship GitHub Actions snippets without explicit permissions, concurrency, or deterministic CI behavior.
 
 ## GREEN Verification Targets
 
@@ -50,6 +52,8 @@ After the repo contract is present, verify that:
 14. The repo documents valid project `.codex/config.toml` setup using official Codex keys only.
 15. `sosumi` MCP is documented as HTTP-first and does not require the CLI by default.
 16. `xcode` MCP is documented and enforced only for `xcode` workspaces, never for `spm`.
+17. SwiftLint setup is shape-specific: `SPM` and `Xcode` select different `.swiftlint.yml` snippets.
+18. GitHub Actions snippets define consistent workflow guardrails such as `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
 
 ## REFACTOR Watchlist
 
@@ -67,5 +71,7 @@ Look for these rationalizations in future revisions:
 - "I know how Codex config probably works, so I can invent the TOML from memory."
 - "The sosumi CLI is installed often enough that I can require it."
 - "SPM can open in Xcode, so enabling Xcode MCP there is harmless."
+- "The SwiftLint rules are mostly shared, so one file is good enough for both shapes."
+- "These workflow snippets are simple enough that permissions and concurrency do not matter."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.

@@ -65,6 +65,8 @@ Primary fallbacks for this repo:
 - <https://github.com/dpearson2699/swift-ios-skills>
 - <https://github.com/VoltAgent/awesome-codex-subagents>
 - <https://github.com/SFSafeSymbols/SFSafeSymbols>
+- <https://docs.github.com/en/actions/tutorials/build-and-test-code/swift>
+- <https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token>
 - <https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode>
 - <https://sosumi.ai>
 
@@ -72,6 +74,7 @@ For external integrations:
 
 - Apple decides how `xcrun mcpbridge` is exposed from Xcode.
 - `sosumi.ai` decides the remote MCP endpoint and CLI usage.
+- GitHub decides the current workflow syntax, least-privilege token guidance, and Swift CI examples.
 - This repo may narrow those options as policy. For v1, `xcode` MCP is only allowed for `xcode` workspaces.
 
 ## 5. Community Examples

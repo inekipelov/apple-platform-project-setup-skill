@@ -94,7 +94,8 @@ Instead:
 ## Optional vs Required
 
 - `npx` is required only when the selected skill source uses `skills.sh` or when the user explicitly chooses an `mcp-remote` stdio proxy path.
-- `gitlint` and `swiftlint` are required only when those repo artifacts are selected.
+- `gitlint` is required only when the gitlint repo artifacts are selected.
+- `swiftlint` is required only when the chosen workspace-specific SwiftLint artifact is selected.
 - `gh` is optional unless the user explicitly wants GitHub CLI workflow help.
 - `xcrun` matters only when `xcode` MCP is selected for an `xcode` workspace.
 - `sosumi` is optional unless the user explicitly wants Apple documentation lookup through that CLI.

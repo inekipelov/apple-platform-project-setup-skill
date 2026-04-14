@@ -9,7 +9,7 @@ Bootstrap Apple workspaces in a strict order so the repo gets the right foundati
 
 **Core principle:** install the baseline workflow first, then interview and specialize, then generate `AGENTS.md` after the selected skills and subagents are already in place.
 
-**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), and the files under [`snippets/`](snippets/).
+**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), and the files under [`snippets/`](snippets/).
 
 ## When to Use
 
@@ -73,6 +73,8 @@ Never reorder these steps.
 | Project config | prefer project `.codex/config.toml` for skill registration and optional wrappers |
 | Sosumi integration | prefer HTTP MCP; CLI is optional |
 | Xcode MCP policy | only for `xcode` workspaces, never for `spm` |
+| SwiftLint policy | choose the `SPM` or `Xcode` SwiftLint snippet after the workspace shape is known |
+| GitHub Actions policy | every workflow keeps `workflow_dispatch`, least-privilege permissions, and concurrency |
 | Global tool install policy | propose only, never auto-install |
 | Project choice | decide `SPM` vs `Xcode` after interview, not before |
 | Snippet application | obey `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml` |
@@ -112,8 +114,8 @@ Do not choose skills, subagents, or repo files before the interview is complete.
 
 Then use the matching snippet set:
 
-- `SPM`: [`snippets/spm/.gitignore`](snippets/spm/.gitignore), [`snippets/spm/workflows/build.yml`](snippets/spm/workflows/build.yml), [`snippets/spm/workflows/test.yml`](snippets/spm/workflows/test.yml)
-- `Xcode`: [`snippets/xcode/.gitignore`](snippets/xcode/.gitignore), [`snippets/xcode/workflows/build.yml`](snippets/xcode/workflows/build.yml), [`snippets/xcode/workflows/test.yml`](snippets/xcode/workflows/test.yml)
+- `SPM`: [`snippets/spm/.gitignore`](snippets/spm/.gitignore), [`snippets/spm/.swiftlint.yml`](snippets/spm/.swiftlint.yml), [`snippets/spm/workflows/build.yml`](snippets/spm/workflows/build.yml), [`snippets/spm/workflows/test.yml`](snippets/spm/workflows/test.yml)
+- `Xcode`: [`snippets/xcode/.gitignore`](snippets/xcode/.gitignore), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode/workflows/build.yml`](snippets/xcode/workflows/build.yml), [`snippets/xcode/workflows/test.yml`](snippets/xcode/workflows/test.yml)
 
 ### 4. Check tool prerequisites
 
@@ -175,11 +177,13 @@ If a required tool is missing:
 Apply or refine:
 
 - [`snippets/common/.gitlint`](snippets/common/.gitlint)
-- [`snippets/common/.swiftlint.yml`](snippets/common/.swiftlint.yml) when Swift source is in scope
+- the selected workspace SwiftLint snippet from [`references/swiftlint-setup.md`](references/swiftlint-setup.md) when Swift source is in scope
 - [`snippets/common/.swiftlint.sfsafesymbols.yml`](snippets/common/.swiftlint.sfsafesymbols.yml) only when the user chose `SFSafeSymbols`
 - [`snippets/common/workflows/gitlint.yml`](snippets/common/workflows/gitlint.yml)
 - the selected `.gitignore`
 - the selected build and test workflows
+
+Use [`references/github-actions.md`](references/github-actions.md) when refining the workflow snippets.
 
 Always apply snippet-backed artifacts using the contract in [`catalog.yaml`](catalog.yaml):
 
@@ -194,6 +198,7 @@ Before adding the `No raw SF Symbol strings` SwiftLint rule:
 
 - ask whether the project should add `SFSafeSymbols` via Swift Package Manager
 - use [`references/sfsafesymbols.md`](references/sfsafesymbols.md) for the install path that matches the chosen workspace shape
+- select the workspace-specific `.swiftlint.yml` before merging any optional fragments
 - if the user says yes:
   - add the `SFSafeSymbols` package dependency
   - merge the `snippets/common/.swiftlint.sfsafesymbols.yml` fragment into the final `.swiftlint.yml`
@@ -277,6 +282,10 @@ Wrong. `AGENTS.md` should describe the setup that was actually chosen and instal
 
 Wrong. The `No raw SF Symbol strings` rule only makes sense after the user accepts `SFSafeSymbols` for the project.
 
+### Applying one shared SwiftLint snippet to both `SPM` and `Xcode`
+
+Wrong. SwiftLint selection is shape-specific in this repository. Choose the workspace first, then apply the matching `.swiftlint.yml`.
+
 ### Listing multiple relevant skills or subagents as equal defaults
 
 Wrong. Recommend one best-fit option for the current task and move the rest into conditional alternatives.
@@ -344,5 +353,5 @@ Correct response shape:
 10. Configure project `.codex/config.toml` and any approved MCP servers.
 11. If the user accepted `SFSafeSymbols`, add that package dependency and merge the SF Symbols SwiftLint rule.
 12. If the workspace is `Xcode` and the user wants Xcode tools, configure `xcode` MCP through `xcrun mcpbridge`.
-13. Apply common snippets plus the `Xcode` snippets.
+13. Apply common snippets plus the `Xcode` snippets, including the `Xcode` SwiftLint snippet and normalized workflow guardrails.
 14. Generate the repo-specific `AGENTS.md` from the bootstrap snippet.

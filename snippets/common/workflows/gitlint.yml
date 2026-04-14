@@ -3,29 +3,48 @@ name: Gitlint
 on:
   push:
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   gitlint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install gitlint
         run: pip install gitlint
 
-      - name: Lint latest commit on push
-        if: github.event_name == 'push'
-        run: gitlint --config .gitlint --commit "${{ github.sha }}"
+      - name: Lint pushed or proposed commits
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            gitlint --config .gitlint --commits "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+            exit 0
+          fi
 
-      - name: Lint pull request commits
-        if: github.event_name == 'pull_request'
-        run: gitlint --config .gitlint --commits "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          if [[ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]]; then
+            gitlint --config .gitlint --commit "${{ github.sha }}"
+            exit 0
+          fi
+
+          gitlint --config .gitlint --commits "${{ github.event.before }}..${{ github.sha }}"

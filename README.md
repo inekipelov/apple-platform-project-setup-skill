@@ -2,7 +2,7 @@
 
 Codex-first skill for bootstrapping Apple workspaces.
 
-It does not ship a project template. It orchestrates setup: checks the baseline workflow, interviews the user, chooses `SPM` or `Xcode`, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, applies repo snippets with deterministic copy or merge rules, and generates the final `AGENTS.md`.
+It does not ship a project template. It orchestrates setup: checks the baseline workflow, interviews the user, chooses `SPM` or `Xcode`, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
 
 ## Install
 
@@ -193,7 +193,7 @@ Use `~/.codex/config.toml` or a profile-specific config when you want this remin
 
 It starts with `obra/superpowers`. If that baseline is missing, the skill stops and asks for confirmation before any user-level install or home-directory change.
 
-Once the baseline is available, the skill interviews the user about project purpose, Apple platforms, UI stack, CI needs, repository policy, project config, and MCP needs. Only then does it choose `SPM` or `Xcode`, check prerequisites such as `npx`, `gitlint`, and `swiftlint`, map the project to capability categories, resolve one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, configure project `.codex/config.toml`, and leave the final choice with the user.
+Once the baseline is available, the skill interviews the user about project purpose, Apple platforms, UI stack, CI needs, repository policy, project config, and MCP needs. Only then does it choose `SPM` or `Xcode`, check prerequisites such as `npx`, `gitlint`, and `swiftlint`, map the project to capability categories, resolve one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, choose the matching `SwiftLint` snippet, configure project `.codex/config.toml`, and leave the final choice with the user.
 
 After the selection is confirmed, the skill installs or copies only the chosen items, applies the repo snippets, and generates the repo-specific `AGENTS.md` from the bootstrap snippet.
 
@@ -207,6 +207,8 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Prefer project `.codex/config.toml` for repo-local Codex setup.
 - `sosumi` HTTP MCP is preferred over the `sosumi` CLI.
 - `xcode` MCP is allowed only for `xcode` workspaces in this skill.
+- `SwiftLint` is shape-specific: `SPM` and `Xcode` get different `.swiftlint.yml` snippets.
+- GitHub Actions snippets include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
 - Concrete recommended skills come from `inventory/skills.yaml`.
 - Concrete recommended subagents come from `inventory/subagents.yaml`.
 - `AGENTS.md` must reference skills as `$skill-name` and subagents as `@agent-name`.

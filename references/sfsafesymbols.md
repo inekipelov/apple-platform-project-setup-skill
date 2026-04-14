@@ -48,3 +48,5 @@ Then add `SFSafeSymbols` to the target dependencies that should use typed SF Sym
 The `No raw SF Symbol strings` rule is intentionally optional.
 
 Only add it when `SFSafeSymbols` is present or being added as part of the same setup run.
+
+Merge the optional rule only after the workspace-specific `.swiftlint.yml` has already been selected for `SPM` or `Xcode`.

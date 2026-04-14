@@ -111,10 +111,10 @@ artifacts:
     selection_hints:
       - Apply to every repo that uses Git and local commit policy.
 
-  - artifact: swiftlint-config
-    applies_to: common
+  - artifact: spm-swiftlint-config
+    applies_to: spm
     snippet_paths:
-      - snippets/common/.swiftlint.yml
+      - snippets/spm/.swiftlint.yml
     target_path: .swiftlint.yml
     apply_mode: copy_file
     conflict_policy: ask_before_replace_existing_nonempty
@@ -125,6 +125,25 @@ artifacts:
     upstream_sources: []
     selection_hints:
       - Apply only when Swift source will exist in the target workspace.
+      - Use for `spm` workspaces only.
+      - Keep the config package-oriented and avoid Xcode-only asset assumptions by default.
+
+  - artifact: xcode-swiftlint-config
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode/.swiftlint.yml
+    target_path: .swiftlint.yml
+    apply_mode: copy_file
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - swift_source_in_scope
+      - swiftlint_or_user_confirmed_install
+    install_strategy: project_file_with_confirmation_gated_global_tool_install
+    upstream_sources: []
+    selection_hints:
+      - Apply only when Swift source will exist in the target workspace.
+      - Use for `xcode` workspaces only.
+      - Keep the config app-oriented and include typed asset rules.
 
   - artifact: sfsafesymbols-package
     applies_to: common
@@ -152,12 +171,14 @@ artifacts:
       - swift_source_in_scope
       - user_opted_in_to_sfsafesymbols
       - sfsafesymbols_package_added_or_planned
+      - workspace_specific_swiftlint_config_selected
     install_strategy: merge_into_swiftlint_config_when_sfsafesymbols_enabled
     upstream_sources:
       - https://github.com/SFSafeSymbols/SFSafeSymbols
     selection_hints:
       - Skip this rule when the user does not want SFSafeSymbols.
       - Add only together with the SFSafeSymbols package decision.
+      - Merge only after the `SPM` or `Xcode` SwiftLint base config is already selected.
 
   - artifact: gitlint-workflow
     applies_to: common
@@ -172,6 +193,8 @@ artifacts:
     upstream_sources: []
     selection_hints:
       - Apply when the target repository uses GitHub Actions.
+      - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+      - Lint pushed commit ranges on `push` and proposed commit ranges on `pull_request`.
 
   - artifact: spm-gitignore
     applies_to: spm
@@ -195,6 +218,10 @@ artifacts:
       - github_actions_enabled
     install_strategy: copy_from_snippet
     upstream_sources: []
+    selection_hints:
+      - Keep the workflow package-first.
+      - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+      - Cache SwiftPM dependency directories rather than arbitrary build outputs.
 
   - artifact: spm-test-workflow
     applies_to: spm
@@ -207,6 +234,10 @@ artifacts:
       - github_actions_enabled
     install_strategy: copy_from_snippet
     upstream_sources: []
+    selection_hints:
+      - Keep the workflow package-first.
+      - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+      - Cache SwiftPM dependency directories rather than arbitrary build outputs.
 
   - artifact: xcode-gitignore
     applies_to: xcode
@@ -230,6 +261,10 @@ artifacts:
       - github_actions_enabled
     install_strategy: copy_from_snippet
     upstream_sources: []
+    selection_hints:
+      - Keep the workflow app-first and Xcode-oriented.
+      - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+      - Use a repo-local DerivedData path and disable code signing in CI.
 
   - artifact: xcode-test-workflow
     applies_to: xcode
@@ -242,6 +277,10 @@ artifacts:
       - github_actions_enabled
     install_strategy: copy_from_snippet
     upstream_sources: []
+    selection_hints:
+      - Keep the workflow app-first and Xcode-oriented.
+      - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+      - Use a repo-local DerivedData path and disable code signing in CI.
 
   - artifact: community-skills-twostraws
     applies_to: common

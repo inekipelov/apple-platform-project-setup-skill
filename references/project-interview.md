@@ -100,6 +100,7 @@ After the interview, the skill should be able to produce:
 - one recommended skill per capability gap, with rationale and conditional alternatives
 - one recommended subagent per capability gap, with rationale and conditional alternatives
 - the common snippets to apply
+- which workspace-specific `SwiftLint` snippet applies
 - whether the repo should carry `.codex/config.toml`
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired
