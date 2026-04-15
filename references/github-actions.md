@@ -76,3 +76,21 @@ The `Xcode + Tuist` workflow snippets should:
 - use explicit env vars such as `TUIST_SCHEME` instead of relying on all-schemes behavior
 
 For this repo contract, the Tuist workflow path uses `tuist build <scheme>` and `tuist test <scheme>` as the default CI commands for generated-project repositories.
+
+## Maintainer Release Workflow For This Repository
+
+This repository also maintains its own release-preparation workflow in `.github/workflows/prepare-release.yml`.
+
+That maintainer workflow should:
+
+- use `workflow_dispatch` only
+- run from a short-lived `release/x.y.z` branch, not directly from `main`
+- accept a stable `x.y.z` version input without a `v` prefix
+- reject non-stable version strings such as prereleases
+- require explicit confirmation that CI is green and manual doc review is complete
+- run the repo contract verification script before tagging
+- create the `vX.Y.Z` tag
+- create a draft GitHub Release with auto-generated notes
+- leave final note editing and publication to the maintainer in GitHub
+
+Use `.github/release.yml` to keep the generated release notes grouped by the repo label taxonomy.

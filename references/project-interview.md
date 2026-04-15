@@ -100,6 +100,7 @@ If the user gives no other explicit personalization answers:
 - `SwiftLint` required?
 - Apple docs lookup via `sosumi` desired?
 - configure a project `.codex/config.toml`?
+- if `.codex/config.toml` is desired, use the standard `setup` / `review` / `release` profile set?
 - use `sosumi` via remote HTTP MCP?
 - use `xcode` MCP via `xcrun mcpbridge`? Only ask this if the workspace shape is likely `Xcode`.
 - project-local subagents desired?
@@ -146,6 +147,7 @@ After the interview, the skill should be able to produce:
 - which workspace-specific `SwiftLint` snippet applies
 - which `Xcode` snippet set applies when the workspace is `Xcode`
 - whether the repo should carry `.codex/config.toml`
+- whether the standard `setup` / `review` / `release` `.codex/config.toml` profiles should be used
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired
 - whether `SFSafeSymbols` should be added and whether the SF Symbols SwiftLint rule should exist

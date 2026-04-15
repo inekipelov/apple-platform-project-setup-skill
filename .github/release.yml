@@ -1,0 +1,26 @@
+changelog:
+  categories:
+    - title: Breaking Changes
+      labels:
+        - breaking
+    - title: Contract
+      labels:
+        - contract
+    - title: Documentation
+      labels:
+        - docs
+    - title: CI
+      labels:
+        - ci
+    - title: Lint
+      labels:
+        - lint
+    - title: Skills
+      labels:
+        - skills
+    - title: MCP
+      labels:
+        - mcp
+    - title: Release
+      labels:
+        - release

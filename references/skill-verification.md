@@ -42,6 +42,12 @@ Because the repository had no workflow contract, each planned failure mode was e
 24. An agent could skip asking which communication language should be fixed and silently invent a language policy.
 25. An agent could mix the canonical `.codex/skills/` path with a legacy project-local skill path.
 26. An agent could place commands in `Repository Rules` or duplicate them outside `Core Commands`.
+27. A maintainer could publish directly from `main` or rely on a permanent `release` branch instead of a short-lived `release/x.y.z` branch.
+28. The repo could treat `VERSION` files or `CHANGELOG.md` as required even though the intended version source is the tag plus GitHub Release only.
+29. The repo could lack a manual release-preparation workflow and rely on ad-hoc local release steps.
+30. Auto-generated GitHub Release notes could be left uncategorized because the repo has no release-note label taxonomy.
+31. The `.codex/config.toml` guidance could omit the standard `setup`, `review`, and `release` profiles or recommend unsupported baseline keys.
+32. Advanced config knobs such as MCP tool filtering, named permissions profiles, or telemetry could be treated as baseline defaults instead of optional hardening.
 
 ## GREEN Verification Targets
 
@@ -79,6 +85,11 @@ After the repo contract is present, verify that:
 30. If the user does not choose a communication language, the exact fallback line is `- Communication language: Use the language the client used to contact the agent.`
 31. Project-local skills are documented under `.codex/skills/`, and `~/.agents/skills/` appears only as the upstream `superpowers` user-level exception.
 32. `Core Commands` is the only command-owning section in generated `AGENTS.md`, and `Repository Rules` is documented as non-command repo policy only.
+33. The maintainer release contract uses short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the only changelog.
+34. The repo contains a manual `workflow_dispatch` release-preparation workflow that validates branch/version inputs, runs contract verification, and creates a draft GitHub Release.
+35. `.github/release.yml` groups auto-generated release notes by the repo label taxonomy.
+36. `.codex/config.toml` guidance recommends the standard `setup`, `review`, and `release` profiles using only official config keys.
+37. Advanced config knobs are documented as optional hardening, and `VERSION`, `CHANGELOG.md`, `review_model`, custom providers, provider auth, and telemetry are not recommended by default.
 
 ## REFACTOR Watchlist
 
@@ -107,5 +118,9 @@ Look for these rationalizations in future revisions:
 - "If the user did not pick a language, I can assume English or Russian from context."
 - "Project-local skills can live under either the canonical path or a legacy local path; the reader will infer the intended one."
 - "Repository Rules can absorb the command list; a separate `Core Commands` section is optional."
+- "A permanent release branch is cleaner than cutting short-lived `release/x.y.z` branches."
+- "The repo needs a `VERSION` file or `CHANGELOG.md` to have a real release process."
+- "Auto-generated GitHub Release notes are good enough without label categories."
+- "We should recommend provider config, telemetry, and review-model overrides in the baseline `.codex/config.toml`."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.

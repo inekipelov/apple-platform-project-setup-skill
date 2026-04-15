@@ -1,0 +1,70 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable release version without the leading v
+        required: true
+        type: string
+      confirm_ci_green:
+        description: Confirm that all required CI workflows are green
+        required: true
+        type: boolean
+      confirm_manual_review:
+        description: Confirm that README, SKILL, catalog, and contract docs were reviewed manually
+        required: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate release request
+        env:
+          VERSION: ${{ inputs.version }}
+          CONFIRM_CI_GREEN: ${{ inputs.confirm_ci_green }}
+          CONFIRM_MANUAL_REVIEW: ${{ inputs.confirm_manual_review }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Version must be stable x.y.z"; exit 1; }
+          [[ "${GITHUB_REF_NAME}" == "release/${VERSION}" ]] || { echo "Run this workflow from release/${VERSION}"; exit 1; }
+          [[ "$CONFIRM_CI_GREEN" == "true" ]] || { echo "Confirm that CI is green before preparing the release."; exit 1; }
+          [[ "$CONFIRM_MANUAL_REVIEW" == "true" ]] || { echo "Confirm that manual review is complete before preparing the release."; exit 1; }
+          git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null && { echo "Tag v${VERSION} already exists."; exit 1; } || true
+
+      - name: Verify repo contract
+        run: ruby scripts/verify-repo-contract.rb
+
+      - name: Create annotated tag
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${VERSION}" -m "Release v${VERSION}"
+          git push origin "v${VERSION}"
+
+      - name: Create draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          gh release view "v${VERSION}" >/dev/null 2>&1 && { echo "Release v${VERSION} already exists."; exit 1; } || true
+          gh release create "v${VERSION}" --draft --verify-tag --generate-notes --title "v${VERSION}"

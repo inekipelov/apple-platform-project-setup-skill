@@ -87,6 +87,7 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Project-local skills and subagents are preferred by default.
 - Project-local skills live under `.codex/skills/`; project-local subagents live under `.codex/agents/`.
 - Prefer project `.codex/config.toml` for repo-local Codex setup.
+- When the repo carries project-local Codex config, prefer the standard `setup`, `review`, and `release` profiles with `setup` as the default profile.
 - `sosumi` HTTP MCP is preferred over the `sosumi` CLI.
 - `xcode` MCP is allowed only for `xcode` workspaces in this skill.
 - `Tuist` is an optional `Xcode` sub-mode, not a third workspace shape.
@@ -126,4 +127,11 @@ apple-platform-project-setup-skill/
 
 This repository is maintained as a skill contract, not a template bundle.
 
-Use [`references/skill-verification.md`](references/skill-verification.md) for the recorded RED/GREEN expectations.
+Maintainer releases are manual:
+
+- branch from `main` into a short-lived `release/x.y.z` branch
+- run the manual release preparation workflow on that branch
+- publish a stable `vX.Y.Z` tag as a draft GitHub Release with auto-generated notes
+- use GitHub Releases as the only changelog for this repository
+
+Use [`references/release-management.md`](references/release-management.md) for the maintainer release contract and [`references/skill-verification.md`](references/skill-verification.md) for the recorded RED/GREEN expectations.

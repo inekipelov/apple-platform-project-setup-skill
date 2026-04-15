@@ -101,11 +101,39 @@ artifacts:
     install_strategy: create_or_refine_project_codex_config_toml
     upstream_sources:
       - https://developers.openai.com/codex/config-reference#configtoml
+    config_profiles:
+      default_profile: setup
+      recommended_profiles:
+        - setup
+        - review
+        - release
+      review_release_extra_keys:
+        - plan_mode_reasoning_effort
+      optional_hardening_keys:
+        - mcp_servers.<id>.enabled_tools
+        - mcp_servers.<id>.disabled_tools
+        - mcp_servers.<id>.required
+        - default_permissions
+        - permissions.<name>
+        - notify
+        - shell_environment_policy.*
+      not_recommended_by_default:
+        - VERSION
+        - CHANGELOG.md
+        - review_model
+        - model_provider
+        - openai_base_url
+        - provider auth config
+        - telemetry / analytics config
     selection_hints:
       - Prefer project-scoped `.codex/config.toml` for repo-local Codex setup.
       - Register the local skill with `[[skills.config]]`.
+      - Prefer `profile = "setup"` plus the standard `setup`, `review`, and `release` profiles when the repo wants project-local Codex operating modes.
+      - Use only official config keys such as `personality`, `approval_policy`, `sandbox_mode`, `web_search`, `model_reasoning_effort`, and `plan_mode_reasoning_effort` in that baseline.
       - Use `developer_instructions` only as a thin wrapper, not as a replacement for the skill itself.
       - Use `model_instructions_file` only as an explicit alternative when the repo wants a dedicated instructions file.
+      - Keep hardening knobs such as MCP tool filtering, named permissions profiles, notifications, and shell environment policy optional.
+      - Do not recommend `VERSION`, `CHANGELOG.md`, `review_model`, custom model providers, provider auth config, or telemetry settings by default.
       - Project-scoped `.codex/config.toml` loads only when the project is trusted.
 
   - artifact: sosumi-mcp-config

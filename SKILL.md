@@ -75,7 +75,7 @@ Never reorder these steps.
 | Concrete selection source | `inventory/skills.yaml` and `inventory/subagents.yaml` |
 | Skill install preference | `skills.sh` first, upstream instructions second |
 | Subagent install location | `.codex/agents/` by default |
-| Project config | prefer project `.codex/config.toml` for skill registration and optional wrappers |
+| Project config | prefer project `.codex/config.toml` for skill registration, optional wrappers, and the standard `setup` / `review` / `release` profile set |
 | Sosumi integration | prefer HTTP MCP; CLI is optional |
 | Xcode MCP policy | only for `xcode` workspaces, never for `spm` |
 | Xcode strategy | after `Xcode` is chosen, default to native `xcodeproj` unless `Tuist` is explicitly selected or clearly justified |
@@ -187,8 +187,15 @@ If a required tool is missing:
 - If the selected Xcode strategy is `Tuist`, also follow [`references/tuist-setup.md`](references/tuist-setup.md).
 - Prefer a project-scoped `.codex/config.toml` when the repo is meant to carry its own Codex setup.
 - Register the skill with `[[skills.config]]` using the installed local path.
+- Use `profile = "setup"` as the default entrypoint when the repo carries the standard project-local Codex profile set.
+- Prefer the standard profile names `setup`, `review`, and `release` for repos that want project-local Codex operating modes.
+- In that standard profile set:
+  - `setup` should use pragmatic personality, `on-request` approvals, `workspace-write`, cached web search, and medium reasoning effort
+  - `review` should keep the same approval and sandbox policy but raise reasoning and plan-mode reasoning effort to high
+  - `release` should keep the same approval and sandbox policy, use live web search, and keep reasoning and plan-mode reasoning effort high
 - Use `developer_instructions` only as a thin wrapper when the repo wants a short always-on reminder.
 - Use `model_instructions_file` only as an explicit alternative when the repo wants a dedicated instruction file instead of relying on `AGENTS.md`.
+- Treat `review_model`, custom model providers, provider auth config, telemetry, analytics, `VERSION`, and `CHANGELOG.md` as non-default choices. Do not recommend them in the baseline project config.
 - Prefer `sosumi` over HTTP MCP when Apple docs lookup is desired and the client supports remote MCP servers.
 - Treat the `sosumi` CLI as optional. Do not require a global CLI install when HTTP MCP already solves the need.
 - Offer `xcode` MCP only when the workspace shape is `xcode`.
