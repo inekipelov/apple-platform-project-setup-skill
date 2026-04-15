@@ -19,6 +19,12 @@ These sources decide:
 - which `config.toml` keys are valid for project config and MCP setup
 - which `config.toml` keys are valid for official multi-agent runtime
 
+Local repository state also matters once the skill is already running inside a structured repo:
+
+- existing repo structure is a high-priority local signal
+- discovered workspace shape and project strategy should override bootstrap defaults unless the user explicitly asks to migrate
+- existing local files should be compared and confirmed, not blindly replaced
+
 ## 2. Official `obra/superpowers` Installation
 
 Use the official `obra/superpowers` install instructions before any other workspace setup:

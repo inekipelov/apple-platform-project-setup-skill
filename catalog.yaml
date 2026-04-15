@@ -4,6 +4,36 @@ inventory_refs:
   skills: inventory/skills.yaml
   subagents: inventory/subagents.yaml
 
+runtime_modes:
+  repo_state_detection:
+    modes:
+      - greenfield
+      - existing_structured_repo
+    existing_structured_repo_signals:
+      - Package.swift
+      - "*.xcodeproj"
+      - "*.xcworkspace"
+      - Project.swift
+      - Tuist.swift
+      - .gitignore
+      - .swiftlint.yml
+      - .gitlint
+      - .github/workflows/
+      - .codex/config.toml
+      - AGENTS.md
+    defaults:
+      greenfield: bootstrap
+      existing_structured_repo: audit_and_align
+    policy:
+      - Existing repo structure is a stronger signal than bootstrap defaults.
+      - Existing structured repositories stay in scope for this skill.
+      - Existing structured repositories must use preserve-first compare-and-confirm behavior before artifact replacement.
+    decision_outputs:
+      - repo_state
+      - detected_workspace_shape
+      - detected_xcode_project_strategy
+      - standardization_scope
+
 artifacts:
   - artifact: superpowers
     applies_to: common
@@ -18,6 +48,7 @@ artifacts:
     selection_hints:
       - Mandatory first step for every workspace setup run.
       - Stop after proposing the install until the user confirms.
+      - After baseline confirmation, detect whether the repo is `greenfield` or `existing_structured_repo` before running the interview.
 
   - artifact: agents-bootstrap
     applies_to: common
@@ -79,6 +110,7 @@ artifacts:
       repository_rules_scope: non_command_repo_policy_only
     selection_hints:
       - Create AGENTS.md after the interview and after the selected skills and subagents are installed or intentionally skipped.
+      - For `existing_structured_repo`, compare the current `AGENTS.md` first and do not replace it without explicit confirmation.
       - Render skill references as $skill-name and subagent references as @agent-name.
       - Render AGENTS.md as a declarative final-state document with fixed section titles and exact line prefixes.
       - Render `Agent Personalization` as a separate section before `Workspace`.
@@ -162,6 +194,7 @@ artifacts:
       - Keep hardening knobs such as MCP tool filtering, named permissions profiles, notifications, and shell environment policy optional.
       - Do not recommend `VERSION`, `CHANGELOG.md`, `review_model`, custom model providers, provider auth config, or telemetry settings by default.
       - Project-scoped `.codex/config.toml` loads only when the project is trusted.
+      - For `existing_structured_repo`, compare the current `.codex/config.toml` against the selected policy and only propose confirmed alignment changes.
 
   - artifact: sosumi-mcp-config
     applies_to: common
@@ -229,6 +262,7 @@ artifacts:
       - Apply only when Swift source will exist in the target workspace.
       - Use for `spm` workspaces only.
       - Keep the config package-oriented and avoid Xcode-only asset assumptions by default.
+      - For `existing_structured_repo`, compare the current `.swiftlint.yml` first and preserve repo-specific rules unless the user explicitly wants canonical replacement.
 
   - artifact: xcode-swiftlint-config
     applies_to: xcode
@@ -247,6 +281,7 @@ artifacts:
       - Use for `xcode` workspaces only.
       - Keep the config app-oriented and include typed asset rules.
       - Share this config across native `xcodeproj` and `Tuist`-generated `Xcode` repositories.
+      - For `existing_structured_repo`, compare the current `.swiftlint.yml` first and preserve repo-specific rules unless the user explicitly wants canonical replacement.
 
   - artifact: tuist-cli
     applies_to: xcode
@@ -313,6 +348,7 @@ artifacts:
       - Apply when the target repository uses GitHub Actions.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Lint pushed commit ranges on `push` and proposed commit ranges on `pull_request`.
+      - For `existing_structured_repo`, compare the existing workflow first and do not replace it without explicit confirmation.
 
   - artifact: spm-gitignore
     applies_to: spm
@@ -324,6 +360,8 @@ artifacts:
     prerequisites: []
     install_strategy: copy_from_snippet
     upstream_sources: []
+    selection_hints:
+      - For `existing_structured_repo`, compare the current `.gitignore` first and preserve repo-specific entries unless the user explicitly wants replacement.
 
   - artifact: spm-build-workflow
     applies_to: spm
@@ -340,6 +378,7 @@ artifacts:
       - Keep the workflow package-first.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Cache SwiftPM dependency directories rather than arbitrary build outputs.
+      - For `existing_structured_repo`, refine or replace only after comparing the existing workflow and getting explicit confirmation.
 
   - artifact: spm-test-workflow
     applies_to: spm
@@ -356,6 +395,7 @@ artifacts:
       - Keep the workflow package-first.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Cache SwiftPM dependency directories rather than arbitrary build outputs.
+      - For `existing_structured_repo`, refine or replace only after comparing the existing workflow and getting explicit confirmation.
 
   - artifact: xcode-native-gitignore
     applies_to: xcode
@@ -370,6 +410,7 @@ artifacts:
     upstream_sources: []
     selection_hints:
       - Use only for native checked-in `xcodeproj` repositories.
+      - For `existing_structured_repo`, do not replace the current `.gitignore` without confirming that native Xcode remains the intended strategy.
 
   - artifact: xcode-native-build-workflow
     applies_to: xcode
@@ -387,6 +428,7 @@ artifacts:
       - Keep the workflow app-first, Xcode-oriented, and native-`xcodeproj` based.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Use a repo-local DerivedData path and disable code signing in CI.
+      - For `existing_structured_repo`, compare the existing workflow first and do not replace it without explicit confirmation.
 
   - artifact: xcode-native-test-workflow
     applies_to: xcode
@@ -404,6 +446,7 @@ artifacts:
       - Keep the workflow app-first, Xcode-oriented, and native-`xcodeproj` based.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Use a repo-local DerivedData path and disable code signing in CI.
+      - For `existing_structured_repo`, compare the existing workflow first and do not replace it without explicit confirmation.
 
   - artifact: xcode-tuist-gitignore
     applies_to: xcode
@@ -420,6 +463,7 @@ artifacts:
     selection_hints:
       - Use only when the selected Xcode strategy is `Tuist`.
       - Ignore generated Xcode artifacts and Tuist local state.
+      - For `existing_structured_repo`, do not switch a native repo to Tuist snippets without explicit migration intent.
 
   - artifact: xcode-tuist-manifests
     applies_to: xcode
@@ -439,6 +483,7 @@ artifacts:
     selection_hints:
       - Use `Project.swift` and `Tuist.swift` as the repository source of truth for the Xcode project structure.
       - Do not add `Workspace.swift` or `Config.swift` in v1.
+      - For `existing_structured_repo`, compare existing manifests before replacement and treat them as the current source of truth unless the user asked for migration.
 
   - artifact: xcode-tuist-build-workflow
     applies_to: xcode
@@ -457,6 +502,7 @@ artifacts:
       - Keep the workflow app-first and Tuist-generated.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Install Tuist, run `tuist install`, and then run `tuist build` with an explicit scheme env var.
+      - For `existing_structured_repo`, compare the existing workflow first and do not replace it without explicit confirmation.
 
   - artifact: xcode-tuist-test-workflow
     applies_to: xcode
@@ -475,6 +521,7 @@ artifacts:
       - Keep the workflow app-first and Tuist-generated.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
       - Install Tuist, run `tuist install`, and then run `tuist test` with an explicit scheme env var.
+      - For `existing_structured_repo`, compare the existing workflow first and do not replace it without explicit confirmation.
 
   - artifact: community-skills-twostraws
     applies_to: common

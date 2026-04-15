@@ -1,6 +1,6 @@
 ---
 name: apple-platform-project-setup-skill
-description: Use when bootstrapping a new Apple platform workspace, choosing between Swift Package Manager and Xcode setup, optionally choosing a native or Tuist-generated Xcode path, and establishing project-local skills, subagents, lint, CI, and AGENTS guidance.
+description: Use when bootstrapping or standardizing an Apple platform workspace, choosing between Swift Package Manager and Xcode setup, optionally choosing a native or Tuist-generated Xcode path, and establishing project-local skills, subagents, lint, CI, and AGENTS guidance.
 ---
 
 # Apple Platform Project Setup
@@ -16,6 +16,7 @@ Bootstrap Apple workspaces in a strict order so the repo gets the right foundati
 Use this skill when:
 
 - starting a new Apple platform repository or local workspace
+- standardizing or auditing an existing Apple platform repository
 - deciding between `SPM` and `Xcode`
 - if `Xcode`, deciding between native `xcodeproj` and `Tuist-generated`
 - setting up `AGENTS.md`, `.codex/config.toml`, MCP, `gitlint`, `SwiftLint`, GitHub Actions, skills, or subagents for Apple development
@@ -23,7 +24,6 @@ Use this skill when:
 
 Do not use this skill for:
 
-- editing an already-established repository with stable local conventions
 - non-Apple projects
 - one-off repo cleanup unrelated to bootstrap
 
@@ -35,6 +35,7 @@ digraph setup_order {
     superpowers [label="Check superpowers"];
     confirm [label="Need install or home-dir change?", shape=diamond];
     stop [label="Propose official install\nand wait for confirmation"];
+    state [label="Detect repo state"];
     interview [label="Interview user"];
     choose [label="Choose SPM or Xcode"];
     xcodestrategy [label="If Xcode, choose\nnative or Tuist"];
@@ -47,8 +48,9 @@ digraph setup_order {
 
     superpowers -> confirm;
     confirm -> stop [label="yes"];
-    confirm -> interview [label="no"];
-    stop -> interview [label="after confirmation"];
+    confirm -> state [label="no"];
+    stop -> state [label="after confirmation"];
+    state -> interview;
     interview -> choose;
     choose -> xcodestrategy;
     xcodestrategy -> tools;
@@ -67,6 +69,7 @@ Never reorder these steps.
 | Topic | Rule |
 |---|---|
 | Baseline prerequisite | `obra/superpowers` always comes first |
+| Repo modes | detect `greenfield` vs `existing_structured_repo` before the interview |
 | AGENTS timing | generate after selected skills and subagents are installed |
 | AGENTS syntax | skills as `$skill-name`, subagents as `@agent-name` |
 | AGENTS mode | declarative final-state only; no recommendations or alternatives |
@@ -85,6 +88,7 @@ Never reorder these steps.
 | GitHub Actions policy | every workflow keeps `workflow_dispatch`, least-privilege permissions, and concurrency |
 | Global tool install policy | propose only, never auto-install |
 | Project choice | decide `SPM` vs `Xcode` after interview, not before |
+| Existing repo policy | preserve first, standardize second |
 | Snippet application | obey `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml` |
 
 ## Workflow
@@ -97,11 +101,38 @@ Never reorder these steps.
 
 **No exceptions.**
 
-### 2. Run the project interview
+### 2. Detect repository state
+
+- Explore the repository before choosing setup mode.
+- Classify the repository as:
+  - `greenfield` when the folder is empty or lacks meaningful project structure
+  - `existing_structured_repo` when structural signals already exist
+- Treat these as structural signals:
+  - `Package.swift`
+  - `*.xcodeproj`
+  - `*.xcworkspace`
+  - `Project.swift`
+  - `Tuist.swift`
+  - `.gitignore`
+  - `.swiftlint.yml`
+  - `.gitlint`
+  - `.github/workflows/`
+  - `.codex/config.toml`
+  - `AGENTS.md`
+- Record `repo_state = greenfield | existing_structured_repo`.
+- If `repo_state = existing_structured_repo`, switch to `audit-and-align` mode:
+  - preserve existing structure first
+  - confirm detected choices through the interview
+  - propose targeted standardization instead of blind bootstrap replacement
+
+### 3. Run the project interview
 
 - Ask questions from [`references/project-interview.md`](references/project-interview.md).
 - Use [`references/agents-personalization.md`](references/agents-personalization.md) to collect and render the final `Agent Personalization` section.
 - Determine:
+  - repo state
+  - detected workspace shape
+  - if `Xcode`, detected Xcode project strategy
   - project role
   - agent personalization profile
   - target platforms
@@ -115,6 +146,7 @@ Never reorder these steps.
   - whether official multi-agent runtime should be enabled in project `.codex/config.toml`
   - whether multi-agent runtime should use the repository baseline config
   - whether project-local subagents are desired directly or as a follow-up to multi-agent runtime activation
+  - standardization scope for existing repositories
   - optional MCP integrations
   - policy constraints
 
@@ -125,11 +157,15 @@ For communication language:
 
 Do not choose skills, subagents, or repo files before the interview is complete.
 
-### 3. Choose workspace type
+### 4. Choose workspace type
 
+- If `repo_state = existing_structured_repo`, treat detected repo structure as the strongest default signal.
 - Use `SPM` when the project is package-first, library-first, CLI-first, or intentionally lightweight.
 - Use `Xcode` when the project is app-first, uses app lifecycle targets, or depends on Xcode-managed assets and schemes.
 - If the user already made a valid choice, honor it and continue.
+- If the repo already clearly uses `SPM`, do not re-choose `Xcode` without explicit user intent.
+- If the repo already clearly uses native `xcodeproj`, do not suggest `Tuist` as the implicit default.
+- If the repo already clearly uses `Tuist`, keep `Tuist` as the detected strategy unless the user explicitly wants migration.
 
 If the workspace choice is `Xcode`:
 
@@ -144,7 +180,7 @@ Then use the matching snippet set:
 - `Xcode + native`: [`snippets/xcode/.gitignore`](snippets/xcode/.gitignore), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode/workflows/build.yml`](snippets/xcode/workflows/build.yml), [`snippets/xcode/workflows/test.yml`](snippets/xcode/workflows/test.yml)
 - `Xcode + Tuist`: [`snippets/xcode-tuist/.gitignore`](snippets/xcode-tuist/.gitignore), [`snippets/xcode-tuist/Project.swift`](snippets/xcode-tuist/Project.swift), [`snippets/xcode-tuist/Tuist.swift`](snippets/xcode-tuist/Tuist.swift), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode-tuist/workflows/build.yml`](snippets/xcode-tuist/workflows/build.yml), [`snippets/xcode-tuist/workflows/test.yml`](snippets/xcode-tuist/workflows/test.yml)
 
-### 4. Check tool prerequisites
+### 5. Check tool prerequisites
 
 Check for:
 
@@ -165,7 +201,7 @@ If a required tool is missing:
 - propose one concrete global install command
 - wait for explicit confirmation before running it
 
-### 5. Install skills and subagents
+### 6. Install skills and subagents
 
 - Follow [`references/skills-catalog.md`](references/skills-catalog.md) and [`references/subagents-catalog.md`](references/subagents-catalog.md).
 - Resolve concrete choices from [`inventory/skills.yaml`](inventory/skills.yaml) and [`inventory/subagents.yaml`](inventory/subagents.yaml).
@@ -185,7 +221,7 @@ If a required tool is missing:
 - Final selection still belongs to the user. The skill recommends; the user confirms or overrides.
 - Once the user confirms the selection, treat that installed set as final repo state and carry only that final state into `AGENTS.md`.
 
-### 6. Configure project `.codex/config.toml` and optional MCP
+### 7. Configure project `.codex/config.toml` and optional MCP
 
 - Follow [`references/codex-config.md`](references/codex-config.md) and [`references/mcp-setup.md`](references/mcp-setup.md).
 - If the selected Xcode strategy is `Tuist`, also follow [`references/tuist-setup.md`](references/tuist-setup.md).
@@ -222,7 +258,7 @@ If a required tool is missing:
   - use the Apple-supported `xcrun mcpbridge` integration path
 - Never configure `xcode` MCP for `spm` workspaces in this skill, even if the package could be opened in Xcode manually.
 
-### 7. Apply common artifacts
+### 8. Apply common artifacts
 
 Apply or refine:
 
@@ -245,6 +281,16 @@ Always apply snippet-backed artifacts using the contract in [`catalog.yaml`](cat
 
 Do not improvise target paths, overwrite behavior, or merge behavior outside that contract.
 
+For `existing_structured_repo`, add this policy layer before applying any artifact:
+
+- preserve first, standardize second
+- detect whether the target file already exists and treat it as current repo state, not as missing bootstrap output
+- compare the existing file against the selected canonical snippet or config intent
+- propose only the aligned change set the user actually wants
+- do not replace `.gitignore`, `.swiftlint.yml`, `.gitlint`, workflows, `.codex/config.toml`, or `AGENTS.md` without explicit confirmation
+- do not migrate native `xcodeproj` to `Tuist` or `Tuist` to native `xcodeproj` without explicit confirmation
+- do not auto-enable MCP, multi-agent runtime, skills, or subagents just because the repo already exists
+
 Before adding the `No raw SF Symbol strings` SwiftLint rule:
 
 - ask whether the project should add `SFSafeSymbols` via Swift Package Manager
@@ -257,7 +303,7 @@ Before adding the `No raw SF Symbol strings` SwiftLint rule:
   - do not add the package dependency
   - do not add the `No raw SF Symbol strings` rule
 
-### 8. Create `AGENTS.md` last
+### 9. Create `AGENTS.md` last
 
 - Start from [`snippets/common/AGENTS.bootstrap.md`](snippets/common/AGENTS.bootstrap.md).
 - Use **REQUIRED SUB-SKILL:** `superpowers:writing-skills` when generating or reshaping the repo-specific `AGENTS.md`.
@@ -318,7 +364,7 @@ When refining `AGENTS.md`, use this rendering contract:
 - Do not use the word `Report` anywhere in `AGENTS.md`.
 - For `Xcode + Tuist`, `Project Structure Source Of Truth` must explicitly say that `Project.swift` and `Tuist.swift` are the project-structure source of truth and that `tuist generate` may be required before opening the project in Xcode.
 
-### 9. Summarize clearly
+### 10. Summarize clearly
 
 End by separating:
 
@@ -336,6 +382,10 @@ Wrong. This skill must establish the baseline workflow first or stop for confirm
 ### Choosing `SPM` or `Xcode` before interviewing the user
 
 Wrong. The project role and technology priorities determine the correct shape.
+
+### Treating an existing structured repo like an empty folder
+
+Wrong. Existing structure is a discovery signal. Confirm it first, then align only what the user wants standardized.
 
 ### Treating `Tuist` as a third workspace shape
 
@@ -421,6 +471,8 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 
 - "I can skip `superpowers` because the user only asked for SwiftLint."
 - "I already know this is an Xcode project."
+- "The repo already has files, so this skill is no longer useful."
+- "The repo already has files, so I can replace them with the canonical snippets in one pass."
 - "Tuist is different enough that I should treat it as a third workspace shape."
 - "I'll install `gitlint` first and ask later."
 - "I'll install all suggested subagents now and clean up later."

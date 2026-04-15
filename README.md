@@ -1,8 +1,8 @@
 # Apple Platform Project Setup Skill
 
-Codex-first skill for bootstrapping Apple workspaces.
+Codex-first skill for bootstrapping and standardizing Apple workspaces.
 
-It does not ship a project template. It orchestrates setup: checks the baseline workflow, interviews the user, chooses `SPM` or `Xcode`, optionally chooses `native xcodeproj` or `Tuist-generated` inside the `Xcode` path, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, can enable official multi-agent runtime in `.codex/config.toml`, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
+It does not ship a project template. It orchestrates setup: checks the baseline workflow, detects whether the repo is greenfield or already structured, interviews the user, chooses or confirms `SPM` vs `Xcode`, optionally chooses or confirms `native xcodeproj` vs `Tuist-generated` inside the `Xcode` path, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, can enable official multi-agent runtime in `.codex/config.toml`, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
 
 ## Install
 
@@ -74,13 +74,14 @@ Do not configure `xcode` MCP for `spm` workspaces in this repo contract.
 
 It starts with `obra/superpowers`. If that baseline is missing, the skill stops and asks for confirmation before any user-level install or home-directory change.
 
-Once the baseline is available, the skill interviews the user about project purpose, agent personalization, Apple platforms, UI stack, CI needs, repository policy, project config, multi-agent runtime needs, and MCP needs. It can enable official multi-agent runtime in `.codex/config.toml`, but it treats that as a config-layer decision and then asks separately whether to continue into project-local subagent selection. If runtime stays disabled, project-local subagents can still be selected directly. Only then does it choose `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default and offers an optional `Tuist-generated` path for app-first repositories that want declarative manifests and generated projects. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
+Once the baseline is available, the skill first detects whether the repo is greenfield or already structured. For existing repos it switches to audit-and-align mode: confirm the detected shape, preserve current structure first, then propose only the standardization work the user actually wants. The interview covers project purpose, agent personalization, Apple platforms, UI stack, CI needs, repository policy, project config, multi-agent runtime needs, and MCP needs. It can enable official multi-agent runtime in `.codex/config.toml`, but it treats that as a config-layer decision and then asks separately whether to continue into project-local subagent selection. If runtime stays disabled, project-local subagents can still be selected directly. Only then does it choose or confirm `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default unless the repo already uses `Tuist` or the user explicitly wants `Tuist-generated`. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
 
 After the selection is confirmed, the skill installs or copies only the chosen items, applies the repo snippets, and generates the repo-specific `AGENTS.md` from the bootstrap snippet.
 
 ## Rules
 
 - `obra/superpowers` comes first.
+- The skill supports both `greenfield` and `existing_structured_repo` repo states.
 - `skills.sh` is preferred when a community skill supports it.
 - Upstream instructions are fallback only.
 - Global installs and user-home changes always require explicit confirmation.
@@ -106,6 +107,7 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - The skill explicitly asks which communication language should be fixed in `AGENTS.md`; if the user does not choose one, the fallback is the language the client used to contact the agent.
 - `AGENTS.md` lists only installed project-local skills and subagents.
 - Snippet-backed files follow `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml`.
+- In existing structured repos, preserve current structure first and replace files only after explicit compare-and-confirm decisions.
 
 ## Source of truth
 

@@ -53,6 +53,10 @@ Because the repository had no workflow contract, each planned failure mode was e
 35. An agent could install project-local subagents and silently mutate `.codex/config.toml` to enable multi-agent runtime.
 36. The interview could enable multi-agent runtime without recording whether project-local subagents were requested directly or only as a follow-up.
 37. The config contract could blur profile operating modes and multi-agent runtime into one undifferentiated settings layer.
+38. The skill could still reject already-structured repositories as out of scope instead of switching into an audit-and-align mode.
+39. The skill could detect an existing `SPM`, native `Xcode`, or `Tuist` structure and still re-run bootstrap defaults as if the folder were empty.
+40. The skill could overwrite existing `.gitignore`, `.swiftlint.yml`, `.gitlint`, workflows, `.codex/config.toml`, or `AGENTS.md` without compare-and-confirm behavior.
+41. The skill could silently migrate a native `xcodeproj` repo to `Tuist`, or a `Tuist` repo back to native, just because one path is canonical for greenfield bootstrap.
 
 ## GREEN Verification Targets
 
@@ -100,6 +104,10 @@ After the repo contract is present, verify that:
 40. Runtime multi-agent config and installed project-local subagents are documented as separate layers with no implicit auto-conversion between them.
 41. The interview records `project_local_subagents_desired` and `subagent_flow_trigger` so direct subagent selection and follow-up subagent selection are distinguishable.
 42. The config contract explicitly documents `profiles.*` as operating modes and multi-agent runtime as a separate optional capability layer.
+43. The skill documents `greenfield` and `existing_structured_repo` as supported repo states.
+44. Existing structured repos are handled through preserve-first `audit-and-align` behavior instead of blind bootstrap replacement.
+45. The interview records `repo_state`, `detected_workspace_shape`, `detected_xcode_project_strategy`, and `standardization_scope`.
+46. Existing repo signals override bootstrap defaults unless the user explicitly wants migration or replacement.
 
 ## REFACTOR Watchlist
 
@@ -136,5 +144,8 @@ Look for these rationalizations in future revisions:
 - "If project-local subagents are installed, I should also enable `features.multi_agent` while I'm there."
 - "Once multi-agent runtime is enabled, it is unnecessary to record whether subagent selection was a follow-up or a direct choice."
 - "The profile set and multi-agent settings are all just config knobs, so separating their roles is unnecessary."
+- "This repo already has files, so the skill should stop instead of helping."
+- "The repo already has files, so I should replace them with the canonical snippets in one pass."
+- "Detected `Tuist` or native Xcode structure is only historical noise; greenfield defaults are still better."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.

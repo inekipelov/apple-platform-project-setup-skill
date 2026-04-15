@@ -19,6 +19,15 @@ It is not the default output file for the target repository.
 
 The target repository should receive exactly one shape-specific `.swiftlint.yml`, then optional fragments may be merged on top.
 
+## Existing-Repo Alignment
+
+For `existing_structured_repo` runs:
+
+- treat an existing `.swiftlint.yml` as current repo state, not as a missing bootstrap file
+- compare it against the selected shape-specific snippet before proposing changes
+- preserve repo-specific rules unless the user explicitly wants canonical replacement
+- do not replace the file blindly just because the workspace shape is now known
+
 ## `SPM` SwiftLint
 
 The `SPM` SwiftLint snippet should stay package-oriented:

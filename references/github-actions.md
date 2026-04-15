@@ -30,6 +30,15 @@ Keep these guardrails aligned across:
 - native `Xcode` build and test
 - `Xcode + Tuist` build and test
 
+## Existing-Repo Alignment
+
+For `existing_structured_repo` runs:
+
+- treat existing workflow files as current repo state, not missing bootstrap outputs
+- compare the existing workflow against the selected canonical snippet before proposing changes
+- preserve repo-specific jobs, triggers, or environment details unless the user explicitly wants canonical replacement
+- replace or rewrite workflow files only after explicit confirmation
+
 ## `gitlint` Workflow
 
 The `gitlint` workflow should:

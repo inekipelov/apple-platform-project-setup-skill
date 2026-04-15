@@ -6,6 +6,8 @@ Run this interview before generating the repo-specific `AGENTS.md`.
 
 Collect the information needed to decide:
 
+- whether this is a `greenfield` or `existing_structured_repo` run
+- whether current repo structure already reveals the workspace choice
 - `SPM` vs `Xcode`
 - if `Xcode`, `native xcodeproj` vs `Tuist-generated`
 - which `Agent Personalization` profile applies
@@ -18,18 +20,42 @@ Collect the information needed to decide:
 - whether the repo should carry a project `.codex/config.toml`
 - whether the repo should enable official multi-agent runtime in project `.codex/config.toml`
 - which MCP integrations are useful
+- which parts of an existing repo should be standardized now
 - which exact personalization lines and repo rules belong in `AGENTS.md`
 
 ## Required Questions
 
 Ask about these topics in order.
 
-### 1. Project Purpose
+### 1. Repository State Discovery
+
+Before asking for new setup choices, inspect the repository and classify it:
+
+- `greenfield`
+- `existing_structured_repo`
+
+Use structural signals such as:
+
+- `Package.swift`
+- `*.xcodeproj`
+- `*.xcworkspace`
+- `Project.swift`
+- `Tuist.swift`
+- `.gitignore`
+- `.swiftlint.yml`
+- `.gitlint`
+- `.github/workflows/`
+- `.codex/config.toml`
+- `AGENTS.md`
+
+If the repo is already structured, start the interview by confirming detected choices instead of asking from a blank slate.
+
+### 2. Project Purpose
 
 - What is this project for?
 - Is it an app, library, package, CLI, internal tool, template, or mixed workspace?
 
-### 2. Apple Platform Targets
+### 3. Apple Platform Targets
 
 - iOS
 - macOS
@@ -38,14 +64,19 @@ Ask about these topics in order.
 - visionOS
 - multi-platform
 
-### 3. Workspace Shape
+### 4. Workspace Shape
 
 - package-first
 - app-first
 - mixed app plus packages
 - Xcode-managed assets or schemes required?
 
-### 4. Xcode Project Strategy
+For `existing_structured_repo`:
+
+- first confirm the detected workspace shape
+- do not re-choose `SPM` vs `Xcode` from defaults when the repo already makes that clear
+
+### 5. Xcode Project Strategy
 
 Ask this only after `Xcode` is the likely workspace choice.
 
@@ -55,7 +86,12 @@ Ask this only after `Xcode` is the likely workspace choice.
 - does the team want declarative manifests as the project source of truth?
 - if `Tuist` is chosen, should the repo pin the version with `mise`, or is a simple local CLI install enough?
 
-### 5. Priority Technologies
+For `existing_structured_repo`:
+
+- if the repo already uses `Tuist`, confirm that `Tuist` remains the source of truth unless the user explicitly wants migration
+- if the repo already uses native `xcodeproj`, confirm that native remains the source of truth unless the user explicitly wants migration
+
+### 6. Priority Technologies
 
 - SwiftUI
 - UIKit
@@ -68,7 +104,7 @@ Ask this only after `Xcode` is the likely workspace choice.
 - automation and CI tools
 - typed SF Symbols via `SFSafeSymbols`
 
-### 6. Repository and Team Policy
+### 7. Repository and Team Policy
 
 - commit convention
 - branch strategy
@@ -76,8 +112,9 @@ Ask this only after `Xcode` is the likely workspace choice.
 - review expectations
 - release workflow
 - dependency policy
+- for existing repos, which areas should be aligned now: config, agents, lint, CI, or targeted fixes only
 
-### 7. Agent Personalization
+### 8. Agent Personalization
 
 - which communication language should be fixed in `AGENTS.md`?
 - should the agent challenge hacks, security weaknesses, and long-term technical debt?
@@ -94,7 +131,7 @@ If the user gives no other explicit personalization answers:
 
 - keep the strict-quality baseline for the other five personalization lines
 
-### 8. Optional Tooling
+### 9. Optional Tooling
 
 - GitHub Actions required?
 - `gitlint` required?
@@ -147,6 +184,9 @@ For the multi-agent branch, keep this order exact:
 
 After the interview, the skill should be able to produce:
 
+- `repo_state = greenfield | existing_structured_repo`
+- `detected_workspace_shape = spm | xcode | unknown`
+- `detected_xcode_project_strategy = native | tuist | unknown`
 - one workspace choice: `SPM` or `Xcode`
 - if the workspace is `Xcode`, one Xcode project strategy: `native` or `tuist`
 - the top 1-3 skill categories that matter for this project
@@ -163,6 +203,7 @@ After the interview, the skill should be able to produce:
 - whether the multi-agent runtime should use the repository baseline config
 - whether project-local subagents are desired
 - whether project-local subagent selection was requested directly or as a follow-up to multi-agent runtime activation
+- `standardization_scope = full_bootstrap | config_only | agents_only | lint_only | ci_only | targeted_alignment`
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired
 - whether `SFSafeSymbols` should be added and whether the SF Symbols SwiftLint rule should exist
@@ -177,3 +218,10 @@ Use these exact internal decision outputs for the multi-agent branch:
 - `multi_agent_runtime_config = { features.multi_agent: true, agents.max_threads: 3, agents.max_depth: 2, agents.job_max_runtime_seconds: 900 } | none`
 - `project_local_subagents_desired = true | false`
 - `subagent_flow_trigger = direct | after_multi_agent_runtime | none`
+
+Use these exact internal decision outputs for repo-state handling:
+
+- `repo_state = greenfield | existing_structured_repo`
+- `detected_workspace_shape = spm | xcode | unknown`
+- `detected_xcode_project_strategy = native | tuist | unknown`
+- `standardization_scope = full_bootstrap | config_only | agents_only | lint_only | ci_only | targeted_alignment`
