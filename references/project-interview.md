@@ -16,6 +16,7 @@ Collect the information needed to decide:
 - which subagents are worth copying
 - which skill and subagent should be recommended first
 - whether the repo should carry a project `.codex/config.toml`
+- whether the repo should enable official multi-agent runtime in project `.codex/config.toml`
 - which MCP integrations are useful
 - which exact personalization lines and repo rules belong in `AGENTS.md`
 
@@ -101,10 +102,20 @@ If the user gives no other explicit personalization answers:
 - Apple docs lookup via `sosumi` desired?
 - configure a project `.codex/config.toml`?
 - if `.codex/config.toml` is desired, use the standard `setup` / `review` / `release` profile set?
+- if `.codex/config.toml` is desired, enable official multi-agent runtime with the baseline `features.multi_agent` and `agents.*` keys?
+- if multi-agent runtime is enabled, continue into the project-local subagent selection flow?
 - use `sosumi` via remote HTTP MCP?
 - use `xcode` MCP via `xcrun mcpbridge`? Only ask this if the workspace shape is likely `Xcode`.
-- project-local subagents desired?
+- if multi-agent runtime is not enabled, are project-local subagents still desired directly?
 - should the project add `SFSafeSymbols` and enforce typed SF Symbols?
+
+For the multi-agent branch, keep this order exact:
+
+1. ask whether the repo should carry `.codex/config.toml`
+2. if yes, ask whether the standard `setup` / `review` / `release` profiles should be used
+3. if yes or the repo still wants project config, ask whether official multi-agent runtime should be enabled
+4. if multi-agent runtime is enabled, record the runtime baseline and then ask separately whether to continue into the project-local subagent flow
+5. if multi-agent runtime is not enabled, ask separately whether project-local subagents are still desired directly
 
 ## Decision Rules
 
@@ -148,9 +159,21 @@ After the interview, the skill should be able to produce:
 - which `Xcode` snippet set applies when the workspace is `Xcode`
 - whether the repo should carry `.codex/config.toml`
 - whether the standard `setup` / `review` / `release` `.codex/config.toml` profiles should be used
+- whether official multi-agent runtime should be enabled in `.codex/config.toml`
+- whether the multi-agent runtime should use the repository baseline config
+- whether project-local subagents are desired
+- whether project-local subagent selection was requested directly or as a follow-up to multi-agent runtime activation
 - whether `sosumi` MCP should be configured
 - whether `xcode` MCP is allowed and desired
 - whether `SFSafeSymbols` should be added and whether the SF Symbols SwiftLint rule should exist
 - the exact command set that must appear in `Core Commands`
 - the exact repository rules that must appear in `Repository Rules`
 - the final inputs needed to generate a declarative `AGENTS.md`
+
+Use these exact internal decision outputs for the multi-agent branch:
+
+- `multi_agent_runtime_enabled = true | false`
+- `multi_agent_runtime_config_mode = baseline | none`
+- `multi_agent_runtime_config = { features.multi_agent: true, agents.max_threads: 3, agents.max_depth: 2, agents.job_max_runtime_seconds: 900 } | none`
+- `project_local_subagents_desired = true | false`
+- `subagent_flow_trigger = direct | after_multi_agent_runtime | none`

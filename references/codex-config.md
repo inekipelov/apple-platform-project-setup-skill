@@ -9,7 +9,7 @@ Per the official Codex config reference:
 - user-level config lives in `~/.codex/config.toml`
 - project-scoped overrides live in `.codex/config.toml`
 - project-scoped config loads only when the project is trusted
-- valid keys include `skills.config`, `developer_instructions`, `model_instructions_file`, and `mcp_servers.*`
+- valid keys include `skills.config`, `developer_instructions`, `model_instructions_file`, `features.multi_agent`, `agents.*`, and `mcp_servers.*`
 
 Reference:
 
@@ -61,6 +61,43 @@ Use this profile set as follows:
 - `review`: deeper contract, code, or documentation review with higher reasoning effort
 - `release`: release preparation and final verification with live web search enabled for up-to-date release and docs checks
 
+Keep these profiles separate from multi-agent runtime:
+
+- `profiles.*` define repo-local operating modes
+- `features.multi_agent` and `agents.*` define optional orchestration capability
+- enabling one does not implicitly require the other
+
+## Optional Multi-Agent Runtime
+
+If the interview says the repository should enable official multi-agent runtime, extend the project config with this exact baseline:
+
+```toml
+[features]
+multi_agent = true
+
+[agents]
+max_threads = 3
+max_depth = 2
+job_max_runtime_seconds = 900
+```
+
+Use this baseline as follows:
+
+- `features.multi_agent = true` enables the official multi-agent collaboration tools.
+- `agents.max_threads = 3` keeps concurrency conservative for repo-local work.
+- `agents.max_depth = 2` permits coordination without encouraging deep nesting.
+- `agents.job_max_runtime_seconds = 900` sets a bounded worker timeout for delegated work.
+
+Keep this layer separate from project-local subagent installation:
+
+- multi-agent runtime config belongs in `.codex/config.toml`
+- installed subagent files belong in `.codex/agents/`
+- enabling runtime config does not install subagents automatically
+- installing project-local subagents does not enable runtime config automatically
+- project-local subagents may still be selected directly even when runtime config stays disabled
+
+Do not add `agents.<name>.*` to the baseline. Treat named agent-role config as advanced-only.
+
 ## Optional Thin Wrapper
 
 If the project wants an always-on routing reminder, add:
@@ -87,6 +124,9 @@ Use this only as an explicit alternative to inline wrapper text.
 
 These keys are useful, but they are not part of the baseline default:
 
+- `agents.<name>.config_file`
+- `agents.<name>.description`
+- `agents.<name>.nickname_candidates`
 - `mcp_servers.<id>.enabled_tools`
 - `mcp_servers.<id>.disabled_tools`
 - `mcp_servers.<id>.required`
@@ -112,6 +152,7 @@ Do not add these to the default project config for this skill:
 
 - Do not invent config keys outside the official Codex config reference.
 - Do not assume project config loads in untrusted projects.
+- Do not treat `features.multi_agent` or `agents.*` as a replacement for installed project-local subagents.
 - Do not put the full skill body into `developer_instructions`.
 - Do not treat `model_instructions_file` as required when `AGENTS.md` or a thin wrapper is enough.
 - Do not replace the standard `setup`, `review`, and `release` profiles with ad-hoc names unless the repo has a strong reason to diverge.

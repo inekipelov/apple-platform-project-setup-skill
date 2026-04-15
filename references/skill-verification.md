@@ -48,6 +48,11 @@ Because the repository had no workflow contract, each planned failure mode was e
 30. Auto-generated GitHub Release notes could be left uncategorized because the repo has no release-note label taxonomy.
 31. The `.codex/config.toml` guidance could omit the standard `setup`, `review`, and `release` profiles or recommend unsupported baseline keys.
 32. Advanced config knobs such as MCP tool filtering, named permissions profiles, or telemetry could be treated as baseline defaults instead of optional hardening.
+33. An agent could confuse official multi-agent runtime config in `.codex/config.toml` with installed project-local subagents in `.codex/agents/`.
+34. An agent could enable multi-agent runtime and silently install subagents without a second explicit decision.
+35. An agent could install project-local subagents and silently mutate `.codex/config.toml` to enable multi-agent runtime.
+36. The interview could enable multi-agent runtime without recording whether project-local subagents were requested directly or only as a follow-up.
+37. The config contract could blur profile operating modes and multi-agent runtime into one undifferentiated settings layer.
 
 ## GREEN Verification Targets
 
@@ -90,6 +95,11 @@ After the repo contract is present, verify that:
 35. `.github/release.yml` groups auto-generated release notes by the repo label taxonomy.
 36. `.codex/config.toml` guidance recommends the standard `setup`, `review`, and `release` profiles using only official config keys.
 37. Advanced config knobs are documented as optional hardening, and `VERSION`, `CHANGELOG.md`, `review_model`, custom providers, provider auth, and telemetry are not recommended by default.
+38. The interview can explicitly enable official multi-agent runtime and records whether the baseline runtime config should be used.
+39. Multi-agent runtime guidance uses only official `features.multi_agent`, `agents.max_threads`, `agents.max_depth`, and `agents.job_max_runtime_seconds` keys.
+40. Runtime multi-agent config and installed project-local subagents are documented as separate layers with no implicit auto-conversion between them.
+41. The interview records `project_local_subagents_desired` and `subagent_flow_trigger` so direct subagent selection and follow-up subagent selection are distinguishable.
+42. The config contract explicitly documents `profiles.*` as operating modes and multi-agent runtime as a separate optional capability layer.
 
 ## REFACTOR Watchlist
 
@@ -122,5 +132,9 @@ Look for these rationalizations in future revisions:
 - "The repo needs a `VERSION` file or `CHANGELOG.md` to have a real release process."
 - "Auto-generated GitHub Release notes are good enough without label categories."
 - "We should recommend provider config, telemetry, and review-model overrides in the baseline `.codex/config.toml`."
+- "If multi-agent runtime is enabled, the repo obviously wants project-local subagents too."
+- "If project-local subagents are installed, I should also enable `features.multi_agent` while I'm there."
+- "Once multi-agent runtime is enabled, it is unnecessary to record whether subagent selection was a follow-up or a direct choice."
+- "The profile set and multi-agent settings are all just config knobs, so separating their roles is unnecessary."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.

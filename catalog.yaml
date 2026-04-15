@@ -107,9 +107,31 @@ artifacts:
         - setup
         - review
         - release
+      role_boundary:
+        profiles: operating_modes
+        multi_agent_runtime: optional_orchestration_capability
+      optional_multi_agent_runtime_keys:
+        - features.multi_agent
+        - agents.max_threads
+        - agents.max_depth
+        - agents.job_max_runtime_seconds
+      recommended_multi_agent_runtime_baseline:
+        features.multi_agent: true
+        agents.max_threads: 3
+        agents.max_depth: 2
+        agents.job_max_runtime_seconds: 900
+      multi_agent_runtime_decision_outputs:
+        - multi_agent_runtime_enabled
+        - multi_agent_runtime_config_mode
+        - multi_agent_runtime_config
+        - project_local_subagents_desired
+        - subagent_flow_trigger
       review_release_extra_keys:
         - plan_mode_reasoning_effort
       optional_hardening_keys:
+        - agents.<name>.config_file
+        - agents.<name>.description
+        - agents.<name>.nickname_candidates
         - mcp_servers.<id>.enabled_tools
         - mcp_servers.<id>.disabled_tools
         - mcp_servers.<id>.required
@@ -130,6 +152,11 @@ artifacts:
       - Register the local skill with `[[skills.config]]`.
       - Prefer `profile = "setup"` plus the standard `setup`, `review`, and `release` profiles when the repo wants project-local Codex operating modes.
       - Use only official config keys such as `personality`, `approval_policy`, `sandbox_mode`, `web_search`, `model_reasoning_effort`, and `plan_mode_reasoning_effort` in that baseline.
+      - If the interview enables official multi-agent runtime, add the exact baseline `features.multi_agent = true`, `agents.max_threads = 3`, `agents.max_depth = 2`, and `agents.job_max_runtime_seconds = 900`.
+      - Keep `setup`, `review`, and `release` as operating modes and keep multi-agent runtime as a separate optional capability layer.
+      - Treat `features.multi_agent` and `agents.*` as runtime orchestration config, not as installed subagents.
+      - If multi-agent runtime is enabled, the skill may continue into project-local subagent selection only after a second explicit interview decision.
+      - If multi-agent runtime stays disabled, project-local subagents may still be selected directly through the existing subagent flow.
       - Use `developer_instructions` only as a thin wrapper, not as a replacement for the skill itself.
       - Use `model_instructions_file` only as an explicit alternative when the repo wants a dedicated instructions file.
       - Keep hardening knobs such as MCP tool filtering, named permissions profiles, notifications, and shell environment policy optional.

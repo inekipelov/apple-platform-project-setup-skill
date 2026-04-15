@@ -17,6 +17,7 @@ These sources decide:
 - which fields a custom agent file must define
 - how project-level guidance is discovered
 - which `config.toml` keys are valid for project config and MCP setup
+- which `config.toml` keys are valid for official multi-agent runtime
 
 ## 2. Official `obra/superpowers` Installation
 
@@ -143,6 +144,8 @@ Do not invent overwrite or merge behavior outside this contract.
 - Never duplicate commands in `Repository Rules`.
 - Never use first-person wording or the word `Report` in generated `AGENTS.md`.
 - Never invent `config.toml` keys or MCP server fields outside the official Codex config reference.
+- Never treat official multi-agent runtime config in `.codex/config.toml` as the same thing as installed project-local subagents in `.codex/agents/`.
+- Never collapse profile operating modes and multi-agent runtime into one undifferentiated config layer.
 - Never configure `xcode` MCP for an `spm` workspace in this skill.
 - Never require the `sosumi` CLI when remote HTTP MCP is already available.
 - Never treat `Tuist` as a third workspace shape in this repository.

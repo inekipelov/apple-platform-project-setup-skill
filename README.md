@@ -2,7 +2,7 @@
 
 Codex-first skill for bootstrapping Apple workspaces.
 
-It does not ship a project template. It orchestrates setup: checks the baseline workflow, interviews the user, chooses `SPM` or `Xcode`, optionally chooses `native xcodeproj` or `Tuist-generated` inside the `Xcode` path, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
+It does not ship a project template. It orchestrates setup: checks the baseline workflow, interviews the user, chooses `SPM` or `Xcode`, optionally chooses `native xcodeproj` or `Tuist-generated` inside the `Xcode` path, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, can enable official multi-agent runtime in `.codex/config.toml`, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
 
 ## Install
 
@@ -74,7 +74,7 @@ Do not configure `xcode` MCP for `spm` workspaces in this repo contract.
 
 It starts with `obra/superpowers`. If that baseline is missing, the skill stops and asks for confirmation before any user-level install or home-directory change.
 
-Once the baseline is available, the skill interviews the user about project purpose, agent personalization, Apple platforms, UI stack, CI needs, repository policy, project config, and MCP needs. Only then does it choose `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default and offers an optional `Tuist-generated` path for app-first repositories that want declarative manifests and generated projects. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
+Once the baseline is available, the skill interviews the user about project purpose, agent personalization, Apple platforms, UI stack, CI needs, repository policy, project config, multi-agent runtime needs, and MCP needs. It can enable official multi-agent runtime in `.codex/config.toml`, but it treats that as a config-layer decision and then asks separately whether to continue into project-local subagent selection. If runtime stays disabled, project-local subagents can still be selected directly. Only then does it choose `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default and offers an optional `Tuist-generated` path for app-first repositories that want declarative manifests and generated projects. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
 
 After the selection is confirmed, the skill installs or copies only the chosen items, applies the repo snippets, and generates the repo-specific `AGENTS.md` from the bootstrap snippet.
 
@@ -88,6 +88,10 @@ After the selection is confirmed, the skill installs or copies only the chosen i
 - Project-local skills live under `.codex/skills/`; project-local subagents live under `.codex/agents/`.
 - Prefer project `.codex/config.toml` for repo-local Codex setup.
 - When the repo carries project-local Codex config, prefer the standard `setup`, `review`, and `release` profiles with `setup` as the default profile.
+- Official multi-agent runtime is an optional `.codex/config.toml` layer using `features.multi_agent` and `agents.*`.
+- `setup`, `review`, and `release` stay operating modes; official multi-agent runtime stays a separate optional capability layer.
+- Runtime multi-agent config and installed project-local subagents are separate layers.
+- Enabling runtime multi-agent config triggers a second explicit decision about project-local subagents; direct subagent selection remains possible without runtime config.
 - `sosumi` HTTP MCP is preferred over the `sosumi` CLI.
 - `xcode` MCP is allowed only for `xcode` workspaces in this skill.
 - `Tuist` is an optional `Xcode` sub-mode, not a third workspace shape.

@@ -18,6 +18,23 @@ Default storage locations:
 
 For this skill, prefer `.codex/agents/` unless the user explicitly asks for global agents.
 
+## Boundary With Multi-Agent Runtime
+
+Treat installed subagents and multi-agent runtime as different layers:
+
+- runtime multi-agent config belongs in `.codex/config.toml`
+- installed subagent files belong in `.codex/agents/`
+- enabling `features.multi_agent` or `agents.*` does not install subagents automatically
+- copying project-local subagents does not enable runtime config automatically
+
+If the interview enables multi-agent runtime first, the skill may then ask whether to continue into subagent selection. Keep that as a second explicit decision.
+
+Use these exact interpretations:
+
+- `subagent_flow_trigger = after_multi_agent_runtime` when the user entered subagent selection only after enabling runtime config
+- `subagent_flow_trigger = direct` when the user wants project-local subagents without enabling runtime config first
+- `subagent_flow_trigger = none` when the repo does not want project-local subagents
+
 ## Community Source
 
 Curated external source:

@@ -76,6 +76,7 @@ Never reorder these steps.
 | Skill install preference | `skills.sh` first, upstream instructions second |
 | Subagent install location | `.codex/agents/` by default |
 | Project config | prefer project `.codex/config.toml` for skill registration, optional wrappers, and the standard `setup` / `review` / `release` profile set |
+| Multi-agent runtime | optional `.codex/config.toml` layer using official `features.multi_agent` and `agents.*` keys |
 | Sosumi integration | prefer HTTP MCP; CLI is optional |
 | Xcode MCP policy | only for `xcode` workspaces, never for `spm` |
 | Xcode strategy | after `Xcode` is chosen, default to native `xcodeproj` unless `Tuist` is explicitly selected or clearly justified |
@@ -111,6 +112,9 @@ Never reorder these steps.
   - typed SF Symbols policy
   - testing and CI expectations
   - project `.codex/config.toml` expectations
+  - whether official multi-agent runtime should be enabled in project `.codex/config.toml`
+  - whether multi-agent runtime should use the repository baseline config
+  - whether project-local subagents are desired directly or as a follow-up to multi-agent runtime activation
   - optional MCP integrations
   - policy constraints
 
@@ -195,6 +199,18 @@ If a required tool is missing:
   - `release` should keep the same approval and sandbox policy, use live web search, and keep reasoning and plan-mode reasoning effort high
 - Use `developer_instructions` only as a thin wrapper when the repo wants a short always-on reminder.
 - Use `model_instructions_file` only as an explicit alternative when the repo wants a dedicated instruction file instead of relying on `AGENTS.md`.
+- If the interview enables official multi-agent runtime, add the exact baseline:
+  - `[features] multi_agent = true`
+  - `[agents] max_threads = 3`
+  - `[agents] max_depth = 2`
+  - `[agents] job_max_runtime_seconds = 900`
+- Treat multi-agent runtime as a config capability layer, not as a replacement for project-local subagents.
+- Treat the standard `setup`, `review`, and `release` profiles as operating modes and keep them separate from `features.multi_agent` and `agents.*`.
+- If multi-agent runtime is enabled, ask whether to continue into the existing project-local subagent selection flow.
+- Record `subagent_flow_trigger = after_multi_agent_runtime` only when that second interview decision is yes.
+- If multi-agent runtime stays disabled and the user still wants project-local subagents, record `project_local_subagents_desired = true` and `subagent_flow_trigger = direct`.
+- Do not auto-install project-local subagents just because multi-agent runtime was enabled.
+- Do not auto-enable multi-agent runtime just because the user wants project-local subagents.
 - Treat `review_model`, custom model providers, provider auth config, telemetry, analytics, `VERSION`, and `CHANGELOG.md` as non-default choices. Do not recommend them in the baseline project config.
 - Prefer `sosumi` over HTTP MCP when Apple docs lookup is desired and the client supports remote MCP servers.
 - Treat the `sosumi` CLI as optional. Do not require a global CLI install when HTTP MCP already solves the need.
