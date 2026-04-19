@@ -1,0 +1,19 @@
+[general]
+ignore=body-is-missing,body-min-length
+ignore-merge-commits=true
+ignore-revert-commits=true
+
+[title-max-length]
+line-length=72
+
+[body-max-line-length]
+line-length=100
+
+[title-match-regex]
+regex=^(feat|fix|docs|refactor|test|chore|build|ci|revert)\((readme|skill|catalog|inventory|agents|interview|personalization|subagents|skills|swiftlint|gitlint|workflows|mcp|xcode|xcodegen|spm|release|verification|references|snippets|repo)\)!?: [^ ].+[^ .]$
+
+[title-min-length]
+min-length=10
+
+[title-must-not-contain-word]
+words=wip

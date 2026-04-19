@@ -30,5 +30,6 @@ npx skills add https://github.com/inekipelov/apple-platform-project-setup-skill 
 ## Notes
 
 - Project-local install path: `.codex/skills/apple-platform-project-setup-skill`
+- This repository enforces `type(scope): summary` commits with mandatory repo-specific scopes via root `.gitlint`
 - Advanced config and MCP guidance: [codex-config.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/codex-config.md), [mcp-setup.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/mcp-setup.md)
 - Maintainer release contract: [release-management.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/release-management.md)

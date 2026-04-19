@@ -1,0 +1,50 @@
+name: Gitlint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitlint-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  gitlint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install gitlint
+        run: pip install gitlint
+
+      - name: Lint pushed or proposed commits
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            gitlint --config .gitlint --commits "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+            exit 0
+          fi
+
+          if [[ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]]; then
+            gitlint --config .gitlint --commit "${{ github.sha }}"
+            exit 0
+          fi
+
+          gitlint --config .gitlint --commits "${{ github.event.before }}..${{ github.sha }}"
