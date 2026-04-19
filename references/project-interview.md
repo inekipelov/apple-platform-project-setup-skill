@@ -6,6 +6,7 @@ Run this interview before generating the repo-specific `AGENTS.md`.
 
 Collect the information needed to decide:
 
+- which plugins, project-local skills, project-local subagents, and MCP servers are already available
 - whether this is a `greenfield` or `existing_structured_repo` run
 - whether current repo structure already reveals the workspace choice
 - `SPM` vs `Xcode`
@@ -16,7 +17,7 @@ Collect the information needed to decide:
 - which subagent categories are relevant
 - which concrete skills are worth installing
 - which subagents are worth copying
-- which skill and subagent should be recommended first
+- which ordered skill instructions should appear in final `AGENTS.md`
 - whether the repo should carry a project `.codex/config.toml`
 - whether the repo should enable official multi-agent runtime in project `.codex/config.toml`
 - which MCP integrations are useful
@@ -27,7 +28,23 @@ Collect the information needed to decide:
 
 Ask about these topics in order.
 
-### 1. Repository State Discovery
+### 1. Capability Discovery And Repository State
+
+Before asking for new setup choices, inspect the current Codex and repo-local capability surface:
+
+- plugin-provided skills already available in the current session
+- project-local skills under `.codex/skills/`
+- project-local subagents under `.codex/agents/`
+- configured MCP servers in `.codex/config.toml`, when present
+
+Record:
+
+- `discovered_plugins`
+- `discovered_project_local_skills`
+- `discovered_project_local_subagents`
+- `discovered_mcp_servers`
+
+Treat Superpowers as a plugin capability surface, not as a skill install target.
 
 Before asking for new setup choices, inspect the repository and classify it:
 
@@ -183,6 +200,10 @@ For the multi-agent branch, keep this order exact:
 
 After the interview, the skill should be able to produce:
 
+- `discovered_plugins`
+- `discovered_project_local_skills`
+- `discovered_project_local_subagents`
+- `discovered_mcp_servers`
 - `repo_state = greenfield | existing_structured_repo`
 - `detected_workspace_shape = spm | xcode | unknown`
 - `detected_xcode_project_strategy = native | xcodegen | unknown`
@@ -192,6 +213,7 @@ After the interview, the skill should be able to produce:
 - the top 1-3 subagent categories that matter for this project
 - the final selected skills to install, if any
 - the final selected subagents to copy, if any
+- the ordered skill instructions that should appear in `Skill Usage Order`
 - the final `Agent Personalization` lines
 - the common snippets to apply
 - which workspace-specific `SwiftLint` snippet applies

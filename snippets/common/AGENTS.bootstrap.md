@@ -10,6 +10,7 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 - Use `$writing-skills` when drafting or restructuring future versions of this file.
 - Do not install global tools or modify user-home directories without explicit confirmation.
 - Prefer project-local skills and project-local subagents unless the user explicitly wants global setup.
+- Discover already available plugins, project-local skills, project-local subagents, and configured MCP before deciding what is missing.
 
 ## Reference Syntax
 
@@ -17,11 +18,13 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 - Reference subagents as `@agent-name`.
 - This file must describe only the final installed repo state.
 - Do not include recommendation prose, alternatives, rationale, or user-choice notes.
-- Every installed `$skill-name` or `@agent-name` must include a short rule that says when to apply it.
+- `Installed Skills` records project-local installation state.
+- `Skill Usage Order` records when and in what order skills should be used.
 
 ## Current Unknowns To Resolve
 
 - final project purpose
+- discovered plugins, project-local skills, project-local subagents, and MCP
 - agent personalization profile
 - target Apple platforms
 - `SPM` vs `Xcode`
@@ -85,6 +88,11 @@ Use these exact section titles in this exact order.
 - Exact line format for each installed skill: `- $skill-name: Use for <exact repository task>.`
 - If none were installed: `- None installed.`
 
+### Skill Usage Order
+
+- Exact line format for each ordered skill instruction: `- Step <n>: Use $skill-name when <exact repository situation>.`
+- If none are needed: `- None defined.`
+
 ### Installed Subagents
 
 - Exact line format for each installed subagent: `- @agent-name: Use for <exact repository task>.`
@@ -106,6 +114,7 @@ After the interview and after the selected skills and subagents are installed or
 - if `Xcode`, the chosen Xcode project strategy
 - core commands
 - installed project-local skills
+- ordered skill-usage instructions
 - installed project-local subagents
 - non-negotiable repo rules
 

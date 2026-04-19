@@ -55,6 +55,7 @@ Treat it as a catalog, not a bundle to install wholesale.
 
 ## Recommendation Rules
 
+- Discover existing project-local subagents in `.codex/agents/` before proposing any copy step.
 - Copy only selected `.toml` files.
 - Keep the set small and role-driven.
 - Skip subagents entirely when the repo is tiny or the user does not want them.
@@ -78,16 +79,17 @@ Treat it as a catalog, not a bundle to install wholesale.
 ## Installation Procedure
 
 1. Finish the interview.
-2. Determine the top 1-3 subagent categories that actually help this repo.
-3. Resolve one concrete candidate from [`../inventory/subagents.yaml`](../inventory/subagents.yaml) for each relevant category.
-4. Explain why each proposed subagent is useful.
-5. Choose one recommended best-fit subagent for each capability gap.
-6. Explain why that subagent is the strongest starting point for the current repository state.
-7. Move any other relevant candidates into conditional alternatives for client choice.
-8. If the inventory has no verified match for a category, stop at the source-catalog recommendation level and do not invent a subagent id.
-9. Let the user confirm or override the final subagent choice when multiple candidates are relevant.
-10. Copy only the chosen `.toml` files into `.codex/agents/`.
-11. Keep names and schemas aligned with the official Codex format.
+2. Discover which project-local subagents are already present in `.codex/agents/`.
+3. Determine the top 1-3 subagent categories that actually help this repo.
+4. Resolve one concrete candidate from [`../inventory/subagents.yaml`](../inventory/subagents.yaml) for each relevant category.
+5. Explain why each proposed subagent is useful.
+6. Choose one recommended best-fit subagent for each capability gap.
+7. Explain why that subagent is the strongest starting point for the current repository state.
+8. Move any other relevant candidates into conditional alternatives for client choice.
+9. If the inventory has no verified match for a category, stop at the source-catalog recommendation level and do not invent a subagent id.
+10. Let the user confirm or override the final subagent choice when multiple candidates are relevant.
+11. Copy only the chosen missing `.toml` files into `.codex/agents/`.
+12. Keep names and schemas aligned with the official Codex format.
 
 ## AGENTS.md Rendering Rule
 

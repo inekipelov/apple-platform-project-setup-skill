@@ -6,20 +6,21 @@ Concrete skill selection is inventory-backed. Use [`../inventory/skills.yaml`](.
 
 ## Selection Rules
 
-1. `obra/superpowers` is mandatory baseline and always comes first.
-2. Prefer `skills.sh` installation commands when the chosen source supports them.
-3. Treat every external skills source as a multi-skill catalog unless the source explicitly proves otherwise.
-4. Recommend the smallest relevant set of skills.
-5. Choose a capability category before choosing a concrete skill.
-6. Do not install every skill from a relevant catalog.
-7. Do not install skills before the project interview.
-8. Prefer project-local install under `.codex/skills/` when the installer supports it.
-9. If the installer only supports user-level install, explain that limitation and ask before proceeding.
-10. In generated `AGENTS.md`, render skills as `$skill-name`.
-11. Final selection happens before `AGENTS.md` is generated.
-12. In `AGENTS.md`, list only installed project-local skills.
-13. Every installed `$skill-name` must include a short “when to use” rule.
-14. If no verified concrete entry exists for a category, do not invent one. Keep the source catalog as a fallback recommendation path.
+1. Discover the current plugin, project-local skill, and project-local subagent surface before proposing any skill install.
+2. Treat Superpowers as a plugin capability surface, not as a skill install target.
+3. Prefer `skills.sh` installation commands when the chosen source supports them.
+4. Treat every external skills source as a multi-skill catalog unless the source explicitly proves otherwise.
+5. Recommend the smallest relevant set of missing skills.
+6. Choose a capability category before choosing a concrete skill.
+7. Do not install every skill from a relevant catalog.
+8. Do not install skills before the project interview.
+9. Prefer project-local install under `.codex/skills/` when the installer supports it.
+10. If the installer only supports user-level install, explain that limitation and ask before proceeding.
+11. In generated `AGENTS.md`, render skills as `$skill-name`.
+12. Final selection happens before `AGENTS.md` is generated.
+13. In `AGENTS.md`, list only installed project-local skills under `Installed Skills`.
+14. Put skill timing and order only under `Skill Usage Order`.
+15. If no verified concrete entry exists for a category, do not invent one. Keep the source catalog as a fallback recommendation path.
 
 ## Capability Categories
 
@@ -40,7 +41,6 @@ Use categories to decide which part of a catalog matters before you look for a c
 
 | Source | Prefer When | Install Preference | Notes |
 |---|---|---|---|
-| `obra/superpowers` | Every setup run | Official install flow | Baseline prerequisite |
 | `skills.sh/twostraws` | SwiftUI, Apple UI, app architecture, Apple platform patterns | `skills.sh` | Prefer this before manual repo fallback |
 | `skills.sh/avdlee` | Swift engineering, UI, tooling, testing, architecture | `skills.sh` | Apple-focused catalog |
 | `skills.sh/dimillian/skills` | GitHub automation, repo automation, package-oriented workflow helpers | `skills.sh` | Useful after CI or repo automation needs are known |
@@ -58,18 +58,19 @@ Interpret each source row above as a catalog, not as one skill.
 ## Runtime Procedure
 
 1. Finish the project interview.
-2. Determine the top 1-3 capability categories or gaps.
-3. Map each category to a skill source catalog.
-4. Resolve one concrete candidate from [`../inventory/skills.yaml`](../inventory/skills.yaml) for that source and category.
-5. For each capability category, choose one recommended best-fit skill.
-6. Explain why that skill is the strongest starting point for the current repository state.
-7. If the same source exposes multiple relevant skills in that category, keep the strongest fit as the recommendation and move the rest into conditional alternatives.
-8. If the inventory has no verified match for a category, stop at the source-catalog recommendation level and do not invent a skill id.
-9. Let the user confirm or override the final skill choice when multiple candidates are relevant.
-10. For each selected skill:
+2. Compare the interview result against the discovered capability surface.
+3. Determine the top 1-3 capability categories or gaps that are still missing.
+4. Map each missing category to a skill source catalog.
+5. Resolve one concrete candidate from [`../inventory/skills.yaml`](../inventory/skills.yaml) for that source and category.
+6. For each missing capability category, choose one recommended best-fit skill.
+7. Explain why that skill is the strongest starting point for the current repository state.
+8. If the same source exposes multiple relevant skills in that category, keep the strongest fit as the recommendation and move the rest into conditional alternatives.
+9. If the inventory has no verified match for a category, stop at the source-catalog recommendation level and do not invent a skill id.
+10. Let the user confirm or override the final skill choice when multiple candidates are relevant.
+11. For each selected missing skill:
    - prefer the exact `npx skills add ...` command when available
    - otherwise use the upstream installation method
-11. Summarize proposed installs before executing them.
+12. Summarize proposed installs before executing them.
 
 ## AGENTS.md Rendering Rule
 
@@ -80,6 +81,9 @@ When this skill generates or refines `AGENTS.md` after the selected skills are i
 - list only installed project-local skills
 - use the exact line format `- $skill-name: Use for <exact repository task>.`
 - if no project-local skills were installed, use the exact line `- None installed.`
+- use the section title `Skill Usage Order` for ordered skill instructions
+- use the exact line format `- Step <n>: Use $skill-name when <exact repository situation>.`
+- plugin-provided skills may appear in `Skill Usage Order` when they are part of the intended workflow
 - do not include recommendation prose, alternatives, rationale, or user-choice notes
 - do not mention skills that were considered but not installed
 

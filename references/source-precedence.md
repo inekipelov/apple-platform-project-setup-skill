@@ -25,18 +25,26 @@ Local repository state also matters once the skill is already running inside a s
 - discovered workspace shape and project strategy should override bootstrap defaults unless the user explicitly asks to migrate
 - existing local files should be compared and confirmed, not blindly replaced
 
-## 2. Official `obra/superpowers` Installation
+## 2. Current Codex Environment And Repo-Local Capability Surface
 
-Use the official `obra/superpowers` install instructions before any other workspace setup:
+Inspect the current environment before proposing installs:
 
-- Repository: <https://github.com/obra/superpowers>
-- Codex install instructions: <https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md>
+- plugin-provided skills already available in the current session
+- project-local skills in `.codex/skills/`
+- project-local subagents in `.codex/agents/`
+- configured MCP servers in `.codex/config.toml`
 
 This source decides:
 
-- clone location
-- symlink location
-- update path
+- which workflow capabilities are already available
+- which project-local skills are already installed
+- which project-local subagents are already installed
+- which MCP integrations are already configured
+
+For this repository:
+
+- Superpowers is treated as a Codex plugin capability surface
+- `obra/superpowers` is not a project-local skill install target
 
 ## 3. `skills.sh` Installation Commands
 
@@ -100,7 +108,7 @@ They may influence:
 They must not override:
 
 - official Codex paths
-- official `superpowers` installation
+- discovered current environment capabilities
 - repo-local snippets
 - explicit user preferences
 
@@ -119,6 +127,7 @@ After precedence is resolved:
 - keep the final decision with the user
 - if the inventory is not seeded for that category yet, stop at the source-catalog recommendation level instead of inventing an id
 - after the user confirms the final selection, write only that final installed state into `AGENTS.md`
+- write skill timing and order only under the fixed `Skill Usage Order` section in `AGENTS.md`
 
 ## Artifact Apply Contract
 
@@ -138,6 +147,7 @@ Do not invent overwrite or merge behavior outside this contract.
 - Never invent skill names or custom agent names.
 - Never infer `skills.sh` support without checking a source entry.
 - Never auto-install global tools or make user-home changes.
+- Never try to install `obra/superpowers` as a project-local skill.
 - Prefer repo-local snippets for file content once the project shape is known.
 - Never treat a relevant source link as permission to install the whole catalog.
 - Never list multiple skills or subagents as equal defaults for the same capability gap.

@@ -1,10 +1,10 @@
 # Apple Platform Project Setup Skill
 
-[![ChatGPT](https://custom-icon-badges.demolab.com/badge/Codex-74aa9c?logo=openai&logoColor=white)]()
+[![ChatGPT](https://custom-icon-badges.demolab.com/badge/Codex-74aa9c?logo=openai&logoColor=black)]()
 
 Codex skill for bootstrapping and standardizing Apple workspaces.
 
-It interviews the user, detects existing repo structure, chooses or confirms `SPM` vs `Xcode`, supports native `xcodeproj` or `XcodeGen`-generated `xcodeproj`, configures `.codex/config.toml` and optional MCP, applies repo snippets, and generates final-state `AGENTS.md`.
+It discovers the current Codex capability surface, interviews the user, detects existing repo structure, chooses or confirms `SPM` vs `Xcode`, supports native `xcodeproj` or `XcodeGen`-generated `xcodeproj`, configures `.codex/config.toml` and optional MCP, applies repo snippets, and generates final-state `AGENTS.md`.
 
 ## Install
 
@@ -32,4 +32,4 @@ npx skills add https://github.com/inekipelov/apple-platform-project-setup-skill 
 - Project-local install path: `.codex/skills/apple-platform-project-setup-skill`
 - This repository enforces `type(scope): summary` commits with mandatory repo-specific scopes via root `.gitlint`
 - Advanced config and MCP guidance: [codex-config.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/codex-config.md), [mcp-setup.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/mcp-setup.md)
-- Maintainer release contract: [release-management.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/release-management.md)
+- Maintainer release contract: short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the changelog. See [release-management.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/release-management.md)

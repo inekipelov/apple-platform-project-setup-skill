@@ -34,20 +34,20 @@ runtime_modes:
       - standardization_scope
 
 artifacts:
-  - artifact: superpowers
+  - artifact: capability-discovery
     applies_to: common
     snippet_paths: []
-    prerequisites:
-      - git
-      - explicit_confirmation_for_user_home_changes
-    install_strategy: official_user_level_clone_and_symlink
+    prerequisites: []
+    install_strategy: inspect_current_codex_environment_and_project_local_capabilities
     upstream_sources:
-      - https://github.com/obra/superpowers
-      - https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md
+      - https://developers.openai.com/codex/skills
+      - https://developers.openai.com/codex/subagents#custom-agents
+      - https://developers.openai.com/codex/config-reference#configtoml
     selection_hints:
       - Mandatory first step for every workspace setup run.
-      - Stop after proposing the install until the user confirms.
-      - After baseline confirmation, detect whether the repo is `greenfield` or `existing_structured_repo` before running the interview.
+      - Discover currently available plugins, project-local skills, project-local subagents, and configured MCP before proposing any new install.
+      - Treat Superpowers as a plugin capability surface, not as a project-local skill install target.
+      - After capability discovery, detect whether the repo is `greenfield` or `existing_structured_repo` before running the interview.
 
   - artifact: agents-bootstrap
     applies_to: common
@@ -57,7 +57,7 @@ artifacts:
     apply_mode: generate_from_template
     conflict_policy: ask_before_replace_existing_nonempty
     prerequisites:
-      - superpowers_present
+      - capability_discovery_complete
       - project_interview_complete
       - selected_skills_and_subagents_installed_or_intentionally_skipped
     install_strategy: copy_and_customize_after_install_selection_is_final
@@ -77,6 +77,7 @@ artifacts:
         - Project Structure Source Of Truth
         - Core Commands
         - Installed Skills
+        - Skill Usage Order
         - Installed Subagents
         - Repository Rules
       personalization_line_prefixes:
@@ -103,6 +104,8 @@ artifacts:
           temporary_fixes_policy: "Do not accept \"temporary\" solutions without an explicit cleanup plan."
           risk_disclosure: "If a risky shortcut is chosen, state the risks explicitly in the final response."
       installed_skill_line_format: "- $skill-name: Use for <exact repository task>."
+      skill_usage_order_line_format: "- Step <n>: Use $skill-name when <exact repository situation>."
+      skill_usage_order_empty_line: "- None defined."
       installed_subagent_line_format: "- @agent-name: Use for <exact repository task>."
       empty_section_line: "- None installed."
       commands_section: "Core Commands"
@@ -116,6 +119,7 @@ artifacts:
       - Always ask which communication language should be fixed in AGENTS.md.
       - Use the client-language strict-quality fallback profile when the interview does not provide an explicit communication-language choice.
       - List only the final installed skills and subagents. Do not include recommendations, alternatives, or rationale.
+      - Render skill timing and order only under `Skill Usage Order`.
       - Render workflow commands only under `Core Commands`.
       - Keep `Repository Rules` limited to non-command repo policy.
       - Do not use first-person wording or the word `Report` in AGENTS.md.

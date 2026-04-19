@@ -31,8 +31,12 @@ end
 
 catalog = YAML.load_file(File.join(ROOT, "catalog.yaml"))
 project_codex_config = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "project-codex-config" }
+capability_discovery = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "capability-discovery" }
+agents_bootstrap = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "agents-bootstrap" }
 
 assert(errors, !project_codex_config.nil?, "catalog.yaml must define the project-codex-config artifact")
+assert(errors, !capability_discovery.nil?, "catalog.yaml must define the capability-discovery artifact")
+assert(errors, !agents_bootstrap.nil?, "catalog.yaml must define the agents-bootstrap artifact")
 
 if project_codex_config
   config_profiles = project_codex_config["config_profiles"] || {}
@@ -51,6 +55,20 @@ if project_codex_config
   ].each do |key|
     assert(errors, optional_hardening_keys.include?(key), "project-codex-config optional hardening keys must include #{key}")
   end
+end
+
+if capability_discovery
+  hints = capability_discovery["selection_hints"] || []
+  assert(errors, hints.any? { |hint| hint.include?("Treat Superpowers as a plugin capability surface") }, "capability-discovery must treat Superpowers as a plugin capability surface")
+end
+
+if agents_bootstrap
+  prerequisites = agents_bootstrap["prerequisites"] || []
+  rendering = agents_bootstrap["agents_rendering"] || {}
+  required_sections = rendering["require_exact_sections"] || []
+  assert(errors, prerequisites.include?("capability_discovery_complete"), "agents-bootstrap must depend on capability_discovery_complete")
+  assert(errors, required_sections.include?("Skill Usage Order"), "agents-bootstrap must require the Skill Usage Order section")
+  assert(errors, rendering["skill_usage_order_line_format"] == "- Step <n>: Use $skill-name when <exact repository situation>.", "agents-bootstrap must define the exact skill usage order line format")
 end
 
 release_doc = read_file("references/release-management.md")
@@ -102,11 +120,22 @@ end
 
 project_interview_doc = read_file("references/project-interview.md")
 assert(errors, project_interview_doc.include?("setup` / `review` / `release`"), "project interview must mention the standard setup/review/release profile set")
+assert(errors, project_interview_doc.include?("discovered_plugins"), "project interview must record discovered_plugins")
+assert(errors, project_interview_doc.include?("Skill Usage Order"), "project interview must mention Skill Usage Order")
+
+skill_doc = read_file("SKILL.md")
+assert(errors, skill_doc.include?("references/capability-discovery.md"), "SKILL.md must reference capability-discovery.md")
+assert(errors, skill_doc.include?("Skill Usage Order"), "SKILL.md must include the Skill Usage Order contract")
+assert(errors, !skill_doc.include?("references/install-superpowers.md"), "SKILL.md must not reference install-superpowers.md")
 
 readme = read_file("README.md")
 assert(errors, readme.include?("release/x.y.z"), "README must mention release/x.y.z branches")
 assert(errors, readme.include?("vX.Y.Z"), "README must mention vX.Y.Z tags")
 assert(errors, readme.include?("GitHub Releases"), "README must mention GitHub Releases")
+
+capability_doc = read_file("references/capability-discovery.md")
+assert(errors, capability_doc.include?("obra/superpowers"), "capability-discovery doc must mention obra/superpowers explicitly")
+assert(errors, capability_doc.include?("not a project-local skill install target"), "capability-discovery doc must forbid treating Superpowers as a project-local skill install target")
 
 release_config = YAML.load_file(File.join(ROOT, ".github/release.yml"))
 categories = release_config.dig("changelog", "categories") || []

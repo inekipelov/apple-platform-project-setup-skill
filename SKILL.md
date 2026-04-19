@@ -7,9 +7,9 @@ description: Use when bootstrapping or standardizing an Apple platform workspace
 
 Bootstrap Apple workspaces in a strict order so the repo gets the right foundation before any project-specific customization.
 
-**Core principle:** install the baseline workflow first, then interview and specialize, then generate `AGENTS.md` after the selected skills and subagents are already in place.
+**Core principle:** inspect the current Codex environment first, then interview and specialize, then install only missing project-local capabilities, then generate `AGENTS.md` after the selected skills and subagents are already in place.
 
-**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), [`references/xcodegen-setup.md`](references/xcodegen-setup.md), [`references/agents-personalization.md`](references/agents-personalization.md), and the files under [`snippets/`](snippets/).
+**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/capability-discovery.md`](references/capability-discovery.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), [`references/xcodegen-setup.md`](references/xcodegen-setup.md), [`references/agents-personalization.md`](references/agents-personalization.md), and the files under [`snippets/`](snippets/).
 
 ## When to Use
 
@@ -32,24 +32,19 @@ Do not use this skill for:
 ```dot
 digraph setup_order {
     rankdir=LR;
-    superpowers [label="Check superpowers"];
-    confirm [label="Need install or home-dir change?", shape=diamond];
-    stop [label="Propose official install\nand wait for confirmation"];
+    discovery [label="Discover installed plugins /\nskills / agents / MCP"];
     state [label="Detect repo state"];
     interview [label="Interview user"];
     choose [label="Choose SPM or Xcode"];
     xcodestrategy [label="If Xcode, choose\nnative or XcodeGen"];
     tools [label="Check tool prerequisites"];
-    install [label="Install skills / copy subagents\nwith confirmation rules"];
+    install [label="Install only missing skills /\ncopy only missing subagents"];
     config [label="Configure .codex/config.toml\nand optional MCP"];
     apply [label="Apply snippets"];
     agents [label="Create AGENTS.md\nfrom bootstrap snippet"];
     summary [label="Summarize configured vs pending"];
 
-    superpowers -> confirm;
-    confirm -> stop [label="yes"];
-    confirm -> state [label="no"];
-    stop -> state [label="after confirmation"];
+    discovery -> state;
     state -> interview;
     interview -> choose;
     choose -> xcodestrategy;
@@ -68,16 +63,18 @@ Never reorder these steps.
 
 | Topic | Rule |
 |---|---|
-| Baseline prerequisite | `obra/superpowers` always comes first |
+| Capability baseline | inspect installed plugins, project-local skills, project-local subagents, and configured MCP before proposing new installs |
 | Repo modes | detect `greenfield` vs `existing_structured_repo` before the interview |
 | AGENTS timing | generate after selected skills and subagents are installed |
 | AGENTS syntax | skills as `$skill-name`, subagents as `@agent-name` |
 | AGENTS mode | declarative final-state only; no recommendations or alternatives |
 | AGENTS personalization | fixed `Agent Personalization` section with exact prefixes and strict-quality fallback |
+| AGENTS skill sequencing | render skill timing and order only in the fixed `Skill Usage Order` section |
 | Selection model | recommend one best-fit option, user keeps the final choice |
 | Concrete selection source | `inventory/skills.yaml` and `inventory/subagents.yaml` |
 | Skill install preference | `skills.sh` first, upstream instructions second |
 | Subagent install location | `.codex/agents/` by default |
+| Superpowers policy | treat Superpowers as a Codex plugin surface, not as a skill install target |
 | Project config | prefer project `.codex/config.toml` for skill registration, optional wrappers, and the standard `setup` / `review` / `release` profile set |
 | Multi-agent runtime | optional `.codex/config.toml` layer using official `features.multi_agent` and `agents.*` keys |
 | Sosumi integration | prefer HTTP MCP; CLI is optional |
@@ -93,13 +90,22 @@ Never reorder these steps.
 
 ## Workflow
 
-### 1. Check baseline prerequisites
+### 1. Discover installed capability surface
 
-- Confirm whether `superpowers` is already installed.
-- If not installed, use [`references/install-superpowers.md`](references/install-superpowers.md).
-- If the step requires cloning into `~/.codex`, creating `~/.agents/skills` for the upstream `superpowers` symlink, changing dotfiles, or installing a global tool, stop and ask for confirmation.
-
-**No exceptions.**
+- Inspect the current Codex environment before proposing any install.
+- Use [`references/capability-discovery.md`](references/capability-discovery.md).
+- Discover:
+  - currently available plugin-provided skills in the active session
+  - already installed project-local skills under `.codex/skills/`
+  - already installed project-local subagents under `.codex/agents/`
+  - already configured MCP servers from `.codex/config.toml` when present
+- Record:
+  - `discovered_plugins`
+  - `discovered_project_local_skills`
+  - `discovered_project_local_subagents`
+  - `discovered_mcp_servers`
+- Treat Superpowers as a plugin capability surface. Do not try to install `obra/superpowers` as a skill in this repository.
+- Treat this discovery step as mandatory. Do not propose new skills, subagents, or MCP until the current capability surface is known.
 
 ### 2. Detect repository state
 
@@ -129,6 +135,7 @@ Never reorder these steps.
 - Ask questions from [`references/project-interview.md`](references/project-interview.md).
 - Use [`references/agents-personalization.md`](references/agents-personalization.md) to collect and render the final `Agent Personalization` section.
 - Determine:
+  - discovered plugin, skill, subagent, and MCP surface
   - repo state
   - detected workspace shape
   - if `Xcode`, detected Xcode project strategy
@@ -154,7 +161,7 @@ For communication language:
 - always ask which language should be fixed in `AGENTS.md`
 - if the user does not choose a preferred communication language, set `- Communication language: Use the language the client used to contact the agent.`
 
-Do not choose skills, subagents, or repo files before the interview is complete.
+Do not choose skills, subagents, MCP changes, or repo files before the interview is complete.
 
 ### 4. Choose workspace type
 
@@ -204,21 +211,26 @@ If a required tool is missing:
 
 - Follow [`references/skills-catalog.md`](references/skills-catalog.md) and [`references/subagents-catalog.md`](references/subagents-catalog.md).
 - Resolve concrete choices from [`inventory/skills.yaml`](inventory/skills.yaml) and [`inventory/subagents.yaml`](inventory/subagents.yaml).
-- Prefer `skills.sh` install commands whenever available.
+- Compare the discovered capability surface against the selected project needs before proposing any install.
+- Prefer using already available plugin-provided skills or already installed project-local skills when they already cover the need.
+- Prefer `skills.sh` install commands whenever available for missing project-local skills.
 - Fall back to upstream instructions only when `skills.sh` is not available or not supported for the selected source.
 - Treat every external skills source as a catalog that may contain multiple skills, not as a single install target.
 - First map the project needs to one or more capability categories such as UI, architecture, package design, testing, tooling, CI, or repository automation.
 - Then map each selected category to a source catalog and resolve one concrete inventory-backed choice from that category.
 - Install community skills project-locally by default under `.codex/skills/` when the installer supports it.
+- Do not try to install plugin-provided skills as project-local skills just because they are part of the workflow.
 - If the installer only supports user-level install, explain the limitation and ask before proceeding.
 - Do not install an entire catalog because its source link is relevant. Only inspect and recommend skills from the categories that match the project.
 - If a category has no verified concrete entry in the inventory, do not invent one. Keep the source as a fallback recommendation path and tell the user the inventory is not seeded for that case yet.
 - Copy only the chosen subagent files into `.codex/agents/`; never dump an entire external collection into the repo.
+- If a selected project-local skill or subagent is already present, do not reinstall or recopy it. Treat it as existing repo state and carry it forward.
 - If a source exposes multiple relevant skills or subagents, narrow them to one recommended best-fit option per capability gap.
 - Explain why that recommended `$skill-name` or `@agent-name` is the strongest fit for the current repository state.
 - List other relevant candidates only as alternatives with explicit `choose instead if ...` rules.
 - Final selection still belongs to the user. The skill recommends; the user confirms or overrides.
 - Once the user confirms the selection, treat that installed set as final repo state and carry only that final state into `AGENTS.md`.
+- Build the final `Skill Usage Order` section from the effective skill surface the repo will rely on after setup, including plugin-provided skills when they are part of the intended workflow order.
 
 ### 7. Configure project `.codex/config.toml` and optional MCP
 
@@ -305,7 +317,7 @@ Before adding the `No raw SF Symbol strings` SwiftLint rule:
 ### 9. Create `AGENTS.md` last
 
 - Start from [`snippets/common/AGENTS.bootstrap.md`](snippets/common/AGENTS.bootstrap.md).
-- Use **REQUIRED SUB-SKILL:** `superpowers:writing-skills` when generating or reshaping the repo-specific `AGENTS.md`.
+- Use **REQUIRED SUB-SKILL:** `$writing-skills` when generating or reshaping the repo-specific `AGENTS.md`.
 - Do this only after:
   - the project interview is complete
   - the workspace shape is chosen
@@ -324,6 +336,7 @@ When refining `AGENTS.md`, use this rendering contract:
   - `Project Structure Source Of Truth`
   - `Core Commands`
   - `Installed Skills`
+  - `Skill Usage Order`
   - `Installed Subagents`
   - `Repository Rules`
 - Under `Repository Purpose`, use the exact line prefix `- Purpose:`.
@@ -350,6 +363,8 @@ When refining `AGENTS.md`, use this rendering contract:
   - `- Project generation:`
 - Under `Installed Skills`, each installed skill line must use the exact format `- $skill-name: Use for <exact repository task>.`
 - If no project-local skills were installed, `Installed Skills` must contain the exact line `- None installed.`
+- Under `Skill Usage Order`, each line must use the exact format `- Step <n>: Use $skill-name when <exact repository situation>.`
+- If no skill-order instructions are needed, `Skill Usage Order` must contain the exact line `- None defined.`
 - Under `Installed Subagents`, each installed subagent line must use the exact format `- @agent-name: Use for <exact repository task>.`
 - If no project-local subagents were installed, `Installed Subagents` must contain the exact line `- None installed.`
 - Under `Repository Rules`, every rule line must use the exact prefix `- Rule:`.
@@ -361,6 +376,7 @@ When refining `AGENTS.md`, use this rendering contract:
 - Do not include user-choice language in `AGENTS.md`; by this stage the choice has already been made.
 - Do not use first-person wording inside `Agent Personalization`.
 - Do not use the word `Report` anywhere in `AGENTS.md`.
+- Do not place skill-order instructions under `Installed Skills`; they belong only in `Skill Usage Order`.
 - For `Xcode + XcodeGen`, `Project Structure Source Of Truth` must explicitly say that `project.yml` is the project-structure source of truth and that `xcodegen generate --spec project.yml` may be required before opening the project in Xcode.
 
 ### 10. Summarize clearly
@@ -374,9 +390,9 @@ End by separating:
 
 ## Common Mistakes
 
-### Installing anything before `superpowers`
+### Proposing installs before capability discovery
 
-Wrong. This skill must establish the baseline workflow first or stop for confirmation.
+Wrong. This skill must inspect what the environment and repository already provide before it proposes new installs.
 
 ### Choosing `SPM` or `Xcode` before interviewing the user
 
@@ -401,6 +417,10 @@ Wrong. Use the official `config.toml` reference and the repo config guidance doc
 ### Treating external catalogs as templates
 
 Wrong. External skills and subagents are recommendation sources. Repo truth still comes from `catalog.yaml`, `references/`, and `snippets/`.
+
+### Trying to install `obra/superpowers` as a skill
+
+Wrong. Superpowers is a Codex plugin capability surface here, not a project-local skill install target.
 
 ### Installing every skill or subagent from a source
 
@@ -442,6 +462,10 @@ Wrong. `catalog.yaml` defines the target path, apply mode, conflict policy, and 
 
 Wrong. `AGENTS.md` must list only the final installed repo state, not the earlier comparison process.
 
+### Mixing skill inventory with skill sequencing in one section
+
+Wrong. `Installed Skills` records project-local installation state. `Skill Usage Order` records when and in what order skills should be used.
+
 ### Mixing personalization rules into `Repository Rules`
 
 Wrong. `Agent Personalization` and `Repository Rules` have different jobs. Keep communication and pushback policy separate from repo operating rules.
@@ -468,7 +492,7 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 
 ## Red Flags
 
-- "I can skip `superpowers` because the user only asked for SwiftLint."
+- "I do not need to inspect installed plugins or project-local skills before I propose installs."
 - "I already know this is an Xcode project."
 - "The repo already has files, so this skill is no longer useful."
 - "The repo already has files, so I can replace them with the canonical snippets in one pass."
@@ -476,10 +500,12 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 - "I'll install `gitlint` first and ask later."
 - "I'll install all suggested subagents now and clean up later."
 - "This `skills.sh` link is relevant, so I should install the whole catalog."
+- "Superpowers used to be a skill, so I should still try to install `obra/superpowers`."
 - "I can infer the right skills without asking about the project."
 - "I'll list three relevant skills and let the client decide without a recommendation."
 - "I picked the best option, so the user does not need to decide anymore."
 - "I can keep the recommendation language in `AGENTS.md`; the reader will infer what is actually installed."
+- "I can put the sequencing notes under `Installed Skills`; the distinction is obvious."
 - "I can put personalization anywhere in the file; the intent is obvious."
 - "Using first-person voice will make the file feel more personal."
 - "I can keep the word `Report`; people will understand what it means."
@@ -496,9 +522,11 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 | "The install is harmless, so I can do it without asking." | Any global install or user-home change requires explicit confirmation. |
 | "The upstream repo is enough; I do not need local snippets." | This repo stores the canonical snippets and policies the skill must apply. |
 | "The source link looks relevant, so I can install everything it exposes." | External skill links are catalogs. Choose a category first, then one concrete skill. |
+| "Superpowers is part of the workflow, so I should install `obra/superpowers` into the repo." | In this repository, Superpowers is treated as a plugin capability surface. Discover it; do not install it as a skill target. |
 | "All three skills are relevant, so I should list all three as peers." | Recommend one best-fit option and keep the others as conditional alternatives. |
 | "I already recommended the best skill, so I can decide for the user." | The skill recommends one; the final decision stays with the user. |
 | "The recommendation process is useful context, so it should stay in `AGENTS.md`." | `AGENTS.md` records only the final installed repo state. Keep selection reasoning out of it. |
+| "Installed Skills and skill sequencing are basically the same thing." | Keep installation state in `Installed Skills` and ordered usage instructions in `Skill Usage Order`. |
 | "Repository Rules can absorb the personalization text." | Personalization must live in the fixed `Agent Personalization` section, not as free-form rules. |
 | "Repository Rules can absorb the command list." | Commands must live in `Core Commands`. Keep `Repository Rules` for non-command repo policy only. |
 | "First-person voice is harmless in AGENTS." | The contract is declarative. Keep the file repo-local and exact. |
@@ -513,18 +541,18 @@ User request:
 
 Correct response shape:
 
-1. Check whether `superpowers` is present.
-2. If missing, propose the official install and wait.
-3. Ask about platform targets, repo role, UI stack, testing, and CI expectations.
+1. Discover the currently available plugin, project-local skill, project-local subagent, and MCP surface.
+2. Ask about platform targets, repo role, UI stack, testing, and CI expectations.
+3. Use the discovery result plus the interview to determine what is already covered and what is still missing.
 4. Choose `Xcode`.
 5. Keep native `xcodeproj` as the default unless the interview clearly points to `XcodeGen`.
 6. Check `npx`, `gitlint`, `swiftlint`, `xcodegen`, and optionally `gh`, `xcrun`, or `sosumi` based on the chosen integrations.
 7. Ask whether typed SF Symbols should use `SFSafeSymbols`.
-8. Recommend one best-fit `$skill-name` and one best-fit `@agent-name` where needed, each with a short usage rule and rationale.
+8. Recommend one best-fit missing `$skill-name` and one best-fit missing `@agent-name` where needed, each with a short usage rule and rationale.
 9. Ask the user to confirm the final selection when multiple candidates are relevant.
-10. Install or copy only the confirmed skills and subagents.
+10. Install or copy only the confirmed missing skills and subagents.
 11. Configure project `.codex/config.toml` and any approved MCP servers.
 12. If the user accepted `SFSafeSymbols`, add that package dependency and merge the SF Symbols SwiftLint rule.
 13. If the workspace is `Xcode` and the user wants Xcode tools, configure `xcode` MCP through `xcrun mcpbridge`. If the repo uses `XcodeGen`, require `xcodegen generate --spec project.yml` first.
 14. Apply common snippets plus either the native `Xcode` snippets or the `XcodeGen` Xcode snippets, including the shared `Xcode` SwiftLint snippet and the matching workflow guardrails.
-15. Generate the repo-specific `AGENTS.md` from the bootstrap snippet.
+15. Generate the repo-specific `AGENTS.md` from the bootstrap snippet, including `Installed Skills`, `Skill Usage Order`, and `Installed Subagents`.
