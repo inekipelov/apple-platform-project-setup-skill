@@ -25,7 +25,7 @@ Use this bootstrap template to generate the repo-specific `AGENTS.md` after the 
 - agent personalization profile
 - target Apple platforms
 - `SPM` vs `Xcode`
-- if `Xcode`, native `xcodeproj` vs `Tuist-generated`
+- if `Xcode`, native `xcodeproj` vs `XcodeGen-generated`
 - UI stack and priority technologies
 - testing strategy
 - CI expectations
@@ -64,12 +64,12 @@ Use these exact section titles in this exact order.
 
 - `- Shape: SPM` or `- Shape: Xcode`
 - `- Target platforms: <platform list>`
-- `- Xcode project strategy: native xcodeproj` or `- Xcode project strategy: Tuist-generated` only when the shape is `Xcode`
+- `- Xcode project strategy: native xcodeproj` or `- Xcode project strategy: XcodeGen-generated` only when the shape is `Xcode`
 
 ### Project Structure Source Of Truth
 
 - `- Source of truth: <exact project-structure source of truth>`
-- `- Xcode generation: Not required.` or `- Xcode generation: Run \`tuist generate\` before opening in Xcode when needed.`
+- `- Xcode generation: Not required.` or `- Xcode generation: Run \`xcodegen generate --spec project.yml\` before opening in Xcode when needed.`
 
 ### Core Commands
 
@@ -77,7 +77,7 @@ Use these exact section titles in this exact order.
 - `- Build: <command>`
 - `- Test: <command>`
 - `- Lint: <command>` or `- Lint: Not configured.`
-- `- Project generation: Not required.` or `- Project generation: tuist generate`
+- `- Project generation: Not required.` or `- Project generation: xcodegen generate --spec project.yml`
 - All workflow commands belong in this section.
 
 ### Installed Skills
@@ -109,8 +109,8 @@ After the interview and after the selected skills and subagents are installed or
 - installed project-local subagents
 - non-negotiable repo rules
 
-For Tuist-based repositories, the final `AGENTS.md` should also capture:
+For XcodeGen-based repositories, the final `AGENTS.md` should also capture:
 
-- that `Project.swift` and `Tuist.swift` are the project-structure source of truth
-- that `tuist generate` may be required before working in Xcode
-- that build and test commands go through `tuist build` and `tuist test`
+- that `project.yml` is the project-structure source of truth
+- that `xcodegen generate --spec project.yml` may be required before working in Xcode
+- that build and test commands run against the generated `.xcodeproj`

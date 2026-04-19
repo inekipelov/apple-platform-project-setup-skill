@@ -7,7 +7,7 @@ This repository assumes prerequisite checks happen before the related tool is us
 - `npx`
 - `gitlint`
 - `swiftlint`
-- `tuist`
+- `xcodegen`
 - `gh`
 - `xcrun`
 - `sosumi`
@@ -58,23 +58,13 @@ Possible suggestion:
 brew install swiftlint
 ```
 
-### `tuist`
+### `xcodegen`
 
 Simplest suggestion:
 
 ```bash
-brew tap tuist/tuist
-brew install --formula tuist
+brew install xcodegen
 ```
-
-Deterministic repo-pinned suggestion when the project wants a tracked Tuist version:
-
-```bash
-brew install mise
-mise use --pin tuist@latest
-```
-
-Do not require `mise` when the repository only needs the simplest Tuist install path.
 
 ### `gh`
 
@@ -115,7 +105,7 @@ Instead:
 - `npx` is required only when the selected skill source uses `skills.sh` or when the user explicitly chooses an `mcp-remote` stdio proxy path.
 - `gitlint` is required only when the gitlint repo artifacts are selected.
 - `swiftlint` is required only when the chosen workspace-specific SwiftLint artifact is selected.
-- `tuist` is required only when the selected `Xcode` project strategy is `Tuist`.
+- `xcodegen` is required only when the selected `Xcode` project strategy is `XcodeGen`.
 - `gh` is optional unless the user explicitly wants GitHub CLI workflow help.
 - `xcrun` matters only when `xcode` MCP is selected for an `xcode` workspace.
 - `sosumi` is optional unless the user explicitly wants Apple documentation lookup through that CLI.

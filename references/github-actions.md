@@ -28,7 +28,7 @@ Keep these guardrails aligned across:
 - `gitlint`
 - `SPM` build and test
 - native `Xcode` build and test
-- `Xcode + Tuist` build and test
+- `Xcode + XcodeGen` build and test
 
 ## Existing-Repo Alignment
 
@@ -72,19 +72,18 @@ The native `Xcode` workflow snippets should:
 
 These snippets are app-first and may assume checked-in Xcode project or scheme inputs.
 
-## `Xcode + Tuist` Build and Test Workflows
+## `Xcode + XcodeGen` Build and Test Workflows
 
-The `Xcode + Tuist` workflow snippets should:
+The `Xcode + XcodeGen` workflow snippets should:
 
 - run on `macos-15`
 - select the latest stable Xcode
-- install Tuist before invoking Tuist commands
-- use `jdx/mise-action@v2` when the repo pins Tuist through `.tool-versions`
-- use the Homebrew install path when the repo does not pin Tuist
-- run `tuist install` before `tuist build` or `tuist test`
-- use explicit env vars such as `TUIST_SCHEME` instead of relying on all-schemes behavior
+- install `xcodegen` before generating the project
+- run `xcodegen generate --spec project.yml`
+- use explicit env vars such as `XCODE_PROJECT` and `XCODE_SCHEME`
+- run `xcodebuild` build and test commands against the generated `.xcodeproj`
 
-For this repo contract, the Tuist workflow path uses `tuist build <scheme>` and `tuist test <scheme>` as the default CI commands for generated-project repositories.
+For this repo contract, the XcodeGen workflow path uses `xcodegen generate` followed by `xcodebuild` as the default CI path for generated-project repositories.
 
 ## Maintainer Release Workflow For This Repository
 

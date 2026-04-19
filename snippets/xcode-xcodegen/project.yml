@@ -1,0 +1,36 @@
+name: App
+options:
+  bundleIdPrefix: com.example
+targets:
+  App:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: App/Sources
+    resources:
+      - path: App/Resources
+    info:
+      path: App/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.App
+  AppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: App/Tests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.AppTests
+    dependencies:
+      - target: App
+schemes:
+  App:
+    build:
+      targets:
+        App: all
+        AppTests: [test]
+    test:
+      targets:
+        - AppTests

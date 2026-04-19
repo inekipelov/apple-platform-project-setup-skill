@@ -9,7 +9,7 @@ Collect the information needed to decide:
 - whether this is a `greenfield` or `existing_structured_repo` run
 - whether current repo structure already reveals the workspace choice
 - `SPM` vs `Xcode`
-- if `Xcode`, `native xcodeproj` vs `Tuist-generated`
+- if `Xcode`, `native xcodeproj` vs `XcodeGen-generated`
 - which `Agent Personalization` profile applies
 - which snippets apply
 - which skill categories are relevant
@@ -39,8 +39,7 @@ Use structural signals such as:
 - `Package.swift`
 - `*.xcodeproj`
 - `*.xcworkspace`
-- `Project.swift`
-- `Tuist.swift`
+- `project.yml`
 - `.gitignore`
 - `.swiftlint.yml`
 - `.gitlint`
@@ -81,14 +80,14 @@ For `existing_structured_repo`:
 Ask this only after `Xcode` is the likely workspace choice.
 
 - keep a checked-in `xcodeproj`?
-- use a generated-project workflow through `Tuist`?
+- use a generated-project workflow through `XcodeGen`?
 - is there pain around merge conflicts in Xcode project files?
 - does the team want declarative manifests as the project source of truth?
-- if `Tuist` is chosen, should the repo pin the version with `mise`, or is a simple local CLI install enough?
+- if `XcodeGen` is chosen, is the simple local Homebrew install path enough?
 
 For `existing_structured_repo`:
 
-- if the repo already uses `Tuist`, confirm that `Tuist` remains the source of truth unless the user explicitly wants migration
+- if the repo already uses `project.yml` for `XcodeGen`, confirm that `XcodeGen` remains the source of truth unless the user explicitly wants migration
 - if the repo already uses native `xcodeproj`, confirm that native remains the source of truth unless the user explicitly wants migration
 
 ### 6. Priority Technologies
@@ -168,7 +167,7 @@ For the multi-agent branch, keep this order exact:
 - app lifecycle targets matter
 - asset catalogs, schemes, or project settings are central
 
-### Choose `Tuist` inside `Xcode` when:
+### Choose `XcodeGen` inside `Xcode` when:
 
 - the team wants generated projects instead of checked-in `xcodeproj` files
 - declarative manifests are preferred as the project source of truth
@@ -186,9 +185,9 @@ After the interview, the skill should be able to produce:
 
 - `repo_state = greenfield | existing_structured_repo`
 - `detected_workspace_shape = spm | xcode | unknown`
-- `detected_xcode_project_strategy = native | tuist | unknown`
+- `detected_xcode_project_strategy = native | xcodegen | unknown`
 - one workspace choice: `SPM` or `Xcode`
-- if the workspace is `Xcode`, one Xcode project strategy: `native` or `tuist`
+- if the workspace is `Xcode`, one Xcode project strategy: `native` or `xcodegen`
 - the top 1-3 skill categories that matter for this project
 - the top 1-3 subagent categories that matter for this project
 - the final selected skills to install, if any
@@ -223,5 +222,5 @@ Use these exact internal decision outputs for repo-state handling:
 
 - `repo_state = greenfield | existing_structured_repo`
 - `detected_workspace_shape = spm | xcode | unknown`
-- `detected_xcode_project_strategy = native | tuist | unknown`
+- `detected_xcode_project_strategy = native | xcodegen | unknown`
 - `standardization_scope = full_bootstrap | config_only | agents_only | lint_only | ci_only | targeted_alignment`

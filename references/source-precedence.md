@@ -72,9 +72,7 @@ Primary fallbacks for this repo:
 - <https://github.com/dpearson2699/swift-ios-skills>
 - <https://github.com/VoltAgent/awesome-codex-subagents>
 - <https://github.com/SFSafeSymbols/SFSafeSymbols>
-- <https://docs.tuist.dev/en/guides/install-tuist>
-- <https://docs.tuist.dev/en/guides/features/projects/adoption/new-project>
-- <https://docs.tuist.dev/en/guides/automate/continuous-integration>
+- <https://github.com/yonaskolb/XcodeGen>
 - <https://docs.github.com/en/actions/tutorials/build-and-test-code/swift>
 - <https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token>
 - <https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode>
@@ -84,9 +82,9 @@ For external integrations:
 
 - Apple decides how `xcrun mcpbridge` is exposed from Xcode.
 - `sosumi.ai` decides the remote MCP endpoint and CLI usage.
-- Tuist decides the supported install paths, generated-project workflow, and CI commands for Tuist-managed Xcode repositories.
+- XcodeGen decides the supported install paths, generated-project workflow, and `project.yml` source-of-truth model for XcodeGen-managed Xcode repositories.
 - GitHub decides the current workflow syntax, least-privilege token guidance, and Swift CI examples.
-- This repo may narrow those options as policy. For v1, `xcode` MCP is only allowed for `xcode` workspaces, and `Tuist` is an `Xcode` sub-mode rather than a third top-level workspace shape.
+- This repo may narrow those options as policy. For v1, `xcode` MCP is only allowed for `xcode` workspaces, and `XcodeGen` is an `Xcode` sub-mode rather than a third top-level workspace shape.
 
 ## 5. Community Examples
 
@@ -154,4 +152,4 @@ Do not invent overwrite or merge behavior outside this contract.
 - Never collapse profile operating modes and multi-agent runtime into one undifferentiated config layer.
 - Never configure `xcode` MCP for an `spm` workspace in this skill.
 - Never require the `sosumi` CLI when remote HTTP MCP is already available.
-- Never treat `Tuist` as a third workspace shape in this repository.
+- Never treat `XcodeGen` as a third workspace shape in this repository.

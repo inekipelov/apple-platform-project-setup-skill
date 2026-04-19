@@ -58,5 +58,5 @@ args = ["mcpbridge"]
 - `sosumi` MCP is valid for both `spm` and `xcode` workspaces.
 - `xcode` MCP is valid only for `xcode` workspaces in this repo contract.
 - Do not configure `xcode` MCP for `spm` workspaces in this skill.
-- If the `xcode` workspace uses `Tuist`, run `tuist generate` first and open the generated project or workspace in Xcode before configuring `xcode` MCP.
+- If the `xcode` workspace uses `XcodeGen`, run `xcodegen generate --spec project.yml` first and open the generated `.xcodeproj` in Xcode before configuring `xcode` MCP.
 - Do not require the `sosumi` CLI when the HTTP MCP path already works.

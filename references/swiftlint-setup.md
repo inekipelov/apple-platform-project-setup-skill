@@ -44,7 +44,7 @@ The `Xcode` SwiftLint snippet should stay app-oriented:
 - include typed asset rules for `UIImage(named:)`, `Image("...")`, and `Color("...")`
 - remain compatible with optional `SFSafeSymbols` merging
 
-This same `Xcode` SwiftLint snippet is shared by both native `xcodeproj` repositories and `Tuist`-generated `Xcode` repositories.
+This same `Xcode` SwiftLint snippet is shared by both native `xcodeproj` repositories and `XcodeGen`-generated `Xcode` repositories.
 
 ## Optional SF Symbols Rule
 

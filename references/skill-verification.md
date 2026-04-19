@@ -31,10 +31,10 @@ Because the repository had no workflow contract, each planned failure mode was e
 13. An agent could configure `xcode` MCP for an `spm` workspace.
 14. An agent could apply one shared SwiftLint config without respecting the chosen workspace shape.
 15. An agent could ship GitHub Actions snippets without explicit permissions, concurrency, or deterministic CI behavior.
-16. An agent could treat `Tuist` as a third workspace shape instead of an `Xcode` sub-mode.
-17. An agent could suggest `Tuist` while the repo is on the `SPM` path.
-18. An agent could choose `Tuist` and still apply native `Xcode` artifacts.
-19. An agent could configure `xcode` MCP for a Tuist repo without requiring a generated project to be open in Xcode.
+16. An agent could treat `XcodeGen` as a third workspace shape instead of an `Xcode` sub-mode.
+17. An agent could suggest `XcodeGen` while the repo is on the `SPM` path.
+18. An agent could choose `XcodeGen` and still apply native `Xcode` artifacts.
+19. An agent could configure `xcode` MCP for an XcodeGen repo without requiring a generated project to be open in Xcode.
 20. An agent could copy recommendations, alternatives, or selection rationale into the final `AGENTS.md` instead of recording only the final installed repo state.
 21. An agent could omit `Agent Personalization`, use the wrong line prefixes, or fall back to free-form prose.
 22. An agent could use first-person wording or the word `Report` inside the generated `AGENTS.md`.
@@ -54,9 +54,9 @@ Because the repository had no workflow contract, each planned failure mode was e
 36. The interview could enable multi-agent runtime without recording whether project-local subagents were requested directly or only as a follow-up.
 37. The config contract could blur profile operating modes and multi-agent runtime into one undifferentiated settings layer.
 38. The skill could still reject already-structured repositories as out of scope instead of switching into an audit-and-align mode.
-39. The skill could detect an existing `SPM`, native `Xcode`, or `Tuist` structure and still re-run bootstrap defaults as if the folder were empty.
+39. The skill could detect an existing `SPM`, native `Xcode`, or `XcodeGen` structure and still re-run bootstrap defaults as if the folder were empty.
 40. The skill could overwrite existing `.gitignore`, `.swiftlint.yml`, `.gitlint`, workflows, `.codex/config.toml`, or `AGENTS.md` without compare-and-confirm behavior.
-41. The skill could silently migrate a native `xcodeproj` repo to `Tuist`, or a `Tuist` repo back to native, just because one path is canonical for greenfield bootstrap.
+41. The skill could silently migrate a native `xcodeproj` repo to `XcodeGen`, or an `XcodeGen` repo back to native, just because one path is canonical for greenfield bootstrap.
 
 ## GREEN Verification Targets
 
@@ -69,7 +69,7 @@ After the repo contract is present, verify that:
 5. `references/source-precedence.md` gives `skills.sh` higher priority than upstream fallback when available.
 6. `catalog.yaml` maps every managed artifact to snippets, prerequisites, install strategy, sources, and snippet apply semantics where relevant.
 7. `inventory/skills.yaml` and `inventory/subagents.yaml` exist as curated concrete recommendation layers.
-8. `snippets/` contains common plus `SPM`, native `Xcode`, and `Xcode + Tuist` file sets.
+8. `snippets/` contains common plus `SPM`, native `Xcode`, and `Xcode + XcodeGen` file sets.
 9. The selection contract recommends one best-fit skill or subagent while preserving user ownership of the final choice.
 10. The SF Symbols SwiftLint rule appears only when the user accepted `SFSafeSymbols` for the project.
 11. Skills sources are treated as catalogs, category selection happens before skill selection, and the whole catalog is never installed by default.
@@ -80,11 +80,11 @@ After the repo contract is present, verify that:
 16. `xcode` MCP is documented and enforced only for `xcode` workspaces, never for `spm`.
 17. SwiftLint setup is shape-specific: `SPM` and `Xcode` select different `.swiftlint.yml` snippets.
 18. GitHub Actions snippets define consistent workflow guardrails such as `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
-19. `Tuist` is documented as an optional `Xcode` sub-mode, not as a third top-level workspace shape.
-20. The interview and skill contract resolve `xcode_project_strategy = native | tuist` only after `Xcode` is chosen.
-21. `catalog.yaml` contains both native `Xcode` artifacts and `Tuist`-specific `Xcode` artifacts.
-22. `xcode-swiftlint-config` stays shared across native and Tuist-managed `Xcode` repositories.
-23. Tuist-specific MCP guidance requires `tuist generate` and an open generated project or workspace before `xcode` MCP is configured.
+19. `XcodeGen` is documented as an optional `Xcode` sub-mode, not as a third top-level workspace shape.
+20. The interview and skill contract resolve `xcode_project_strategy = native | xcodegen` only after `Xcode` is chosen.
+21. `catalog.yaml` contains both native `Xcode` artifacts and `XcodeGen`-specific `Xcode` artifacts.
+22. `xcode-swiftlint-config` stays shared across native and XcodeGen-managed `Xcode` repositories.
+23. XcodeGen-specific MCP guidance requires `xcodegen generate --spec project.yml` and an open generated project before `xcode` MCP is configured.
 24. `AGENTS.md` is rendered as a declarative final-state document with fixed section titles and no recommendation or alternatives sections.
 25. `Installed Skills` and `Installed Subagents` use exact installed-item line formats or the exact fallback line `- None installed.`
 26. `AGENTS.md` includes the exact section `Agent Personalization` with the six required line prefixes.
@@ -127,8 +127,8 @@ Look for these rationalizations in future revisions:
 - "SPM can open in Xcode, so enabling Xcode MCP there is harmless."
 - "The SwiftLint rules are mostly shared, so one file is good enough for both shapes."
 - "These workflow snippets are simple enough that permissions and concurrency do not matter."
-- "Tuist is different enough that it should be a third workspace shape."
-- "Once Tuist is selected, I can keep using the native Xcode snippets."
+- "XcodeGen is different enough that it should be a third workspace shape."
+- "Once XcodeGen is selected, I can keep using the native Xcode snippets."
 - "The recommendation process is useful context, so it belongs in the final AGENTS file."
 - "The personalization can stay as loose prose; the agent will understand."
 - "First-person wording is close enough to the intended behavior."
@@ -146,6 +146,6 @@ Look for these rationalizations in future revisions:
 - "The profile set and multi-agent settings are all just config knobs, so separating their roles is unnecessary."
 - "This repo already has files, so the skill should stop instead of helping."
 - "The repo already has files, so I should replace them with the canonical snippets in one pass."
-- "Detected `Tuist` or native Xcode structure is only historical noise; greenfield defaults are still better."
+- "Detected `XcodeGen` or native Xcode structure is only historical noise; greenfield defaults are still better."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.

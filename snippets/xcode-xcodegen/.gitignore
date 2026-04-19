@@ -15,7 +15,3 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 *.xcodeproj
-*.xcworkspace
-.tuist-bin/
-.tuist-cache/
-Tuist/.build/

@@ -1,143 +1,34 @@
 # Apple Platform Project Setup Skill
 
-Codex-first skill for bootstrapping and standardizing Apple workspaces.
+[![ChatGPT](https://custom-icon-badges.demolab.com/badge/Codex-74aa9c?logo=openai&logoColor=white)]()
 
-It does not ship a project template. It orchestrates setup: checks the baseline workflow, detects whether the repo is greenfield or already structured, interviews the user, chooses or confirms `SPM` vs `Xcode`, optionally chooses or confirms `native xcodeproj` vs `Tuist-generated` inside the `Xcode` path, resolves concrete skills and subagents from a curated inventory, configures project `.codex/config.toml` and optional MCP, can enable official multi-agent runtime in `.codex/config.toml`, applies repo snippets with deterministic copy or merge rules, uses shape-specific `SwiftLint`, normalizes GitHub Actions guardrails, and generates the final `AGENTS.md`.
+Codex skill for bootstrapping and standardizing Apple workspaces.
+
+It interviews the user, detects existing repo structure, chooses or confirms `SPM` vs `Xcode`, supports native `xcodeproj` or `XcodeGen`-generated `xcodeproj`, configures `.codex/config.toml` and optional MCP, applies repo snippets, and generates final-state `AGENTS.md`.
 
 ## Install
 
-Keep the skill inside the target repository so the version stays pinned with the project.
+Recommended for Codex:
 
 ```bash
-mkdir -p .codex/skills
-git clone https://github.com/inekipelov/apple-platform-project-setup-skill.git .codex/skills/apple-platform-project-setup-skill
+npx skills add inekipelov/apple-platform-project-setup-skill -a codex
 ```
 
-Register it in `.codex/config.toml`:
-
-```toml
-#:schema https://developers.openai.com/codex/config-schema.json
-
-[[skills.config]]
-path = ".codex/skills/apple-platform-project-setup-skill"
-enabled = true
-```
-
-Codex loads project-scoped `.codex/config.toml` only for trusted projects.
-
-This is the only install path you need for this repo.
-
-For advanced `.codex/config.toml`, MCP setup, or wrapper instructions, see [`references/codex-config.md`](references/codex-config.md) and [`references/mcp-setup.md`](references/mcp-setup.md).
-
-## Configure MCP
-
-### Recommended: `sosumi` over HTTP MCP
-
-For Apple documentation lookup, prefer remote HTTP MCP:
-
-```toml
-[mcp_servers.sosumi]
-url = "https://sosumi.ai/mcp"
-```
-
-This works for both `spm` and `xcode` workspaces and does not require the `sosumi` CLI.
-
-### `xcode` MCP for `xcode` workspaces only
-
-This skill treats `xcode` MCP as an `xcode`-only integration.
-
-First enable external agents in Xcode:
-
-1. Open the project in Xcode.
-2. Go to `Xcode > Settings > Intelligence`.
-3. Turn on `Allow external agents to use Xcode tools`.
-
-Then configure the bridge:
+GitHub URL fallback:
 
 ```bash
-codex mcp add xcode -- xcrun mcpbridge
+npx skills add https://github.com/inekipelov/apple-platform-project-setup-skill -a codex
 ```
 
-Or register it in TOML:
+## Source Of Truth
 
-```toml
-[mcp_servers.xcode]
-command = "xcrun"
-args = ["mcpbridge"]
-```
+- [SKILL.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/SKILL.md)
+- [catalog.yaml](/Users/inekipelov/Developer/apple-platform-project-setup-skill/catalog.yaml)
+- [references/](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/project-interview.md)
+- [snippets/](/Users/inekipelov/Developer/apple-platform-project-setup-skill/snippets/common/AGENTS.bootstrap.md)
 
-If the repository uses `Tuist`, run `tuist generate` first and open the generated project or workspace in Xcode before enabling `xcode` MCP.
+## Notes
 
-Do not configure `xcode` MCP for `spm` workspaces in this repo contract.
-
-## How it works
-
-It starts with `obra/superpowers`. If that baseline is missing, the skill stops and asks for confirmation before any user-level install or home-directory change.
-
-Once the baseline is available, the skill first detects whether the repo is greenfield or already structured. For existing repos it switches to audit-and-align mode: confirm the detected shape, preserve current structure first, then propose only the standardization work the user actually wants. The interview covers project purpose, agent personalization, Apple platforms, UI stack, CI needs, repository policy, project config, multi-agent runtime needs, and MCP needs. It can enable official multi-agent runtime in `.codex/config.toml`, but it treats that as a config-layer decision and then asks separately whether to continue into project-local subagent selection. If runtime stays disabled, project-local subagents can still be selected directly. Only then does it choose or confirm `SPM` or `Xcode`. If `Xcode` is selected, the skill keeps `native xcodeproj` as the default unless the repo already uses `Tuist` or the user explicitly wants `Tuist-generated`. After that it checks prerequisites such as `npx`, `gitlint`, `swiftlint`, and optionally `tuist`, maps the project to capability categories, resolves one inventory-backed best-fit `$skill-name` or `@agent-name` per capability gap, chooses the matching `SwiftLint` snippet, configures project `.codex/config.toml`, and leaves the final choice with the user.
-
-After the selection is confirmed, the skill installs or copies only the chosen items, applies the repo snippets, and generates the repo-specific `AGENTS.md` from the bootstrap snippet.
-
-## Rules
-
-- `obra/superpowers` comes first.
-- The skill supports both `greenfield` and `existing_structured_repo` repo states.
-- `skills.sh` is preferred when a community skill supports it.
-- Upstream instructions are fallback only.
-- Global installs and user-home changes always require explicit confirmation.
-- Project-local skills and subagents are preferred by default.
-- Project-local skills live under `.codex/skills/`; project-local subagents live under `.codex/agents/`.
-- Prefer project `.codex/config.toml` for repo-local Codex setup.
-- When the repo carries project-local Codex config, prefer the standard `setup`, `review`, and `release` profiles with `setup` as the default profile.
-- Official multi-agent runtime is an optional `.codex/config.toml` layer using `features.multi_agent` and `agents.*`.
-- `setup`, `review`, and `release` stay operating modes; official multi-agent runtime stays a separate optional capability layer.
-- Runtime multi-agent config and installed project-local subagents are separate layers.
-- Enabling runtime multi-agent config triggers a second explicit decision about project-local subagents; direct subagent selection remains possible without runtime config.
-- `sosumi` HTTP MCP is preferred over the `sosumi` CLI.
-- `xcode` MCP is allowed only for `xcode` workspaces in this skill.
-- `Tuist` is an optional `Xcode` sub-mode, not a third workspace shape.
-- Inside `Xcode`, `native xcodeproj` stays the default and `Tuist` stays optional.
-- `SwiftLint` is shape-specific: `SPM` and `Xcode` get different `.swiftlint.yml` snippets.
-- GitHub Actions snippets include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
-- Final selected skills come from `inventory/skills.yaml`.
-- Final selected subagents come from `inventory/subagents.yaml`.
-- `AGENTS.md` is declarative final-state only. It must reference skills as `$skill-name` and subagents as `@agent-name`.
-- `AGENTS.md` uses fixed sections, including a required `Agent Personalization` section with exact line prefixes.
-- In generated `AGENTS.md`, commands belong only in `Core Commands`; `Repository Rules` contains non-command repo policy only.
-- The skill explicitly asks which communication language should be fixed in `AGENTS.md`; if the user does not choose one, the fallback is the language the client used to contact the agent.
-- `AGENTS.md` lists only installed project-local skills and subagents.
-- Snippet-backed files follow `target_path`, `apply_mode`, `conflict_policy`, and `merge_strategy` from `catalog.yaml`.
-- In existing structured repos, preserve current structure first and replace files only after explicit compare-and-confirm decisions.
-
-## Source of truth
-
-- [`SKILL.md`](SKILL.md): orchestration and runtime order
-- [`catalog.yaml`](catalog.yaml): machine-readable artifact contract
-- [`inventory/`](inventory/): curated concrete skills and subagents
-- [`references/`](references/): install policy, source precedence, config, MCP, interview, and selection rules
-- [`snippets/`](snippets/): canonical files for `AGENTS.md`, linting, ignore rules, and GitHub Actions
-
-## Repository layout
-
-```text
-apple-platform-project-setup-skill/
-  SKILL.md
-  catalog.yaml
-  inventory/
-  agents/
-  references/
-  snippets/
-```
-
-## Development
-
-This repository is maintained as a skill contract, not a template bundle.
-
-Maintainer releases are manual:
-
-- branch from `main` into a short-lived `release/x.y.z` branch
-- run the manual release preparation workflow on that branch
-- publish a stable `vX.Y.Z` tag as a draft GitHub Release with auto-generated notes
-- use GitHub Releases as the only changelog for this repository
-
-Use [`references/release-management.md`](references/release-management.md) for the maintainer release contract and [`references/skill-verification.md`](references/skill-verification.md) for the recorded RED/GREEN expectations.
+- Project-local install path: `.codex/skills/apple-platform-project-setup-skill`
+- Advanced config and MCP guidance: [codex-config.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/codex-config.md), [mcp-setup.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/mcp-setup.md)
+- Maintainer release contract: [release-management.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/release-management.md)
