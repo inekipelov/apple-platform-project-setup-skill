@@ -42,9 +42,4 @@ jobs:
             exit 0
           fi
 
-          if [[ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]]; then
-            gitlint --config .gitlint --commit "${{ github.sha }}"
-            exit 0
-          fi
-
-          gitlint --config .gitlint --commits "${{ github.event.before }}..${{ github.sha }}"
+          gitlint --config .gitlint --commit "${{ github.sha }}"
