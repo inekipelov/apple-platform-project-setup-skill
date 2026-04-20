@@ -1,6 +1,6 @@
 # Apple Platform Project Setup Skill
 
-[![ChatGPT](https://custom-icon-badges.demolab.com/badge/Codex-74aa9c?logo=openai&logoColor=black)]()
+[![Codex Skill](https://custom-icon-badges.demolab.com/badge/Codex-74aa9c?logo=openai&logoColor=black)](https://github.com/inekipelov/apple-platform-project-setup-skill)
 
 Codex skill for bootstrapping and standardizing Apple workspaces.
 
@@ -22,14 +22,14 @@ npx skills add https://github.com/inekipelov/apple-platform-project-setup-skill 
 
 ## Source Of Truth
 
-- [SKILL.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/SKILL.md)
-- [catalog.yaml](/Users/inekipelov/Developer/apple-platform-project-setup-skill/catalog.yaml)
-- [references/](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/project-interview.md)
-- [snippets/](/Users/inekipelov/Developer/apple-platform-project-setup-skill/snippets/common/AGENTS.bootstrap.md)
+- [SKILL.md](./SKILL.md)
+- [catalog.yaml](./catalog.yaml)
+- [references/project-interview.md](./references/project-interview.md)
+- [snippets/common/AGENTS.bootstrap.md](./snippets/common/AGENTS.bootstrap.md)
 
 ## Notes
 
 - Project-local install path: `.codex/skills/apple-platform-project-setup-skill`
 - This repository enforces `type(scope): summary` commits with mandatory repo-specific scopes via root `.gitlint`
-- Advanced config and MCP guidance: [codex-config.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/codex-config.md), [mcp-setup.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/mcp-setup.md)
-- Maintainer release contract: short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the changelog. See [release-management.md](/Users/inekipelov/Developer/apple-platform-project-setup-skill/references/release-management.md)
+- Advanced config and MCP guidance: [references/codex-config.md](./references/codex-config.md), [references/mcp-setup.md](./references/mcp-setup.md)
+- Maintainer release contract: short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the changelog. See [references/release-management.md](./references/release-management.md)
