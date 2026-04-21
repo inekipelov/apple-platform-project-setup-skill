@@ -46,7 +46,11 @@ artifacts:
     selection_hints:
       - Mandatory first step for every workspace setup run.
       - Discover currently available plugins, project-local skills, project-local subagents, and configured MCP before proposing any new install.
+      - Plugins are discovered from the active Codex session and used as capability surfaces; this skill does not install plugins into the repository.
       - Treat Superpowers as a plugin capability surface, not as a project-local skill install target.
+      - "When available in the active session, recommended plugin capability surfaces for Apple-platform work are `Build iOS Apps`, `Build macOS Apps`, and `Expo`."
+      - "For Expo projects, prefer the Expo-managed simulator loop: `expo start`, `expo start --ios`, or the matching Codex `Run` / `Run iOS` action path before `expo run:ios`, prebuild, or `eas build`."
+      - "Use Expo dev clients only when custom native code, Apple targets, or native modules outside Expo Go require them."
       - After capability discovery, detect whether the repo is `greenfield` or `existing_structured_repo` before running the interview.
 
   - artifact: agents-bootstrap

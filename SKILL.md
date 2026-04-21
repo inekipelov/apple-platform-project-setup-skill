@@ -72,9 +72,12 @@ Never reorder these steps.
 | AGENTS skill sequencing | render skill timing and order only in the fixed `Skill Usage Order` section |
 | Selection model | recommend one best-fit option, user keeps the final choice |
 | Concrete selection source | `inventory/skills.yaml` and `inventory/subagents.yaml` |
+| Plugin install policy | discover plugin-provided capabilities from the active Codex session; do not install plugins into the repository as project-local assets |
 | Skill install preference | `skills.sh` first, upstream instructions second |
 | Subagent install location | `.codex/agents/` by default |
 | Superpowers policy | treat Superpowers as a Codex plugin surface, not as a skill install target |
+| Recommended plugins | when available, prefer `Build iOS Apps`, `Build macOS Apps`, and `Expo` as the primary plugin capability surfaces for Apple-platform work |
+| Expo simulator path | for Expo iOS loops, prefer `expo start`, `expo start --ios`, or the Codex `Run` / `Run iOS` action path before `expo run:ios`, prebuild, or `eas build` |
 | Project config | prefer project `.codex/config.toml` for skill registration, optional wrappers, and the standard `setup` / `review` / `release` profile set |
 | Multi-agent runtime | optional `.codex/config.toml` layer using official `features.multi_agent` and `agents.*` keys |
 | Sosumi integration | prefer HTTP MCP; CLI is optional |
@@ -104,7 +107,10 @@ Never reorder these steps.
   - `discovered_project_local_skills`
   - `discovered_project_local_subagents`
   - `discovered_mcp_servers`
+- Treat plugins as session-level capability surfaces. Discover them from the active Codex environment; do not install them into the repository as project-local skills, subagents, or copied plugin bundles.
 - Treat Superpowers as a plugin capability surface. Do not try to install `obra/superpowers` as a skill in this repository.
+- When they are already available in the current session, prefer plugin-associated capabilities from `Build iOS Apps`, `Build macOS Apps`, and `Expo` over inventing parallel local workflow guidance.
+- For Expo iOS simulator work, prefer `expo start`, `expo start --ios`, or the Codex `Run` / `Run iOS` action path. Use Expo dev clients only when native code or Apple targets require them.
 - Treat this discovery step as mandatory. Do not propose new skills, subagents, or MCP until the current capability surface is known.
 
 ### 2. Detect repository state

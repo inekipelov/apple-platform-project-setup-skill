@@ -40,6 +40,13 @@ This source decides:
 - which project-local skills are already installed
 - which project-local subagents are already installed
 - which MCP integrations are already configured
+- which plugin-provided capabilities can be used immediately without any repo-local plugin install step
+
+This source does not authorize:
+
+- installing plugins into the repository
+- cloning or mirroring plugin bundles into project-local paths
+- treating plugin availability as the same thing as project-local skill installation
 
 For this repository:
 
