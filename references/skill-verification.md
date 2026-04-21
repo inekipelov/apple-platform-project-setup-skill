@@ -109,6 +109,11 @@ After the repo contract is present, verify that:
 45. Existing structured repos are handled through preserve-first `audit-and-align` behavior instead of blind bootstrap replacement.
 46. The interview records `repo_state`, `detected_workspace_shape`, `detected_xcode_project_strategy`, and `standardization_scope`.
 47. Existing repo signals override bootstrap defaults unless the user explicitly wants migration or replacement.
+48. `SPM` workflows cache repo-local `.build` rather than global SwiftPM dependency directories.
+49. `SPM` workflows use explicit `actions/cache/restore` and `actions/cache/save` steps with workflow-specific branch-or-ref-plus-commit cache keys and restore prefixes.
+50. The `SPM` test workflow builds before testing, saves `.build` before test execution, and runs `swift test --skip-build --parallel`.
+51. `references/github-actions.md` documents `runner.debug != '1'` as the clean-build escape hatch for cache troubleshooting.
+52. Native `Xcode` and `Xcode + XcodeGen` workflows keep their existing `DerivedData` and package-resolution strategy rather than adopting the `SPM` `.build` cache pattern.
 
 ## REFACTOR Watchlist
 
@@ -128,6 +133,8 @@ Look for these rationalizations in future revisions:
 - "SPM can open in Xcode, so enabling Xcode MCP there is harmless."
 - "The SwiftLint rules are mostly shared, so one file is good enough for both shapes."
 - "These workflow snippets are simple enough that permissions and concurrency do not matter."
+- "Caching only SwiftPM dependency directories is close enough; repo-local `.build` caching is unnecessary for `SPM`."
+- "If tests fail, skipping cache save is acceptable even when a prior build already produced reusable `.build` artifacts."
 - "XcodeGen is different enough that it should be a third workspace shape."
 - "Once XcodeGen is selected, I can keep using the native Xcode snippets."
 - "The recommendation process is useful context, so it belongs in the final AGENTS file."
