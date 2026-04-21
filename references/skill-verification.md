@@ -114,6 +114,8 @@ After the repo contract is present, verify that:
 50. The `SPM` test workflow builds before testing, saves `.build` before test execution, and runs `swift test --skip-build --parallel`.
 51. `references/github-actions.md` documents `runner.debug != '1'` as the clean-build escape hatch for cache troubleshooting.
 52. Native `Xcode` and `Xcode + XcodeGen` workflows keep their existing `DerivedData` and package-resolution strategy rather than adopting the `SPM` `.build` cache pattern.
+53. Capability discovery names `Build iOS Apps`, `Build macOS Apps`, and `Expo` as recommended plugin capability surfaces for Apple-platform projects when they are available in the active session.
+54. Expo guidance keeps the fastest iOS simulator loop on `expo start --ios` or the matching Codex `Run iOS` path, and only escalates to dev clients when native code or Apple targets require them.
 
 ## REFACTOR Watchlist
 
@@ -157,5 +159,6 @@ Look for these rationalizations in future revisions:
 - "This repo already has files, so the skill should stop instead of helping."
 - "The repo already has files, so I should replace them with the canonical snippets in one pass."
 - "Detected `XcodeGen` or native Xcode structure is only historical noise; greenfield defaults are still better."
+- "Expo on iOS means I should jump straight to `expo run:ios`, prebuild, or `eas build` instead of trying `expo start --ios` first."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.
