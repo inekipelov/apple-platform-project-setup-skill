@@ -379,7 +379,8 @@ artifacts:
     selection_hints:
       - Keep the workflow package-first.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
-      - Cache SwiftPM dependency directories rather than arbitrary build outputs.
+      - Cache repo-local `.build` with explicit restore/save steps keyed by workflow kind, branch or ref, and commit SHA.
+      - Use `swift build --build-tests`, and bypass cache restore/save on debug reruns.
       - For `existing_structured_repo`, refine or replace only after comparing the existing workflow and getting explicit confirmation.
 
   - artifact: spm-test-workflow
@@ -396,7 +397,8 @@ artifacts:
     selection_hints:
       - Keep the workflow package-first.
       - Include `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
-      - Cache SwiftPM dependency directories rather than arbitrary build outputs.
+      - Cache repo-local `.build` with explicit restore/save steps keyed by workflow kind, branch or ref, and commit SHA.
+      - Build before test, save `.build`, then run `swift test --skip-build --parallel`.
       - For `existing_structured_repo`, refine or replace only after comparing the existing workflow and getting explicit confirmation.
 
   - artifact: xcode-native-gitignore

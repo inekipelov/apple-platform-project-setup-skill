@@ -128,6 +128,43 @@ assert(errors, skill_doc.include?("references/capability-discovery.md"), "SKILL.
 assert(errors, skill_doc.include?("Skill Usage Order"), "SKILL.md must include the Skill Usage Order contract")
 assert(errors, !skill_doc.include?("references/install-superpowers.md"), "SKILL.md must not reference install-superpowers.md")
 
+github_actions_doc = read_file("references/github-actions.md")
+%w[
+  .build
+  actions/cache/restore@v4
+  actions/cache/save@v4
+  --skip-build
+].each do |token|
+  assert(errors, github_actions_doc.include?(token), "github-actions doc must include #{token}")
+end
+
+spm_build_workflow = read_file("snippets/spm/workflows/build.yml")
+%w[
+  path:\ .build
+  actions/cache/restore@v4
+  actions/cache/save@v4
+  github.event.pull_request.base.ref\ \|\|\ github.ref_name
+  github.sha
+  runner.debug\ !=\ '1'
+  swift\ build\ --build-tests
+].each do |token|
+  assert(errors, spm_build_workflow.include?(token.delete("\\")), "spm build workflow must include #{token.delete("\\")}")
+end
+
+spm_test_workflow = read_file("snippets/spm/workflows/test.yml")
+%w[
+  path:\ .build
+  actions/cache/restore@v4
+  actions/cache/save@v4
+  github.event.pull_request.base.ref\ \|\|\ github.ref_name
+  github.sha
+  runner.debug\ !=\ '1'
+  swift\ build\ --build-tests
+  swift\ test\ --skip-build\ --parallel
+].each do |token|
+  assert(errors, spm_test_workflow.include?(token.delete("\\")), "spm test workflow must include #{token.delete("\\")}")
+end
+
 readme = read_file("README.md")
 assert(errors, readme.include?("release/x.y.z"), "README must mention release/x.y.z branches")
 assert(errors, readme.include?("vX.Y.Z"), "README must mention vX.Y.Z tags")

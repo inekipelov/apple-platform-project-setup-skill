@@ -30,16 +30,23 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Cache SwiftPM dependencies
-        uses: actions/cache@v4
+      - name: Restore SwiftPM build cache
+        if: ${{ runner.debug != '1' }}
+        id: restore-build
+        uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.swiftpm
-            ~/Library/Caches/org.swift.swiftpm
-          key: ${{ runner.os }}-spm-build-${{ hashFiles('**/Package.resolved', '**/Package.swift') }}
+          path: .build
+          key: ${{ runner.os }}-spm-build-${{ github.event.pull_request.base.ref || github.ref_name }}-${{ github.sha }}
           restore-keys: |
+            ${{ runner.os }}-spm-build-${{ github.event.pull_request.base.ref || github.ref_name }}-
             ${{ runner.os }}-spm-build-
-            ${{ runner.os }}-spm-
 
       - name: Swift build
         run: swift build --build-tests
+
+      - name: Save SwiftPM build cache
+        if: ${{ runner.debug != '1' && steps.restore-build.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: .build
+          key: ${{ steps.restore-build.outputs.cache-primary-key }}

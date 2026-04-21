@@ -82,7 +82,7 @@ Never reorder these steps.
 | Xcode strategy | after `Xcode` is chosen, default to native `xcodeproj` unless `XcodeGen` is explicitly selected or clearly justified |
 | XcodeGen policy | `XcodeGen` is an optional `Xcode` sub-mode, not a third workspace shape |
 | SwiftLint policy | choose the `SPM` or `Xcode` SwiftLint snippet after the workspace shape is known |
-| GitHub Actions policy | every workflow keeps `workflow_dispatch`, least-privilege permissions, and concurrency |
+| GitHub Actions policy | every workflow keeps `workflow_dispatch`, least-privilege permissions, and concurrency; `SPM` uses repo-local `.build` restore/save caching with build-before-test, while `Xcode` paths keep their selected snippet strategy |
 | Global tool install policy | propose only, never auto-install |
 | Project choice | decide `SPM` vs `Xcode` after interview, not before |
 | Existing repo policy | preserve first, standardize second |
@@ -282,6 +282,12 @@ Apply or refine:
 - the selected build and test workflows
 
 Use [`references/github-actions.md`](references/github-actions.md) when refining the workflow snippets.
+
+For workflow caching strategy:
+
+- for `SPM`, keep the workflow package-first and use repo-local `.build` cache restore/save steps, `swift build --build-tests`, and `swift test --skip-build --parallel`
+- for native `Xcode` and `Xcode + XcodeGen`, keep the selected snippet strategy based on repo-local `DerivedData` and explicit package-resolution paths
+- do not retrofit the `SPM` `.build` cache pattern onto native `Xcode` or `XcodeGen` workflows in this repository
 
 Always apply snippet-backed artifacts using the contract in [`catalog.yaml`](catalog.yaml):
 
@@ -554,5 +560,5 @@ Correct response shape:
 11. Configure project `.codex/config.toml` and any approved MCP servers.
 12. If the user accepted `SFSafeSymbols`, add that package dependency and merge the SF Symbols SwiftLint rule.
 13. If the workspace is `Xcode` and the user wants Xcode tools, configure `xcode` MCP through `xcrun mcpbridge`. If the repo uses `XcodeGen`, require `xcodegen generate --spec project.yml` first.
-14. Apply common snippets plus either the native `Xcode` snippets or the `XcodeGen` Xcode snippets, including the shared `Xcode` SwiftLint snippet and the matching workflow guardrails.
+14. Apply common snippets plus either the native `Xcode` snippets or the `XcodeGen` Xcode snippets, including the shared `Xcode` SwiftLint snippet and the matching workflow guardrails and caching strategy.
 15. Generate the repo-specific `AGENTS.md` from the bootstrap snippet, including `Installed Skills`, `Skill Usage Order`, and `Installed Subagents`.

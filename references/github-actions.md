@@ -8,6 +8,11 @@ For workflow structure and permissions, prefer official GitHub documentation:
 
 - <https://docs.github.com/en/actions/tutorials/build-and-test-code/swift>
 - <https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token>
+- <https://docs.github.com/en/actions/reference/dependency-caching-reference>
+
+For cache restore/save semantics, prefer the `actions/cache` documentation:
+
+- <https://github.com/actions/cache>
 
 For selecting Xcode on GitHub-hosted macOS runners, use the `setup-xcode` action documentation:
 
@@ -54,11 +59,19 @@ The `SPM` workflow snippets should:
 
 - run on `macos-15`
 - select the latest stable Xcode
-- cache SwiftPM dependency directories, not arbitrary derived build products
+- cache repo-local `.build`, not global SwiftPM dependency directories
+- use `actions/cache/restore@v4` and `actions/cache/save@v4`
+- use a primary cache key made from runner OS, workflow kind, branch or ref signal, and current commit SHA
+- use restore keys that first try the same workflow plus branch or ref prefix, then the same workflow prefix
+- bypass cache restore and save during debug reruns with `if: ${{ runner.debug != '1' }}`
 - use `swift build --build-tests` for the build workflow
-- use `swift test --parallel` for the test workflow
+- in the test workflow, run `swift build --build-tests`, save `.build`, then run `swift test --skip-build --parallel`
 
 These snippets are package-first and should stay free of Xcode-project-specific assumptions.
+
+The article's `zstd` guidance matters most for containerized workflows. The canonical `macos-15` snippets in this repository do not add a separate `zstd` install step.
+
+Do not promote the article's Docker deploy, Linux container, or self-hosted runner guidance into the default `SPM` contract for this Apple-platform setup skill.
 
 ## Native `Xcode` Build and Test Workflows
 
@@ -72,6 +85,8 @@ The native `Xcode` workflow snippets should:
 
 These snippets are app-first and may assume checked-in Xcode project or scheme inputs.
 
+Keep the native `Xcode` workflow strategy based on repo-local `DerivedData` and explicit package-resolution paths. Do not retrofit the `SPM` `.build` cache pattern onto these snippets.
+
 ## `Xcode + XcodeGen` Build and Test Workflows
 
 The `Xcode + XcodeGen` workflow snippets should:
@@ -84,6 +99,8 @@ The `Xcode + XcodeGen` workflow snippets should:
 - run `xcodebuild` build and test commands against the generated `.xcodeproj`
 
 For this repo contract, the XcodeGen workflow path uses `xcodegen generate` followed by `xcodebuild` as the default CI path for generated-project repositories.
+
+Keep the `Xcode + XcodeGen` workflow strategy based on generated projects, repo-local `DerivedData`, and explicit package-resolution paths. Do not retrofit the `SPM` `.build` cache pattern onto these snippets.
 
 ## Maintainer Release Workflow For This Repository
 
