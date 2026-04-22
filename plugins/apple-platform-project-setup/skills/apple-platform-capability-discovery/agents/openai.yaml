@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Capability Discovery"
+  short_description: "Inspect plugin, MCP, and repo state before Apple setup decisions."
+  default_prompt: "Use $apple-platform-capability-discovery before interviewing the user or proposing Apple workspace setup changes."
+policy:
+  allow_implicit_invocation: false

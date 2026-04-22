@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Artifact Application"
+  short_description: "Apply README, lint, workflow, and Xcode artifacts safely."
+  default_prompt: "Use $apple-platform-artifact-application to apply or align Apple repo README, lint, workflow, and Xcode artifacts after setup decisions are final."
+policy:
+  allow_implicit_invocation: false

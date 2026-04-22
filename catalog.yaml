@@ -188,7 +188,7 @@ artifacts:
         - telemetry / analytics config
     selection_hints:
       - Prefer project-scoped `.codex/config.toml` for repo-local Codex setup.
-      - Register the local skill with `[[skills.config]]`.
+      - If the target repo vendors this plugin locally, register the orchestration skill with `[[skills.config]]` using the vendored plugin skill path.
       - Prefer `profile = "setup"` plus the standard `setup`, `review`, and `release` profiles when the repo wants project-local Codex operating modes.
       - Use only official config keys such as `personality`, `approval_policy`, `sandbox_mode`, `web_search`, `model_reasoning_effort`, and `plan_mode_reasoning_effort` in that baseline.
       - If the interview enables official multi-agent runtime, add the exact baseline `features.multi_agent = true`, `agents.max_threads = 3`, `agents.max_depth = 2`, and `agents.job_max_runtime_seconds = 900`.

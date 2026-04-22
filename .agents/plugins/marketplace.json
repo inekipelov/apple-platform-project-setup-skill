@@ -1,0 +1,20 @@
+{
+  "name": "apple-platform-project-setup-marketplace",
+  "interface": {
+    "displayName": "Apple Platform Setup"
+  },
+  "plugins": [
+    {
+      "name": "apple-platform-project-setup",
+      "source": {
+        "source": "local",
+        "path": "./plugins/apple-platform-project-setup"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

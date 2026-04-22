@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Setup Verification"
+  short_description: "Validate final Apple setup state and summarize what remains."
+  default_prompt: "Use $apple-platform-setup-verification to validate the final Apple setup state and summarize configured versus pending work."
+policy:
+  allow_implicit_invocation: false
