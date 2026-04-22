@@ -128,6 +128,7 @@ It also does not mean the whole catalog should be installed.
 After precedence is resolved:
 
 - choose one capability category first
+- use `coverage_tags` to narrow the interview signal inside that chosen category
 - resolve one concrete candidate from `inventory/skills.yaml` or `inventory/subagents.yaml`
 - choose one recommended `$skill-name` per capability gap
 - choose one recommended `@agent-name` per capability gap

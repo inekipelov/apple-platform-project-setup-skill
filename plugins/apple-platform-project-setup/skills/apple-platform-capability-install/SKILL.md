@@ -21,9 +21,11 @@ Use this skill when:
 - Compare project needs against discovered plugin surfaces and project-local capabilities first.
 - Prefer already available plugin-provided skills or already installed project-local skills when they already cover the need.
 - Use [`inventory/skills.yaml`](../../../../inventory/skills.yaml) and [`inventory/subagents.yaml`](../../../../inventory/subagents.yaml) as the concrete recommendation layer.
+- Choose one capability category first, then use `coverage_tags` in the inventory to resolve the best-fit concrete skill.
 - Recommend one best-fit skill or subagent per capability gap.
 - Keep alternatives only as conditional fallbacks with explicit `choose instead if ...` guidance.
 - The user still confirms or overrides the final selection.
+- Do not turn artifact-driven needs such as SwiftLint, gitlint, workflows, or `.codex/config.toml` into fake skill-install gaps.
 
 ## Skill Install Rules
 
@@ -32,6 +34,7 @@ Use this skill when:
 - Treat every external source as a catalog, not a single install target.
 - Install community skills project-locally by default when the installer supports it.
 - If the installer only supports user-level install, explain the limitation and ask before proceeding.
+- If a discovered plugin-provided skill already covers an AppKit, SwiftUI, or other Apple-platform gap, do not mirror it as a project-local install unless the user explicitly wants that duplication.
 
 ## Subagent Rules
 

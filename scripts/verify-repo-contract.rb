@@ -22,6 +22,24 @@ PLUGIN_SKILLS = %w[
   apple-platform-setup-verification
 ].freeze
 LEAF_SKILLS = PLUGIN_SKILLS - [ORCHESTRATION_SKILL]
+SKILL_CATEGORIES = %w[
+  ui
+  persistence
+  app-architecture
+  package-design
+  testing
+  tooling
+  ci-automation
+  release-automation
+  repo-automation
+  networking
+].freeze
+REQUIRED_INVENTORY_SKILL_IDS = %w[
+  app-store-changelog
+  swiftui-ui-patterns
+  swiftui-view-refactor
+  ios-networking
+].freeze
 
 def repo_path(relative_path)
   File.join(ROOT, relative_path)
@@ -33,6 +51,10 @@ end
 
 def assert(errors, condition, message)
   errors << message unless condition
+end
+
+def non_empty_string?(value)
+  value.is_a?(String) && !value.strip.empty?
 end
 
 def parse_frontmatter(relative_path)
@@ -65,6 +87,8 @@ end
 plugin_manifest = JSON.parse(read_file(PLUGIN_MANIFEST_PATH))
 marketplace = JSON.parse(read_file(MARKETPLACE_PATH))
 catalog = YAML.load_file(repo_path("catalog.yaml"))
+inventory = YAML.load_file(repo_path("inventory/skills.yaml"))
+inventory_skills = inventory["skills"] || []
 project_codex_config = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "project-codex-config" }
 capability_discovery = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "capability-discovery" }
 agents_bootstrap = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "agents-bootstrap" }
@@ -88,6 +112,51 @@ assert(errors, marketplace_entry && marketplace_entry.dig("source", "source") ==
 assert(errors, marketplace_entry && marketplace_entry.dig("source", "path") == "./plugins/#{PLUGIN_NAME}", "marketplace plugin entry must point to ./plugins/#{PLUGIN_NAME}")
 assert(errors, marketplace_entry && marketplace_entry.dig("policy", "installation") == "AVAILABLE", "marketplace plugin entry must set installation to AVAILABLE")
 assert(errors, marketplace_entry && marketplace_entry.dig("policy", "authentication") == "ON_INSTALL", "marketplace plugin entry must set authentication to ON_INSTALL")
+
+assert(errors, inventory["version"] == 2, "inventory/skills.yaml must use schema version 2")
+assert(errors, inventory["inventory_scope"] == "curated_subset_not_exhaustive", "inventory/skills.yaml must declare curated_subset_not_exhaustive scope")
+assert(errors, inventory["skill_categories"] == SKILL_CATEGORIES, "inventory/skills.yaml must declare the canonical skill categories")
+assert(errors, inventory_skills.is_a?(Array) && !inventory_skills.empty?, "inventory/skills.yaml must contain at least one skill entry")
+
+inventory_skill_ids = inventory_skills.map { |entry| entry["id"] }
+assert(errors, inventory_skill_ids.uniq == inventory_skill_ids, "inventory/skills.yaml skill ids must be unique")
+
+SKILL_CATEGORIES.each do |category|
+  assert(errors, inventory_skills.any? { |entry| entry["category"] == category }, "inventory/skills.yaml must seed at least one #{category} skill")
+end
+
+REQUIRED_INVENTORY_SKILL_IDS.each do |skill_id|
+  assert(errors, inventory_skill_ids.include?(skill_id), "inventory/skills.yaml must include the #{skill_id} concrete entry")
+end
+
+inventory_skills.each do |entry|
+  %w[
+    id
+    display_name
+    source_artifact
+    category
+    use_when
+    recommend_when
+    install_method
+    install_name
+    install_command
+    upstream_url
+    local_install_support
+    platform_scope
+    confidence
+  ].each do |key|
+    assert(errors, non_empty_string?(entry[key]), "inventory skill #{entry['id'] || '<missing>'} must define #{key}")
+  end
+
+  assert(errors, SKILL_CATEGORIES.include?(entry["category"]), "inventory skill #{entry['id'] || '<missing>'} must use a canonical category")
+  assert(errors, entry["coverage_tags"].is_a?(Array) && !entry["coverage_tags"].empty?, "inventory skill #{entry['id'] || '<missing>'} must define non-empty coverage_tags")
+  assert(errors, entry["coverage_tags"].is_a?(Array) && entry["coverage_tags"].all? { |tag| non_empty_string?(tag) }, "inventory skill #{entry['id'] || '<missing>'} coverage_tags must be non-empty strings")
+  assert(errors, entry["alternative_ids"].is_a?(Array), "inventory skill #{entry['id'] || '<missing>'} must define alternative_ids as an array")
+  assert(errors, entry["verified_on"].to_s.match?(/\A\d{4}-\d{2}-\d{2}\z/), "inventory skill #{entry['id'] || '<missing>'} must define verified_on as an ISO date")
+  assert(errors, %w[high medium low].include?(entry["confidence"]), "inventory skill #{entry['id'] || '<missing>'} confidence must be high, medium, or low")
+  assert(errors, %w[skills_sh upstream_npx_catalog].include?(entry["install_method"]), "inventory skill #{entry['id'] || '<missing>'} must use a supported install_method")
+  assert(errors, entry["install_command"].include?("npx skills add"), "inventory skill #{entry['id'] || '<missing>'} must expose a deterministic npx install command")
+end
 
 PLUGIN_SKILLS.each do |skill_name|
   skill_dir = "#{PLUGIN_ROOT}/skills/#{skill_name}"
@@ -127,6 +196,13 @@ assert(errors, !capability_discovery.nil?, "catalog.yaml must define the capabil
 assert(errors, !agents_bootstrap.nil?, "catalog.yaml must define the agents-bootstrap artifact")
 assert(errors, !spm_readme.nil?, "catalog.yaml must define the spm-readme artifact")
 assert(errors, !app_readme.nil?, "catalog.yaml must define the app-readme artifact")
+
+catalog.fetch("artifacts").select { |artifact| artifact["artifact"].start_with?("community-skills-") }.each do |artifact|
+  categories = artifact["skill_categories"] || []
+  assert(errors, categories.all? { |category| SKILL_CATEGORIES.include?(category) }, "#{artifact['artifact']} must use only canonical skill categories")
+  assert(errors, !categories.include?("apple-fallback"), "#{artifact['artifact']} must not use the apple-fallback category")
+  assert(errors, !categories.include?("architecture"), "#{artifact['artifact']} must not use the legacy architecture category")
+end
 
 if project_codex_config
   config_profiles = project_codex_config["config_profiles"] || {}
@@ -234,6 +310,30 @@ assert(errors, project_interview_doc.include?("discovered_plugins"), "project in
 assert(errors, project_interview_doc.include?("Skill Usage Order"), "project interview must mention Skill Usage Order")
 assert(errors, project_interview_doc.include?("concise library-style `README.md` baseline"), "project interview must ask about the SPM README baseline")
 assert(errors, project_interview_doc.include?("app-first `README.md` baseline"), "project interview must ask about the app README baseline")
+
+skills_catalog_doc = read_file("references/skills-catalog.md")
+%w[
+  | `persistence` |
+  | `app-architecture` |
+  | `release-automation` |
+  | `networking` |
+  coverage_tags
+  verified_on
+  platform_scope
+  confidence
+].each do |token|
+  assert(errors, skills_catalog_doc.include?(token), "skills-catalog doc must include #{token}")
+end
+assert(errors, skills_catalog_doc.include?(".swiftlint.yml"), "skills-catalog doc must state that artifact-backed needs such as .swiftlint.yml are not forced skill-install gaps")
+assert(errors, !skills_catalog_doc.include?("| `apple-fallback` |"), "skills-catalog doc must not advertise the apple-fallback category")
+assert(errors, !skills_catalog_doc.include?("| `architecture` |"), "skills-catalog doc must not advertise the legacy architecture category")
+
+source_precedence_doc = read_file("references/source-precedence.md")
+assert(errors, source_precedence_doc.include?("coverage_tags"), "source precedence doc must use coverage_tags when narrowing skill selection")
+
+capability_install_skill = read_file("#{PLUGIN_ROOT}/skills/apple-platform-capability-install/SKILL.md")
+assert(errors, capability_install_skill.include?("coverage_tags"), "capability install skill must use coverage_tags when selecting a concrete skill")
+assert(errors, capability_install_skill.include?("fake skill-install gaps"), "capability install skill must forbid converting artifact-backed needs into fake skill-install gaps")
 
 capability_doc = read_file("references/capability-discovery.md")
 assert(errors, capability_doc.include?("obra/superpowers"), "capability-discovery doc must mention obra/superpowers explicitly")

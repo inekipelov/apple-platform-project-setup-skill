@@ -79,63 +79,64 @@ After the repo contract is present, verify that:
 5. `references/source-precedence.md` gives `skills.sh` higher priority than upstream fallback when available.
 6. `catalog.yaml` maps every managed artifact to snippets, prerequisites, install strategy, sources, and snippet apply semantics where relevant.
 7. `inventory/skills.yaml` and `inventory/subagents.yaml` exist as curated concrete recommendation layers.
-8. `snippets/` contains common plus `SPM`, native `Xcode`, and `Xcode + XcodeGen` file sets.
-9. The plugin ships one orchestration skill plus explicit-use leaf skills under `plugins/apple-platform-project-setup/skills/`.
-10. Every plugin skill has its own `agents/openai.yaml`, and every skill description starts with `Use when`.
-11. The selection contract recommends one best-fit skill or subagent while preserving user ownership of the final choice.
-12. The SF Symbols SwiftLint rule appears only when the user accepted `SFSafeSymbols` for the project.
-13. Skills sources are treated as catalogs, category selection happens before skill selection, and the whole catalog is never installed by default.
-14. Concrete skill and subagent recommendations come from the curated inventory or remain explicit source-level fallbacks when the inventory is not seeded.
-15. Snippet-backed artifacts declare deterministic target paths, apply modes, and overwrite or merge policies.
-16. The repo documents valid project `.codex/config.toml` setup using official Codex keys only.
-17. `sosumi` MCP is documented as HTTP-first and does not require the CLI by default.
-18. `xcode` MCP is documented and enforced only for `xcode` workspaces, never for `spm`.
-19. SwiftLint setup is shape-specific: `SPM` and `Xcode` select different `.swiftlint.yml` snippets.
-20. GitHub Actions snippets define consistent workflow guardrails such as `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
-21. `XcodeGen` is documented as an optional `Xcode` sub-mode, not as a third top-level workspace shape.
-22. The interview and skill contract resolve `xcode_project_strategy = native | xcodegen` only after `Xcode` is chosen.
-23. `catalog.yaml` contains both native `Xcode` artifacts and `XcodeGen`-specific `Xcode` artifacts.
-24. `xcode-swiftlint-config` stays shared across native and XcodeGen-managed `Xcode` repositories.
-25. XcodeGen-specific MCP guidance requires `xcodegen generate --spec project.yml` and an open generated project before `xcode` MCP is configured.
-26. `AGENTS.md` is rendered as a declarative final-state document with fixed section titles and no recommendation or alternatives sections.
-27. `Installed Skills` and `Installed Subagents` use exact installed-item line formats or the exact fallback line `- None installed.`
-28. `AGENTS.md` includes the exact section `Agent Personalization` with the six required line prefixes.
-29. The canonical Russian strict-quality profile and the client-language strict-quality fallback are both source-of-truth-documented.
-30. `Agent Personalization` and `Repository Rules` are documented as separate responsibilities and do not duplicate the same policy text.
-31. The plugin-first repo layout is documented, and `obra/superpowers` is treated as a plugin capability surface rather than a project-local skill install target.
-32. `Core Commands` is the only command-owning section in generated `AGENTS.md`, and `Repository Rules` is documented as non-command repo policy only.
-33. `Skill Usage Order` exists as a fixed section in generated `AGENTS.md`, and skill sequencing is not mixed into `Installed Skills`.
-34. The maintainer release contract uses short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the only changelog.
-35. The repo contains a manual `workflow_dispatch` release-preparation workflow that validates branch/version inputs, runs contract verification, and creates a draft GitHub Release.
-36. `.github/release.yml` groups auto-generated release notes by the repo label taxonomy.
-37. `.codex/config.toml` guidance recommends the standard `setup`, `review`, and `release` profiles using only official config keys.
-38. Advanced config knobs are documented as optional hardening, and `VERSION`, `CHANGELOG.md`, `review_model`, custom providers, provider auth, and telemetry are not recommended by default.
-39. The interview can explicitly enable official multi-agent runtime and records whether the baseline runtime config should be used.
-40. Multi-agent runtime guidance uses only official `features.multi_agent`, `agents.max_threads`, `agents.max_depth`, and `agents.job_max_runtime_seconds` keys.
-41. Runtime multi-agent config and installed project-local subagents are documented as separate layers with no implicit auto-conversion between them.
-42. The interview records `project_local_subagents_desired` and `subagent_flow_trigger` so direct subagent selection and follow-up subagent selection are distinguishable.
-43. The config contract explicitly documents `profiles.*` as operating modes and multi-agent runtime as a separate optional capability layer.
-44. The skill documents `greenfield` and `existing_structured_repo` as supported repo states.
-45. Existing structured repos are handled through preserve-first `audit-and-align` behavior instead of blind bootstrap replacement.
-46. The interview records `repo_state`, `detected_workspace_shape`, `detected_xcode_project_strategy`, and `standardization_scope`.
-47. Existing repo signals override bootstrap defaults unless the user explicitly wants migration or replacement.
-48. `SPM` workflows cache repo-local `.build` rather than global SwiftPM dependency directories.
-49. `SPM` workflows use explicit `actions/cache/restore` and `actions/cache/save` steps with workflow-specific branch-or-ref-plus-commit cache keys and restore prefixes.
-50. The `SPM` test workflow builds before testing, saves `.build` before test execution, and runs `swift test --skip-build --parallel`.
-51. `references/github-actions.md` documents `runner.debug != '1'` as the clean-build escape hatch for cache troubleshooting.
-52. Native `Xcode` and `Xcode + XcodeGen` workflows keep their existing `DerivedData` and package-resolution strategy rather than adopting the `SPM` `.build` cache pattern.
-53. Capability discovery names `Build iOS Apps`, `Build macOS Apps`, and `Expo` as recommended plugin capability surfaces for Apple-platform projects when they are available in the active session.
-54. Expo guidance keeps the fastest iOS simulator loop on `expo start --ios` or the matching Codex `Run iOS` path, and only escalates to dev clients when native code or Apple targets require them.
-55. `references/spm-readme.md` scopes the concise README baseline to library-first or package-first SwiftPM repositories instead of every SwiftPM repo.
-56. `catalog.yaml` contains an `spm-readme` artifact that targets `README.md` from `snippets/spm/README.md`.
-57. The SPM README contract forbids inferring Swift compiler support solely from `swift-tools-version`.
-58. The SPM README contract forbids inventing API examples, version numbers, or unsupported platform badges.
-59. The project interview records whether the SPM README baseline applies and the facts needed to fill it.
-60. `references/app-readme.md` defines the app-first README contract for `xcode` repositories.
-61. `catalog.yaml` contains an `app-readme` artifact that targets `README.md` from `snippets/xcode/README.md`.
-62. The app README contract requires minimum platform badges, real App Store URL only when it exists, technical stack, short summary, and internal docs link.
-63. The app README contract forbids placeholder App Store links and invented docs links.
-64. The project interview records whether the app-first README baseline applies and the facts needed to fill it.
+8. `inventory/skills.yaml` uses explicit capability categories, `coverage_tags`, deterministic install commands, and freshness metadata for each concrete skill entry.
+9. `snippets/` contains common plus `SPM`, native `Xcode`, and `Xcode + XcodeGen` file sets.
+10. The plugin ships one orchestration skill plus explicit-use leaf skills under `plugins/apple-platform-project-setup/skills/`.
+11. Every plugin skill has its own `agents/openai.yaml`, and every skill description starts with `Use when`.
+12. The selection contract recommends one best-fit skill or subagent while preserving user ownership of the final choice.
+13. The SF Symbols SwiftLint rule appears only when the user accepted `SFSafeSymbols` for the project.
+14. Skills sources are treated as catalogs, category selection happens before skill selection, and the whole catalog is never installed by default.
+15. Concrete skill and subagent recommendations come from the curated inventory or remain explicit source-level fallbacks when the inventory is not seeded.
+16. Snippet-backed artifacts declare deterministic target paths, apply modes, and overwrite or merge policies.
+17. The repo documents valid project `.codex/config.toml` setup using official Codex keys only.
+18. `sosumi` MCP is documented as HTTP-first and does not require the CLI by default.
+19. `xcode` MCP is documented and enforced only for `xcode` workspaces, never for `spm`.
+20. SwiftLint setup is shape-specific: `SPM` and `Xcode` select different `.swiftlint.yml` snippets.
+21. GitHub Actions snippets define consistent workflow guardrails such as `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+22. `XcodeGen` is documented as an optional `Xcode` sub-mode, not as a third top-level workspace shape.
+23. The interview and skill contract resolve `xcode_project_strategy = native | xcodegen` only after `Xcode` is chosen.
+24. `catalog.yaml` contains both native `Xcode` artifacts and `XcodeGen`-specific `Xcode` artifacts.
+25. `xcode-swiftlint-config` stays shared across native and XcodeGen-managed `Xcode` repositories.
+26. XcodeGen-specific MCP guidance requires `xcodegen generate --spec project.yml` and an open generated project before `xcode` MCP is configured.
+27. `AGENTS.md` is rendered as a declarative final-state document with fixed section titles and no recommendation or alternatives sections.
+28. `Installed Skills` and `Installed Subagents` use exact installed-item line formats or the exact fallback line `- None installed.`
+29. `AGENTS.md` includes the exact section `Agent Personalization` with the six required line prefixes.
+30. The canonical Russian strict-quality profile and the client-language strict-quality fallback are both source-of-truth-documented.
+31. `Agent Personalization` and `Repository Rules` are documented as separate responsibilities and do not duplicate the same policy text.
+32. The plugin-first repo layout is documented, and `obra/superpowers` is treated as a plugin capability surface rather than a project-local skill install target.
+33. `Core Commands` is the only command-owning section in generated `AGENTS.md`, and `Repository Rules` is documented as non-command repo policy only.
+34. `Skill Usage Order` exists as a fixed section in generated `AGENTS.md`, and skill sequencing is not mixed into `Installed Skills`.
+35. The maintainer release contract uses short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the only changelog.
+36. The repo contains a manual `workflow_dispatch` release-preparation workflow that validates branch/version inputs, runs contract verification, and creates a draft GitHub Release.
+37. `.github/release.yml` groups auto-generated release notes by the repo label taxonomy.
+38. `.codex/config.toml` guidance recommends the standard `setup`, `review`, and `release` profiles using only official config keys.
+39. Advanced config knobs are documented as optional hardening, and `VERSION`, `CHANGELOG.md`, `review_model`, custom providers, provider auth, and telemetry are not recommended by default.
+40. The interview can explicitly enable official multi-agent runtime and records whether the baseline runtime config should be used.
+41. Multi-agent runtime guidance uses only official `features.multi_agent`, `agents.max_threads`, `agents.max_depth`, and `agents.job_max_runtime_seconds` keys.
+42. Runtime multi-agent config and installed project-local subagents are documented as separate layers with no implicit auto-conversion between them.
+43. The interview records `project_local_subagents_desired` and `subagent_flow_trigger` so direct subagent selection and follow-up subagent selection are distinguishable.
+44. The config contract explicitly documents `profiles.*` as operating modes and multi-agent runtime as a separate optional capability layer.
+45. The skill documents `greenfield` and `existing_structured_repo` as supported repo states.
+46. Existing structured repos are handled through preserve-first `audit-and-align` behavior instead of blind bootstrap replacement.
+47. The interview records `repo_state`, `detected_workspace_shape`, `detected_xcode_project_strategy`, and `standardization_scope`.
+48. Existing repo signals override bootstrap defaults unless the user explicitly wants migration or replacement.
+49. `SPM` workflows cache repo-local `.build` rather than global SwiftPM dependency directories.
+50. `SPM` workflows use explicit `actions/cache/restore` and `actions/cache/save` steps with workflow-specific branch-or-ref-plus-commit cache keys and restore prefixes.
+51. The `SPM` test workflow builds before testing, saves `.build` before test execution, and runs `swift test --skip-build --parallel`.
+52. `references/github-actions.md` documents `runner.debug != '1'` as the clean-build escape hatch for cache troubleshooting.
+53. Native `Xcode` and `Xcode + XcodeGen` workflows keep their existing `DerivedData` and package-resolution strategy rather than adopting the `SPM` `.build` cache pattern.
+54. Capability discovery names `Build iOS Apps`, `Build macOS Apps`, and `Expo` as recommended plugin capability surfaces for Apple-platform projects when they are available in the active session.
+55. Expo guidance keeps the fastest iOS simulator loop on `expo start --ios` or the matching Codex `Run iOS` path, and only escalates to dev clients when native code or Apple targets require them.
+56. `references/spm-readme.md` scopes the concise README baseline to library-first or package-first SwiftPM repositories instead of every SwiftPM repo.
+57. `catalog.yaml` contains an `spm-readme` artifact that targets `README.md` from `snippets/spm/README.md`.
+58. The SPM README contract forbids inferring Swift compiler support solely from `swift-tools-version`.
+59. The SPM README contract forbids inventing API examples, version numbers, or unsupported platform badges.
+60. The project interview records whether the SPM README baseline applies and the facts needed to fill it.
+61. `references/app-readme.md` defines the app-first README contract for `xcode` repositories.
+62. `catalog.yaml` contains an `app-readme` artifact that targets `README.md` from `snippets/xcode/README.md`.
+63. The app README contract requires minimum platform badges, real App Store URL only when it exists, technical stack, short summary, and internal docs link.
+64. The app README contract forbids placeholder App Store links and invented docs links.
+65. The project interview records whether the app-first README baseline applies and the facts needed to fill it.
 
 ## REFACTOR Watchlist
 

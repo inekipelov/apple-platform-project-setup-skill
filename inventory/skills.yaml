@@ -1,21 +1,28 @@
-version: 1
+version: 2
 inventory_scope: curated_subset_not_exhaustive
 
 skill_categories:
   - ui
-  - architecture
+  - persistence
+  - app-architecture
   - package-design
   - testing
   - tooling
   - ci-automation
+  - release-automation
   - repo-automation
-  - apple-fallback
+  - networking
 
 skills:
   - id: swiftui-pro
     display_name: SwiftUI Pro
     source_artifact: community-skills-twostraws
     category: ui
+    coverage_tags:
+      - swiftui
+      - view-composition
+      - accessibility
+      - performance
     use_when: SwiftUI view composition and Apple UI guidance are central to the workspace.
     recommend_when: The repo is SwiftUI-first and needs one strong UI skill as the starting point.
     install_method: skills_sh
@@ -23,14 +30,23 @@ skills:
     install_command: npx skills add https://github.com/twostraws/swiftui-agent-skill --skill swiftui-pro
     upstream_url: https://github.com/twostraws/SwiftUI-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: high
     alternative_ids:
       - swiftui-expert-skill
+      - swiftui-ui-patterns
       - swiftui-uikit-interop
 
   - id: swiftdata-pro
     display_name: SwiftData Pro
     source_artifact: community-skills-twostraws
-    category: architecture
+    category: persistence
+    coverage_tags:
+      - swiftdata
+      - persistence
+      - data-modeling
+      - cloudkit-sync
     use_when: The project needs guidance on data flow, persistence, or SwiftData-backed app structure.
     recommend_when: Data modeling and persistence architecture are shaping early repository decisions.
     install_method: skills_sh
@@ -38,14 +54,21 @@ skills:
     install_command: npx skills add https://github.com/twostraws/swiftdata-agent-skill --skill swiftdata-pro
     upstream_url: https://github.com/twostraws/SwiftData-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: high
     alternative_ids:
       - core-data-expert
-      - swiftui-patterns
 
   - id: swift-testing-pro
     display_name: Swift Testing Pro
     source_artifact: community-skills-twostraws
     category: testing
+    coverage_tags:
+      - swift-testing
+      - async-testing
+      - parameterized-tests
+      - test-strategy
     use_when: The repo wants modern Swift Testing patterns and test-first Apple development guidance.
     recommend_when: Testing strategy is a first-class concern and the project is already leaning on modern Swift tooling.
     install_method: skills_sh
@@ -53,6 +76,9 @@ skills:
     install_command: npx skills add https://github.com/twostraws/swift-testing-agent-skill --skill swift-testing-pro
     upstream_url: https://github.com/twostraws/Swift-Testing-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: high
     alternative_ids:
       - swift-testing-expert
 
@@ -60,6 +86,11 @@ skills:
     display_name: SwiftUI Expert Skill
     source_artifact: community-skills-avdlee
     category: ui
+    coverage_tags:
+      - swiftui
+      - production-ui
+      - view-composition
+      - app-structure
     use_when: SwiftUI architecture and production UI patterns matter more than a generic Apple fallback.
     recommend_when: The repo needs UI guidance with a strong engineering bias rather than a broader Apple patterns catalog.
     install_method: skills_sh
@@ -67,34 +98,55 @@ skills:
     install_command: npx skills add https://github.com/avdlee/swiftui-agent-skill --skill swiftui-expert-skill
     upstream_url: https://github.com/avdlee/swiftui-agent-skill
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: high
     alternative_ids:
       - swiftui-pro
+      - swiftui-ui-patterns
       - swiftui-uikit-interop
 
   - id: core-data-expert
     display_name: Core Data Expert
     source_artifact: community-skills-avdlee
-    category: architecture
+    category: persistence
+    coverage_tags:
+      - core-data
+      - persistence
+      - migrations
+      - cloudkit-sync
     use_when: The project uses Core Data or needs persistence design guidance with Apple framework depth.
     recommend_when: Persistence architecture is central and Core Data is more relevant than SwiftData.
     install_method: skills_sh
     install_name: core-data-expert
-    upstream_url: https://skills.sh/avdlee
+    install_command: npx skills add https://github.com/avdlee/core-data-agent-skill --skill core-data-expert
+    upstream_url: https://github.com/AvdLee/Core-Data-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: high
     alternative_ids:
       - swiftdata-pro
-      - swiftui-patterns
 
   - id: swift-testing-expert
     display_name: Swift Testing Expert
     source_artifact: community-skills-avdlee
     category: testing
+    coverage_tags:
+      - swift-testing
+      - xctest-migration
+      - async-testing
+      - parallel-testing
     use_when: The repo needs Apple-focused testing guidance with strong emphasis on verification discipline.
     recommend_when: Testing matters early and the team wants a testing-specific expert rather than a broader UI or architecture skill.
     install_method: skills_sh
     install_name: swift-testing-expert
-    upstream_url: https://github.com/avdlee/swift-testing-agent-skill
+    install_command: npx skills add https://github.com/avdlee/swift-testing-agent-skill --skill swift-testing-expert
+    upstream_url: https://github.com/AvdLee/Swift-Testing-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: high
     alternative_ids:
       - swift-testing-pro
 
@@ -102,39 +154,85 @@ skills:
     display_name: Swift Concurrency
     source_artifact: community-skills-avdlee
     category: tooling
+    coverage_tags:
+      - swift-concurrency
+      - sendable
+      - actors
+      - async-await
     use_when: The repo needs structured concurrency guardrails, actor discipline, and async correctness during setup.
     recommend_when: Tooling and code-quality concerns are centered on concurrency mistakes rather than CI or repo automation.
     install_method: skills_sh
     install_name: swift-concurrency
-    upstream_url: https://skills.sh/avdlee
+    install_command: npx skills add https://github.com/avdlee/swift-concurrency-agent-skill --skill swift-concurrency
+    upstream_url: https://github.com/AvdLee/Swift-Concurrency-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: high
     alternative_ids: []
 
   - id: github
     display_name: GitHub
     source_artifact: community-skills-dimillian
     category: ci-automation
+    coverage_tags:
+      - github-actions
+      - ci
+      - workflows
+      - pull-requests
     use_when: The project needs GitHub workflow guidance, CI setup, or automation-aware repository operations.
     recommend_when: CI automation is one of the top capability gaps and GitHub is the chosen platform.
     install_method: skills_sh
     install_name: github
-    install_command: npx skills add https://github.com/dimillian/github --skill github
-    upstream_url: https://skills.sh/dimillian/skills
+    install_command: npx skills add https://github.com/dimillian/skills --skill github
+    upstream_url: https://skills.sh/dimillian/skills/github
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: common
+    confidence: high
     alternative_ids:
       - gh-issue-fix-flow
+
+  - id: app-store-changelog
+    display_name: App Store Changelog
+    source_artifact: community-skills-dimillian
+    category: release-automation
+    coverage_tags:
+      - release-notes
+      - app-store
+      - changelog
+      - release
+    use_when: The workspace needs App Store-facing release notes or a repeatable release-summary workflow.
+    recommend_when: Release workflow is in scope and the project needs one concrete release-automation skill.
+    install_method: upstream_npx_catalog
+    install_name: app-store-changelog
+    install_command: npx skills add https://github.com/dimillian/skills --skill app-store-changelog
+    upstream_url: https://github.com/Dimillian/Skills
+    local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: apple-platforms
+    confidence: medium
+    alternative_ids: []
 
   - id: gh-issue-fix-flow
     display_name: GH Issue Fix Flow
     source_artifact: community-skills-dimillian
     category: repo-automation
+    coverage_tags:
+      - github-issues
+      - issue-workflow
+      - repo-automation
+      - validation
     use_when: The team wants repeatable GitHub issue-to-fix workflow discipline inside the repository.
     recommend_when: Repo automation and contributor flow matter more than general CI setup.
     install_method: skills_sh
     install_name: gh-issue-fix-flow
-    install_command: npx skills add https://github.com/dimillian/gh-issue-fix-flow --skill gh-issue-fix-flow
-    upstream_url: https://skills.sh/dimillian/skills
+    install_command: npx skills add https://github.com/dimillian/skills --skill gh-issue-fix-flow
+    upstream_url: https://skills.sh/dimillian/skills/gh-issue-fix-flow
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: common
+    confidence: high
     alternative_ids:
       - github
 
@@ -142,34 +240,101 @@ skills:
     display_name: macOS SPM App Packaging
     source_artifact: community-skills-dimillian
     category: package-design
+    coverage_tags:
+      - spm
+      - package-design
+      - packaging
+      - notarization
     use_when: The workspace is package-first and packaging or distribution shape affects the project structure.
     recommend_when: Package design is a top concern and the repo is closer to an SPM product than a classic Xcode app.
     install_method: skills_sh
     install_name: macos-spm-app-packaging
-    install_command: npx skills add https://github.com/dimillian/macos-spm-app-packaging --skill macos-spm-app-packaging
-    upstream_url: https://skills.sh/dimillian/skills
+    install_command: npx skills add https://github.com/dimillian/skills --skill macos-spm-app-packaging
+    upstream_url: https://skills.sh/dimillian/skills/macos-spm-app-packaging
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: macos
+    confidence: high
     alternative_ids: []
+
+  - id: swiftui-ui-patterns
+    display_name: SwiftUI UI Patterns
+    source_artifact: community-skills-dimillian
+    category: app-architecture
+    coverage_tags:
+      - dependency-injection
+      - navigation
+      - state-ownership
+      - app-wiring
+    use_when: The project needs deliberate SwiftUI state ownership, navigation structure, and dependency wiring guidance.
+    recommend_when: Dependency injection or feature wiring matters more than one-off UI polish.
+    install_method: skills_sh
+    install_name: swiftui-ui-patterns
+    install_command: npx skills add https://github.com/dimillian/skills --skill swiftui-ui-patterns
+    upstream_url: https://skills.sh/dimillian/skills/swiftui-ui-patterns
+    local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: ios
+    confidence: high
+    alternative_ids:
+      - swiftui-view-refactor
+      - swiftui-patterns
+
+  - id: swiftui-view-refactor
+    display_name: SwiftUI View Refactor
+    source_artifact: community-skills-dimillian
+    category: app-architecture
+    coverage_tags:
+      - dependency-injection
+      - observation
+      - mv-patterns
+      - view-structure
+    use_when: The repo needs MV-style SwiftUI cleanup, better dependency injection, or safer Observation ownership.
+    recommend_when: Dependency wiring and large-view structure are more urgent than adding new UI patterns.
+    install_method: skills_sh
+    install_name: swiftui-view-refactor
+    install_command: npx skills add https://github.com/dimillian/skills --skill swiftui-view-refactor
+    upstream_url: https://skills.sh/dimillian/skills/swiftui-view-refactor
+    local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: ios
+    confidence: high
+    alternative_ids:
+      - swiftui-ui-patterns
+      - swiftui-patterns
 
   - id: swiftui-patterns
     display_name: SwiftUI Patterns
     source_artifact: community-skills-dpearson
-    category: architecture
+    category: app-architecture
+    coverage_tags:
+      - swiftui
+      - composition
+      - app-architecture
+      - feature-structure
     use_when: The project needs Apple-specific architecture and composition guidance but no better catalog fit exists.
-    recommend_when: The repo needs a fallback Apple architecture skill after higher-priority catalogs were considered.
+    recommend_when: The repo needs an Apple architecture fallback after higher-priority catalogs were considered.
     install_method: upstream_npx_catalog
     install_name: swiftui-patterns
     install_command: npx skills add dpearson2699/swift-ios-skills --skill swiftui-patterns
     upstream_url: https://github.com/dpearson2699/swift-ios-skills
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: ios
+    confidence: high
     alternative_ids:
-      - swiftdata-pro
-      - core-data-expert
+      - swiftui-ui-patterns
+      - swiftui-view-refactor
 
   - id: swiftui-uikit-interop
     display_name: SwiftUI UIKit Interop
     source_artifact: community-skills-dpearson
     category: ui
+    coverage_tags:
+      - swiftui
+      - uikit
+      - interop
+      - representable
     use_when: The repo mixes SwiftUI with UIKit and needs concrete interop guidance.
     recommend_when: UI work is important, but the project is not pure SwiftUI and needs Apple-specific interop patterns.
     install_method: upstream_npx_catalog
@@ -177,6 +342,9 @@ skills:
     install_command: npx skills add dpearson2699/swift-ios-skills --skill swiftui-uikit-interop
     upstream_url: https://github.com/dpearson2699/swift-ios-skills
     local_install_support: installer_dependent_prefer_project_local
+    verified_on: 2026-04-22
+    platform_scope: ios
+    confidence: high
     alternative_ids:
       - swiftui-pro
       - swiftui-expert-skill
@@ -184,13 +352,20 @@ skills:
   - id: ios-networking
     display_name: iOS Networking
     source_artifact: community-skills-dpearson
-    category: apple-fallback
-    use_when: The project needs Apple mobile guidance in an area not covered better by the primary skills.sh catalogs.
-    recommend_when: A concrete Apple-specific fallback is needed and networking or service integration is already in scope.
+    category: networking
+    coverage_tags:
+      - networking
+      - urlsession
+      - api-client
+      - web-sockets
+    use_when: The project needs Apple mobile networking guidance with async URLSession and service integration patterns.
+    recommend_when: Networking is already a known capability gap and no better primary catalog fit exists.
     install_method: upstream_npx_catalog
     install_name: ios-networking
     install_command: npx skills add dpearson2699/swift-ios-skills --skill ios-networking
     upstream_url: https://github.com/dpearson2699/swift-ios-skills
     local_install_support: installer_dependent_prefer_project_local
-    alternative_ids:
-      - swiftui-patterns
+    verified_on: 2026-04-22
+    platform_scope: ios
+    confidence: high
+    alternative_ids: []

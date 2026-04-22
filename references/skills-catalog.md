@@ -21,6 +21,7 @@ Concrete skill selection is inventory-backed. Use [`../inventory/skills.yaml`](.
 13. In `AGENTS.md`, list only installed project-local skills under `Installed Skills`.
 14. Put skill timing and order only under `Skill Usage Order`.
 15. If no verified concrete entry exists for a category, do not invent one. Keep the source catalog as a fallback recommendation path.
+16. Do not force a skill install for needs that are already satisfied by repo artifacts such as `.swiftlint.yml`, `.gitlint`, workflows, or `.codex/config.toml`.
 
 ## Capability Categories
 
@@ -29,29 +30,33 @@ Use categories to decide which part of a catalog matters before you look for a c
 | Category | Typical Need |
 |---|---|
 | `ui` | SwiftUI, UIKit, AppKit, view composition, Apple UI patterns |
-| `architecture` | feature boundaries, project structure, dependency flow |
+| `persistence` | SwiftData, Core Data, schema design, storage lifecycle |
+| `app-architecture` | feature boundaries, dependency injection, state ownership, app wiring |
 | `package-design` | Swift Package Manager structure, modularization, library setup |
 | `testing` | test strategy, XCTest patterns, verification helpers |
-| `tooling` | Swift tooling, local dev utilities, lint-related workflow |
-| `ci-automation` | GitHub Actions, automation workflows, release helpers |
+| `tooling` | Swift tooling, concurrency correctness, local quality workflow |
+| `ci-automation` | GitHub Actions, CI workflows, automation runners |
+| `release-automation` | release notes, App Store release workflow, release summary helpers |
 | `repo-automation` | repository maintenance, contributor workflow, repo helpers |
-| `apple-fallback` | Apple-specific patterns when no better catalog match exists |
+| `networking` | URLSession, service integration, API-client structure |
 
 ## Skill Sources
 
 | Source | Prefer When | Install Preference | Notes |
 |---|---|---|---|
-| `skills.sh/twostraws` | SwiftUI, Apple UI, app architecture, Apple platform patterns | `skills.sh` | Prefer this before manual repo fallback |
-| `skills.sh/avdlee` | Swift engineering, UI, tooling, testing, architecture | `skills.sh` | Apple-focused catalog |
-| `skills.sh/dimillian/skills` | GitHub automation, repo automation, package-oriented workflow helpers | `skills.sh` | Useful after CI or repo automation needs are known |
-| `dpearson2699/swift-ios-skills` | Apple-focused fallback when a suitable `skills.sh` entry is not available | Upstream instructions | Use only when needed |
+| `skills.sh/twostraws` | SwiftUI, persistence, testing, Apple platform patterns | `skills.sh` | Prefer this before manual repo fallback |
+| `skills.sh/avdlee` | Swift engineering, UI, persistence, tooling, testing | `skills.sh` | Apple-focused catalog |
+| `skills.sh/dimillian/skills` | SwiftUI app architecture, GitHub automation, release workflow, package-oriented helpers | `skills.sh` | Useful after CI, release, or SwiftUI architecture needs are known |
+| `dpearson2699/swift-ios-skills` | Apple-focused fallback for networking, SwiftUI interop, and iOS architecture gaps | Upstream instructions | Use only when needed |
 
 Interpret each source row above as a catalog, not as one skill.
 
 ## Inventory Contract
 
 - [`../inventory/skills.yaml`](../inventory/skills.yaml) is a curated subset, not a full mirror of every upstream catalog.
-- Each entry is a concrete recommendation target with an id, category, source artifact, install metadata, and alternatives.
+- Each entry is a concrete recommendation target with an id, category, `coverage_tags`, source artifact, install metadata, verification metadata, and alternatives.
+- `coverage_tags` map interview signals such as `swiftdata`, `dependency-injection`, `github-actions`, or `release-notes` to the strongest concrete candidate inside a category.
+- `verified_on`, `platform_scope`, and `confidence` exist to make curation freshness and fit explicit.
 - Only recommend inventory-backed skill ids as concrete defaults.
 - If a useful source has no seeded entry for the current category, say so explicitly and leave it as a fallback path for manual exploration.
 
@@ -62,15 +67,17 @@ Interpret each source row above as a catalog, not as one skill.
 3. Determine the top 1-3 capability categories or gaps that are still missing.
 4. Map each missing category to a skill source catalog.
 5. Resolve one concrete candidate from [`../inventory/skills.yaml`](../inventory/skills.yaml) for that source and category.
-6. For each missing capability category, choose one recommended best-fit skill.
-7. Explain why that skill is the strongest starting point for the current repository state.
-8. If the same source exposes multiple relevant skills in that category, keep the strongest fit as the recommendation and move the rest into conditional alternatives.
-9. If the inventory has no verified match for a category, stop at the source-catalog recommendation level and do not invent a skill id.
-10. Let the user confirm or override the final skill choice when multiple candidates are relevant.
-11. For each selected missing skill:
+6. Use `coverage_tags` to narrow the candidate against the actual interview signal, such as `core-data`, `dependency-injection`, `github-actions`, or `release-notes`.
+7. For each missing capability category, choose one recommended best-fit skill.
+8. Explain why that skill is the strongest starting point for the current repository state.
+9. If the same source exposes multiple relevant skills in that category, keep the strongest fit as the recommendation and move the rest into conditional alternatives.
+10. If the category is already covered by a discovered plugin-provided skill, do not force a project-local install just to mirror that capability.
+11. If the inventory has no verified match for a category, stop at the source-catalog recommendation level and do not invent a skill id.
+12. Let the user confirm or override the final skill choice when multiple candidates are relevant.
+13. For each selected missing skill:
    - prefer the exact `npx skills add ...` command when available
    - otherwise use the upstream installation method
-12. Summarize proposed installs before executing them.
+14. Summarize proposed installs before executing them.
 
 ## AGENTS.md Rendering Rule
 
@@ -104,10 +111,13 @@ If it does not, stop and ask whether a user-level install is acceptable.
 | Need | Likely Source |
 |---|---|
 | SwiftUI view composition and patterns | `twostraws` |
+| Dependency injection and SwiftUI app wiring | `dimillian` |
+| SwiftData or Core Data persistence | `twostraws` or `avdlee` |
 | Swift package design | `dimillian` |
 | Swift tooling and concurrency guardrails | `avdlee` |
+| App Store release notes and release summaries | `dimillian` |
 | GitHub workflow and repo automation help | `dimillian` |
-| Apple mobile patterns with no matching `skills.sh` entry | `dpearson2699` fallback |
+| iOS networking or Apple interop with no better `skills.sh` match | `dpearson2699` fallback |
 
 If more than one catalog can help, narrow the comparison before install and keep only the final selected installed skill in `AGENTS.md`.
 

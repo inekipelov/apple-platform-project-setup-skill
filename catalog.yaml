@@ -578,7 +578,8 @@ artifacts:
     source_kind: multi_skill_catalog
     skill_categories:
       - ui
-      - architecture
+      - persistence
+      - tooling
       - testing
     prerequisites:
       - project_interview_complete
@@ -589,7 +590,7 @@ artifacts:
       - https://github.com/twostraws/Swift-Agent-Skills
     recommendation_mode: one_recommended_choice_user_decides
     selection_hints:
-      - Prefer when the project needs ui, architecture, or testing categories this catalog covers.
+      - Prefer when the project needs ui, persistence, tooling, or testing categories this catalog covers.
       - Resolve the concrete skill from inventory/skills.yaml after category selection.
       - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
       - If multiple Twostraws skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
@@ -600,7 +601,7 @@ artifacts:
     source_kind: multi_skill_catalog
     skill_categories:
       - ui
-      - architecture
+      - persistence
       - tooling
       - testing
     prerequisites:
@@ -611,7 +612,7 @@ artifacts:
       - https://skills.sh/avdlee
     recommendation_mode: one_recommended_choice_user_decides
     selection_hints:
-      - Prefer when the project needs ui, architecture, tooling, or testing categories this catalog covers.
+      - Prefer when the project needs ui, persistence, tooling, or testing categories this catalog covers.
       - Resolve the concrete skill from inventory/skills.yaml after category selection.
       - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
       - If multiple avdlee skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
@@ -621,8 +622,11 @@ artifacts:
     snippet_paths: []
     source_kind: multi_skill_catalog
     skill_categories:
+      - ui
+      - app-architecture
       - package-design
       - ci-automation
+      - release-automation
       - repo-automation
     prerequisites:
       - project_interview_complete
@@ -632,7 +636,7 @@ artifacts:
       - https://skills.sh/dimillian/skills
     recommendation_mode: one_recommended_choice_user_decides
     selection_hints:
-      - Prefer when the project needs package-design, ci-automation, or repo-automation categories this catalog covers.
+      - Prefer when the project needs ui, app-architecture, package-design, ci-automation, release-automation, or repo-automation categories this catalog covers.
       - Resolve the concrete skill from inventory/skills.yaml after category selection.
       - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
       - If multiple dimillian skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
@@ -642,9 +646,9 @@ artifacts:
     snippet_paths: []
     source_kind: multi_skill_catalog
     skill_categories:
-      - apple-fallback
       - ui
-      - architecture
+      - app-architecture
+      - networking
     prerequisites:
       - project_interview_complete
       - npx_or_user_confirmed_node_install
@@ -653,7 +657,7 @@ artifacts:
       - https://github.com/dpearson2699/swift-ios-skills
     recommendation_mode: one_recommended_choice_user_decides
     selection_hints:
-      - Use as upstream fallback when apple-fallback, ui, or architecture guidance is needed and no better catalog match exists.
+      - Use as upstream fallback when ui, app-architecture, or networking guidance is needed and no better catalog match exists.
       - Resolve the concrete skill from inventory/skills.yaml after category selection.
       - Do not install the whole catalog. Recommend one best-fit skill from the matching category.
       - If multiple dpearson skills fit, recommend one best-fit skill, explain why, and keep the final decision with the user.
