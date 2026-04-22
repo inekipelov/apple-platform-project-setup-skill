@@ -152,7 +152,7 @@ inventory_skills.each do |entry|
   assert(errors, entry["coverage_tags"].is_a?(Array) && !entry["coverage_tags"].empty?, "inventory skill #{entry['id'] || '<missing>'} must define non-empty coverage_tags")
   assert(errors, entry["coverage_tags"].is_a?(Array) && entry["coverage_tags"].all? { |tag| non_empty_string?(tag) }, "inventory skill #{entry['id'] || '<missing>'} coverage_tags must be non-empty strings")
   assert(errors, entry["alternative_ids"].is_a?(Array), "inventory skill #{entry['id'] || '<missing>'} must define alternative_ids as an array")
-  assert(errors, entry["verified_on"].to_s.match?(/\A\d{4}-\d{2}-\d{2}\z/), "inventory skill #{entry['id'] || '<missing>'} must define verified_on as an ISO date")
+  assert(errors, entry["verified_on"].is_a?(String) && entry["verified_on"].match?(/\A\d{4}-\d{2}-\d{2}\z/), "inventory skill #{entry['id'] || '<missing>'} must define verified_on as a quoted ISO date string")
   assert(errors, %w[high medium low].include?(entry["confidence"]), "inventory skill #{entry['id'] || '<missing>'} confidence must be high, medium, or low")
   assert(errors, %w[skills_sh upstream_npx_catalog].include?(entry["install_method"]), "inventory skill #{entry['id'] || '<missing>'} must use a supported install_method")
   assert(errors, entry["install_command"].include?("npx skills add"), "inventory skill #{entry['id'] || '<missing>'} must expose a deterministic npx install command")

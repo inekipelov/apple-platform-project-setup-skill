@@ -30,7 +30,7 @@ skills:
     install_command: npx skills add https://github.com/twostraws/swiftui-agent-skill --skill swiftui-pro
     upstream_url: https://github.com/twostraws/SwiftUI-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: high
     alternative_ids:
@@ -54,7 +54,7 @@ skills:
     install_command: npx skills add https://github.com/twostraws/swiftdata-agent-skill --skill swiftdata-pro
     upstream_url: https://github.com/twostraws/SwiftData-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: high
     alternative_ids:
@@ -76,7 +76,7 @@ skills:
     install_command: npx skills add https://github.com/twostraws/swift-testing-agent-skill --skill swift-testing-pro
     upstream_url: https://github.com/twostraws/Swift-Testing-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: high
     alternative_ids:
@@ -98,7 +98,7 @@ skills:
     install_command: npx skills add https://github.com/avdlee/swiftui-agent-skill --skill swiftui-expert-skill
     upstream_url: https://github.com/avdlee/swiftui-agent-skill
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: high
     alternative_ids:
@@ -122,7 +122,7 @@ skills:
     install_command: npx skills add https://github.com/avdlee/core-data-agent-skill --skill core-data-expert
     upstream_url: https://github.com/AvdLee/Core-Data-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: high
     alternative_ids:
@@ -144,7 +144,7 @@ skills:
     install_command: npx skills add https://github.com/avdlee/swift-testing-agent-skill --skill swift-testing-expert
     upstream_url: https://github.com/AvdLee/Swift-Testing-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: high
     alternative_ids:
@@ -166,7 +166,7 @@ skills:
     install_command: npx skills add https://github.com/avdlee/swift-concurrency-agent-skill --skill swift-concurrency
     upstream_url: https://github.com/AvdLee/Swift-Concurrency-Agent-Skill
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: high
     alternative_ids: []
@@ -187,7 +187,7 @@ skills:
     install_command: npx skills add https://github.com/dimillian/skills --skill github
     upstream_url: https://skills.sh/dimillian/skills/github
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: common
     confidence: high
     alternative_ids:
@@ -209,7 +209,7 @@ skills:
     install_command: npx skills add https://github.com/dimillian/skills --skill app-store-changelog
     upstream_url: https://github.com/Dimillian/Skills
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: apple-platforms
     confidence: medium
     alternative_ids: []
@@ -230,7 +230,7 @@ skills:
     install_command: npx skills add https://github.com/dimillian/skills --skill gh-issue-fix-flow
     upstream_url: https://skills.sh/dimillian/skills/gh-issue-fix-flow
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: common
     confidence: high
     alternative_ids:
@@ -252,7 +252,7 @@ skills:
     install_command: npx skills add https://github.com/dimillian/skills --skill macos-spm-app-packaging
     upstream_url: https://skills.sh/dimillian/skills/macos-spm-app-packaging
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: macos
     confidence: high
     alternative_ids: []
@@ -273,7 +273,7 @@ skills:
     install_command: npx skills add https://github.com/dimillian/skills --skill swiftui-ui-patterns
     upstream_url: https://skills.sh/dimillian/skills/swiftui-ui-patterns
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: ios
     confidence: high
     alternative_ids:
@@ -296,7 +296,7 @@ skills:
     install_command: npx skills add https://github.com/dimillian/skills --skill swiftui-view-refactor
     upstream_url: https://skills.sh/dimillian/skills/swiftui-view-refactor
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: ios
     confidence: high
     alternative_ids:
@@ -319,7 +319,7 @@ skills:
     install_command: npx skills add dpearson2699/swift-ios-skills --skill swiftui-patterns
     upstream_url: https://github.com/dpearson2699/swift-ios-skills
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: ios
     confidence: high
     alternative_ids:
@@ -342,7 +342,7 @@ skills:
     install_command: npx skills add dpearson2699/swift-ios-skills --skill swiftui-uikit-interop
     upstream_url: https://github.com/dpearson2699/swift-ios-skills
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: ios
     confidence: high
     alternative_ids:
@@ -365,7 +365,7 @@ skills:
     install_command: npx skills add dpearson2699/swift-ios-skills --skill ios-networking
     upstream_url: https://github.com/dpearson2699/swift-ios-skills
     local_install_support: installer_dependent_prefer_project_local
-    verified_on: 2026-04-22
+    verified_on: "2026-04-22"
     platform_scope: ios
     confidence: high
     alternative_ids: []
