@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Workspace Selection"
+  short_description: "Choose SPM or Xcode and verify the required toolchain."
+  default_prompt: "Use $apple-platform-workspace-selection to choose or confirm SPM versus Xcode and verify the required tools."
+policy:
+  allow_implicit_invocation: false

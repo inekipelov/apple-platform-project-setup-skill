@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple AGENTS Rendering"
+  short_description: "Render the final Apple repo AGENTS.md after setup decisions settle."
+  default_prompt: "Use $apple-platform-agents-rendering to generate the final Apple repo AGENTS.md only after setup decisions and installs are complete."
+policy:
+  allow_implicit_invocation: false

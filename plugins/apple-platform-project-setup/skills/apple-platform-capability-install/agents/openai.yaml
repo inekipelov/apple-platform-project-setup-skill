@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Capability Install"
+  short_description: "Select and install only the missing Apple setup capabilities."
+  default_prompt: "Use $apple-platform-capability-install to choose one best-fit skill or subagent per Apple setup gap and install only the confirmed missing items."
+policy:
+  allow_implicit_invocation: false

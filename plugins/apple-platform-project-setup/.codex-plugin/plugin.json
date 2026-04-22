@@ -1,0 +1,39 @@
+{
+  "name": "apple-platform-project-setup",
+  "version": "0.1.2",
+  "description": "Plugin for bootstrapping and standardizing Apple platform workspaces with phase-based setup skills.",
+  "author": {
+    "name": "Ineki Pelov",
+    "url": "https://github.com/inekipelov"
+  },
+  "homepage": "https://github.com/inekipelov/apple-platform-project-setup-skill",
+  "repository": "https://github.com/inekipelov/apple-platform-project-setup-skill",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "plugin",
+    "skills",
+    "swift",
+    "xcode",
+    "spm",
+    "apple"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Apple Platform Setup",
+    "shortDescription": "Bootstrap Apple workspaces with phase-based setup skills.",
+    "longDescription": "Bundle of focused skills for Apple workspace discovery, interview, workspace selection, capability install, config, artifact application, AGENTS rendering, and verification.",
+    "developerName": "Ineki Pelov",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Set up an Apple workspace end to end.",
+      "Audit and align an existing Apple repo.",
+      "Run the Apple setup flow in order."
+    ],
+    "brandColor": "#74AA9C"
+  }
+}

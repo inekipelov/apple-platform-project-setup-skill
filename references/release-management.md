@@ -35,7 +35,7 @@ Before creating the tag and draft GitHub Release, require all of these:
 - CI workflows are green
 - repo contract verification is green
 - YAML parse checks are green
-- manual review of `README.md`, `SKILL.md`, `catalog.yaml`, and contract/reference docs is complete
+- manual review of `README.md`, `plugins/apple-platform-project-setup/.codex-plugin/plugin.json`, `plugins/apple-platform-project-setup/skills/`, `catalog.yaml`, and contract/reference docs is complete
 
 The maintainer release workflow enforces the version and branch rules and requires explicit confirmation of CI and manual review before it proceeds.
 

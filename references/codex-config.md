@@ -26,7 +26,7 @@ Use a project-local `.codex/config.toml` with:
 profile = "setup"
 
 [[skills.config]]
-path = ".codex/skills/apple-platform-project-setup-skill"
+path = "plugins/apple-platform-project-setup/skills/apple-platform-project-setup-skill/SKILL.md"
 enabled = true
 
 [profiles.setup]
@@ -53,7 +53,9 @@ model_reasoning_effort = "high"
 plan_mode_reasoning_effort = "high"
 ```
 
-This is the preferred baseline when the repo carries the skill locally.
+This is the preferred baseline when the repo vendors the plugin locally and wants the orchestration skill registered explicitly.
+
+If the repo relies on the plugin through Codex installation instead of a vendored plugin copy, skip the local `[[skills.config]]` entry and rely on the installed plugin surface.
 
 Use this profile set as follows:
 
@@ -153,6 +155,7 @@ Do not add these to the default project config for this skill:
 - Do not invent config keys outside the official Codex config reference.
 - Do not assume project config loads in untrusted projects.
 - Do not treat `features.multi_agent` or `agents.*` as a replacement for installed project-local subagents.
+- Do not point `[[skills.config]]` at the old root-skill path from the pre-plugin layout.
 - Do not put the full skill body into `developer_instructions`.
 - Do not treat `model_instructions_file` as required when `AGENTS.md` or a thin wrapper is enough.
 - Do not replace the standard `setup`, `review`, and `release` profiles with ad-hoc names unless the repo has a strong reason to diverge.

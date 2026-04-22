@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Codex Config"
+  short_description: "Align .codex/config.toml, multi-agent runtime, and MCP policy."
+  default_prompt: "Use $apple-platform-codex-config to align Apple repo .codex/config.toml, optional multi-agent runtime, and MCP settings."
+policy:
+  allow_implicit_invocation: false

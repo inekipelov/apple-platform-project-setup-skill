@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Setup Orchestrator"
+  short_description: "Run the full Apple workspace setup flow in strict order."
+  default_prompt: "Use $apple-platform-project-setup-skill to run the full Apple workspace setup flow from discovery through final verification."
+policy:
+  allow_implicit_invocation: true

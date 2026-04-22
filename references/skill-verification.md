@@ -6,7 +6,9 @@ This file records the baseline failure evidence and the expected post-change beh
 
 Initial repository state before this change:
 
-- no `SKILL.md`
+- no plugin manifest
+- no repo-local marketplace entry
+- one root `SKILL.md` instead of a plugin skill tree
 - no `catalog.yaml`
 - no `references/`
 - no `snippets/`
@@ -70,37 +72,37 @@ Because the repository had no workflow contract, each planned failure mode was e
 
 After the repo contract is present, verify that:
 
-1. `SKILL.md` makes capability discovery the mandatory first step.
-2. `SKILL.md` blocks global installs and user-home changes until explicit confirmation.
-3. `SKILL.md` requires `AGENTS.md` to be generated only after the interview and after selected skills and subagents are installed or intentionally skipped.
-4. `SKILL.md` requires the project interview before choosing `SPM` or `Xcode`.
+1. `plugins/apple-platform-project-setup/.codex-plugin/plugin.json` exists and points `skills` at `./skills/`.
+2. `.agents/plugins/marketplace.json` exposes the repo-local plugin entry at `./plugins/apple-platform-project-setup`.
+3. The orchestration skill makes capability discovery the mandatory first step and blocks global installs and user-home changes until explicit confirmation.
+4. The orchestration skill requires the project interview before choosing `SPM` or `Xcode`, and it requires `AGENTS.md` only after selected skills and subagents are installed or intentionally skipped.
 5. `references/source-precedence.md` gives `skills.sh` higher priority than upstream fallback when available.
 6. `catalog.yaml` maps every managed artifact to snippets, prerequisites, install strategy, sources, and snippet apply semantics where relevant.
 7. `inventory/skills.yaml` and `inventory/subagents.yaml` exist as curated concrete recommendation layers.
 8. `snippets/` contains common plus `SPM`, native `Xcode`, and `Xcode + XcodeGen` file sets.
-9. The selection contract recommends one best-fit skill or subagent while preserving user ownership of the final choice.
-10. The SF Symbols SwiftLint rule appears only when the user accepted `SFSafeSymbols` for the project.
-11. Skills sources are treated as catalogs, category selection happens before skill selection, and the whole catalog is never installed by default.
-12. Concrete skill and subagent recommendations come from the curated inventory or remain explicit source-level fallbacks when the inventory is not seeded.
-13. Snippet-backed artifacts declare deterministic target paths, apply modes, and overwrite or merge policies.
-14. The repo documents valid project `.codex/config.toml` setup using official Codex keys only.
-15. `sosumi` MCP is documented as HTTP-first and does not require the CLI by default.
-16. `xcode` MCP is documented and enforced only for `xcode` workspaces, never for `spm`.
-17. SwiftLint setup is shape-specific: `SPM` and `Xcode` select different `.swiftlint.yml` snippets.
-18. GitHub Actions snippets define consistent workflow guardrails such as `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
-19. `XcodeGen` is documented as an optional `Xcode` sub-mode, not as a third top-level workspace shape.
-20. The interview and skill contract resolve `xcode_project_strategy = native | xcodegen` only after `Xcode` is chosen.
-21. `catalog.yaml` contains both native `Xcode` artifacts and `XcodeGen`-specific `Xcode` artifacts.
-22. `xcode-swiftlint-config` stays shared across native and XcodeGen-managed `Xcode` repositories.
-23. XcodeGen-specific MCP guidance requires `xcodegen generate --spec project.yml` and an open generated project before `xcode` MCP is configured.
-24. `AGENTS.md` is rendered as a declarative final-state document with fixed section titles and no recommendation or alternatives sections.
-25. `Installed Skills` and `Installed Subagents` use exact installed-item line formats or the exact fallback line `- None installed.`
-26. `AGENTS.md` includes the exact section `Agent Personalization` with the six required line prefixes.
-27. The canonical Russian strict-quality profile and the client-language strict-quality fallback are both source-of-truth-documented.
-28. `Agent Personalization` and `Repository Rules` are documented as separate responsibilities and do not duplicate the same policy text.
-29. The interview always asks which communication language should be fixed in `AGENTS.md`.
-30. If the user does not choose a communication language, the exact fallback line is `- Communication language: Use the language the client used to contact the agent.`
-31. Project-local skills are documented under `.codex/skills/`, and `obra/superpowers` is treated as a plugin capability surface rather than a project-local skill install target.
+9. The plugin ships one orchestration skill plus explicit-use leaf skills under `plugins/apple-platform-project-setup/skills/`.
+10. Every plugin skill has its own `agents/openai.yaml`, and every skill description starts with `Use when`.
+11. The selection contract recommends one best-fit skill or subagent while preserving user ownership of the final choice.
+12. The SF Symbols SwiftLint rule appears only when the user accepted `SFSafeSymbols` for the project.
+13. Skills sources are treated as catalogs, category selection happens before skill selection, and the whole catalog is never installed by default.
+14. Concrete skill and subagent recommendations come from the curated inventory or remain explicit source-level fallbacks when the inventory is not seeded.
+15. Snippet-backed artifacts declare deterministic target paths, apply modes, and overwrite or merge policies.
+16. The repo documents valid project `.codex/config.toml` setup using official Codex keys only.
+17. `sosumi` MCP is documented as HTTP-first and does not require the CLI by default.
+18. `xcode` MCP is documented and enforced only for `xcode` workspaces, never for `spm`.
+19. SwiftLint setup is shape-specific: `SPM` and `Xcode` select different `.swiftlint.yml` snippets.
+20. GitHub Actions snippets define consistent workflow guardrails such as `workflow_dispatch`, least-privilege permissions, and workflow-level concurrency.
+21. `XcodeGen` is documented as an optional `Xcode` sub-mode, not as a third top-level workspace shape.
+22. The interview and skill contract resolve `xcode_project_strategy = native | xcodegen` only after `Xcode` is chosen.
+23. `catalog.yaml` contains both native `Xcode` artifacts and `XcodeGen`-specific `Xcode` artifacts.
+24. `xcode-swiftlint-config` stays shared across native and XcodeGen-managed `Xcode` repositories.
+25. XcodeGen-specific MCP guidance requires `xcodegen generate --spec project.yml` and an open generated project before `xcode` MCP is configured.
+26. `AGENTS.md` is rendered as a declarative final-state document with fixed section titles and no recommendation or alternatives sections.
+27. `Installed Skills` and `Installed Subagents` use exact installed-item line formats or the exact fallback line `- None installed.`
+28. `AGENTS.md` includes the exact section `Agent Personalization` with the six required line prefixes.
+29. The canonical Russian strict-quality profile and the client-language strict-quality fallback are both source-of-truth-documented.
+30. `Agent Personalization` and `Repository Rules` are documented as separate responsibilities and do not duplicate the same policy text.
+31. The plugin-first repo layout is documented, and `obra/superpowers` is treated as a plugin capability surface rather than a project-local skill install target.
 32. `Core Commands` is the only command-owning section in generated `AGENTS.md`, and `Repository Rules` is documented as non-command repo policy only.
 33. `Skill Usage Order` exists as a fixed section in generated `AGENTS.md`, and skill sequencing is not mixed into `Installed Skills`.
 34. The maintainer release contract uses short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the only changelog.

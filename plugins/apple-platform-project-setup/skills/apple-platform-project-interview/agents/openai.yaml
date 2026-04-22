@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Project Interview"
+  short_description: "Collect Apple project intent, policy, and personalization decisions."
+  default_prompt: "Use $apple-platform-project-interview to collect project purpose, platform, policy, config, and personalization decisions before Apple repo setup."
+policy:
+  allow_implicit_invocation: false

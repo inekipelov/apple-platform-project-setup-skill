@@ -1,16 +1,48 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "json"
 require "yaml"
 
 ROOT = File.expand_path("..", __dir__)
+PLUGIN_NAME = "apple-platform-project-setup"
+PLUGIN_ROOT = "plugins/#{PLUGIN_NAME}"
+PLUGIN_MANIFEST_PATH = "#{PLUGIN_ROOT}/.codex-plugin/plugin.json"
+MARKETPLACE_PATH = ".agents/plugins/marketplace.json"
+ORCHESTRATION_SKILL = "apple-platform-project-setup-skill"
+PLUGIN_SKILLS = %w[
+  apple-platform-project-setup-skill
+  apple-platform-capability-discovery
+  apple-platform-project-interview
+  apple-platform-workspace-selection
+  apple-platform-capability-install
+  apple-platform-codex-config
+  apple-platform-artifact-application
+  apple-platform-agents-rendering
+  apple-platform-setup-verification
+].freeze
+LEAF_SKILLS = PLUGIN_SKILLS - [ORCHESTRATION_SKILL]
 
-def read_file(path)
-  File.read(File.join(ROOT, path))
+def repo_path(relative_path)
+  File.join(ROOT, relative_path)
+end
+
+def read_file(relative_path)
+  File.read(repo_path(relative_path))
 end
 
 def assert(errors, condition, message)
   errors << message unless condition
+end
+
+def parse_frontmatter(relative_path)
+  content = read_file(relative_path)
+  match = content.match(/\A---\n(.*?)\n---\n/m)
+  raise "Missing YAML frontmatter in #{relative_path}" unless match
+
+  frontmatter = YAML.safe_load(match[1]) || {}
+  body = content[match.end(0)..] || ""
+  [frontmatter, body]
 end
 
 errors = []
@@ -19,22 +51,75 @@ yaml_files = %w[
   catalog.yaml
   inventory/skills.yaml
   inventory/subagents.yaml
-  agents/openai.yaml
   .github/release.yml
 ] + Dir.chdir(ROOT) do
-  Dir[".github/workflows/*.{yml,yaml}"] + Dir["snippets/**/*.{yml,yaml}"]
+  Dir[".github/workflows/*.{yml,yaml}"] +
+    Dir["snippets/**/*.{yml,yaml}"] +
+    Dir["#{PLUGIN_ROOT}/skills/*/agents/openai.yaml"]
 end
 
 yaml_files.each do |relative_path|
-  YAML.load_file(File.join(ROOT, relative_path))
+  YAML.load_file(repo_path(relative_path))
 end
 
-catalog = YAML.load_file(File.join(ROOT, "catalog.yaml"))
+plugin_manifest = JSON.parse(read_file(PLUGIN_MANIFEST_PATH))
+marketplace = JSON.parse(read_file(MARKETPLACE_PATH))
+catalog = YAML.load_file(repo_path("catalog.yaml"))
 project_codex_config = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "project-codex-config" }
 capability_discovery = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "capability-discovery" }
 agents_bootstrap = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "agents-bootstrap" }
 spm_readme = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "spm-readme" }
 app_readme = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "app-readme" }
+
+assert(errors, !File.exist?(repo_path("SKILL.md")), "root SKILL.md must not exist in the plugin-first layout")
+assert(errors, !File.exist?(repo_path("agents/openai.yaml")), "root agents/openai.yaml must not exist in the plugin-first layout")
+assert(errors, File.exist?(repo_path(PLUGIN_MANIFEST_PATH)), "plugin manifest must exist at #{PLUGIN_MANIFEST_PATH}")
+assert(errors, File.exist?(repo_path(MARKETPLACE_PATH)), "repo-local marketplace must exist at #{MARKETPLACE_PATH}")
+
+assert(errors, plugin_manifest["name"] == PLUGIN_NAME, "plugin manifest name must be #{PLUGIN_NAME}")
+assert(errors, plugin_manifest["skills"] == "./skills/", "plugin manifest must point skills to ./skills/")
+assert(errors, plugin_manifest.dig("interface", "displayName") == "Apple Platform Setup", "plugin manifest must expose the Apple Platform Setup display name")
+
+marketplace_entry = (marketplace["plugins"] || []).find { |entry| entry["name"] == PLUGIN_NAME }
+assert(errors, marketplace["name"] == "local-apple-platform-plugins", "marketplace name must be local-apple-platform-plugins")
+assert(errors, !marketplace_entry.nil?, "marketplace must include the #{PLUGIN_NAME} plugin entry")
+assert(errors, marketplace_entry && marketplace_entry.dig("source", "source") == "local", "marketplace plugin entry must use a local source")
+assert(errors, marketplace_entry && marketplace_entry.dig("source", "path") == "./plugins/#{PLUGIN_NAME}", "marketplace plugin entry must point to ./plugins/#{PLUGIN_NAME}")
+assert(errors, marketplace_entry && marketplace_entry.dig("policy", "installation") == "AVAILABLE", "marketplace plugin entry must set installation to AVAILABLE")
+assert(errors, marketplace_entry && marketplace_entry.dig("policy", "authentication") == "ON_INSTALL", "marketplace plugin entry must set authentication to ON_INSTALL")
+
+PLUGIN_SKILLS.each do |skill_name|
+  skill_dir = "#{PLUGIN_ROOT}/skills/#{skill_name}"
+  skill_path = "#{skill_dir}/SKILL.md"
+  openai_yaml_path = "#{skill_dir}/agents/openai.yaml"
+
+  assert(errors, File.exist?(repo_path(skill_path)), "#{skill_name} must provide SKILL.md")
+  assert(errors, File.exist?(repo_path(openai_yaml_path)), "#{skill_name} must provide agents/openai.yaml")
+
+  next unless File.exist?(repo_path(skill_path)) && File.exist?(repo_path(openai_yaml_path))
+
+  frontmatter, body = parse_frontmatter(skill_path)
+  openai_yaml = YAML.load_file(repo_path(openai_yaml_path))
+  interface = openai_yaml["interface"] || {}
+  policy = openai_yaml["policy"] || {}
+
+  assert(errors, frontmatter["name"] == skill_name, "#{skill_name} SKILL.md frontmatter name must match the directory name")
+  assert(errors, frontmatter["description"].is_a?(String) && frontmatter["description"].start_with?("Use when"), "#{skill_name} description must start with 'Use when'")
+  assert(errors, interface["display_name"].is_a?(String) && !interface["display_name"].empty?, "#{skill_name} agents/openai.yaml must define interface.display_name")
+  assert(errors, interface["short_description"].is_a?(String) && !interface["short_description"].empty?, "#{skill_name} agents/openai.yaml must define interface.short_description")
+  assert(errors, interface["default_prompt"].is_a?(String) && !interface["default_prompt"].empty?, "#{skill_name} agents/openai.yaml must define interface.default_prompt")
+
+  if skill_name == ORCHESTRATION_SKILL
+    assert(errors, policy.fetch("allow_implicit_invocation", true) == true, "the orchestration skill must remain implicit-capable")
+    assert(errors, body.include?("Mandatory Execution Order"), "the orchestration skill must document the mandatory execution order")
+    LEAF_SKILLS.each do |leaf_skill|
+      assert(errors, body.include?("$#{leaf_skill}"), "the orchestration skill must reference #{leaf_skill} in its ordered flow")
+    end
+  else
+    assert(errors, policy["allow_implicit_invocation"] == false, "#{skill_name} must disable implicit invocation")
+    assert(errors, !body.include?("Mandatory Execution Order"), "#{skill_name} must not restate the full orchestration order")
+  end
+end
 
 assert(errors, !project_codex_config.nil?, "catalog.yaml must define the project-codex-config artifact")
 assert(errors, !capability_discovery.nil?, "catalog.yaml must define the capability-discovery artifact")
@@ -44,8 +129,10 @@ assert(errors, !app_readme.nil?, "catalog.yaml must define the app-readme artifa
 
 if project_codex_config
   config_profiles = project_codex_config["config_profiles"] || {}
+  selection_hints = project_codex_config["selection_hints"] || []
   assert(errors, config_profiles["default_profile"] == "setup", "project-codex-config default profile must be setup")
   assert(errors, config_profiles["recommended_profiles"] == %w[setup review release], "project-codex-config recommended profiles must be setup/review/release")
+  assert(errors, selection_hints.any? { |hint| hint.include?("vendored plugin skill path") }, "project-codex-config must describe vendored plugin skill registration")
 
   optional_hardening_keys = config_profiles["optional_hardening_keys"] || []
   %w[
@@ -96,6 +183,7 @@ assert(errors, release_doc.include?("GitHub Releases are the only changelog"), "
 assert(errors, release_doc.include?("Do not use:"), "release management doc must include the non-default release constraints")
 assert(errors, release_doc.include?("VERSION"), "release management doc must explicitly forbid VERSION files in the release baseline")
 assert(errors, release_doc.include?("CHANGELOG.md"), "release management doc must explicitly forbid CHANGELOG.md in the release baseline")
+assert(errors, release_doc.include?("plugins/apple-platform-project-setup/.codex-plugin/plugin.json"), "release management doc must require plugin manifest review")
 
 codex_config_doc = read_file("references/codex-config.md")
 %w[
@@ -113,6 +201,9 @@ codex_config_doc = read_file("references/codex-config.md")
 ].each do |token|
   assert(errors, codex_config_doc.include?(token.delete("\\")), "codex-config doc must include #{token.delete("\\")}")
 end
+
+assert(errors, codex_config_doc.include?('path = "plugins/apple-platform-project-setup/skills/apple-platform-project-setup-skill/SKILL.md"'), "codex-config doc must use the vendored plugin skill path")
+assert(errors, codex_config_doc.include?("skip the local `[[skills.config]]` entry"), "codex-config doc must explain when local skill registration should be skipped")
 
 %w[
   mcp_servers.<id>.enabled_tools
@@ -143,12 +234,13 @@ assert(errors, project_interview_doc.include?("Skill Usage Order"), "project int
 assert(errors, project_interview_doc.include?("concise library-style `README.md` baseline"), "project interview must ask about the SPM README baseline")
 assert(errors, project_interview_doc.include?("app-first `README.md` baseline"), "project interview must ask about the app README baseline")
 
-skill_doc = read_file("SKILL.md")
-assert(errors, skill_doc.include?("references/capability-discovery.md"), "SKILL.md must reference capability-discovery.md")
-assert(errors, skill_doc.include?("Skill Usage Order"), "SKILL.md must include the Skill Usage Order contract")
-assert(errors, !skill_doc.include?("references/install-superpowers.md"), "SKILL.md must not reference install-superpowers.md")
-assert(errors, skill_doc.include?("references/spm-readme.md"), "SKILL.md must reference spm-readme.md")
-assert(errors, skill_doc.include?("references/app-readme.md"), "SKILL.md must reference app-readme.md")
+capability_doc = read_file("references/capability-discovery.md")
+assert(errors, capability_doc.include?("obra/superpowers"), "capability-discovery doc must mention obra/superpowers explicitly")
+assert(errors, capability_doc.include?("not a project-local skill install target"), "capability-discovery doc must forbid treating Superpowers as a project-local skill install target")
+
+skill_verification_doc = read_file("references/skill-verification.md")
+assert(errors, skill_verification_doc.include?("plugins/apple-platform-project-setup/.codex-plugin/plugin.json"), "skill-verification doc must mention the plugin manifest path")
+assert(errors, skill_verification_doc.include?("repo-local marketplace"), "skill-verification doc must cover the repo-local marketplace")
 
 github_actions_doc = read_file("references/github-actions.md")
 %w[
@@ -188,13 +280,28 @@ spm_test_workflow = read_file("snippets/spm/workflows/test.yml")
 end
 
 readme = read_file("README.md")
+assert(errors, readme.include?("plugins/apple-platform-project-setup/.codex-plugin/plugin.json"), "README must document the plugin manifest path")
+assert(errors, readme.include?(".agents/plugins/marketplace.json"), "README must document the repo-local marketplace path")
 assert(errors, readme.include?("release/x.y.z"), "README must mention release/x.y.z branches")
 assert(errors, readme.include?("vX.Y.Z"), "README must mention vX.Y.Z tags")
 assert(errors, readme.include?("GitHub Releases"), "README must mention GitHub Releases")
 
-capability_doc = read_file("references/capability-discovery.md")
-assert(errors, capability_doc.include?("obra/superpowers"), "capability-discovery doc must mention obra/superpowers explicitly")
-assert(errors, capability_doc.include?("not a project-local skill install target"), "capability-discovery doc must forbid treating Superpowers as a project-local skill install target")
+legacy_strings = [
+  "npx skills add inekipelov/apple-platform-project-setup-skill",
+  "npx skills add https://github.com/inekipelov/apple-platform-project-setup-skill -a codex",
+  ".codex/skills/apple-platform-project-setup-skill",
+  "[SKILL.md](./SKILL.md)"
+]
+
+%w[
+  README.md
+  references/codex-config.md
+].each do |relative_path|
+  content = read_file(relative_path)
+  legacy_strings.each do |legacy_string|
+    assert(errors, !content.include?(legacy_string), "#{relative_path} must not reference legacy root-skill packaging: #{legacy_string}")
+  end
+end
 
 spm_readme_doc = read_file("references/spm-readme.md")
 assert(errors, spm_readme_doc.include?("Do not infer Swift compiler support solely from `swift-tools-version`."), "spm-readme doc must forbid inferring Swift support from swift-tools-version")
@@ -225,7 +332,7 @@ app_readme_template = read_file("snippets/xcode/README.md")
   assert(errors, app_readme_template.include?(token.delete("\\")), "app README template must include #{token.delete("\\")}")
 end
 
-release_config = YAML.load_file(File.join(ROOT, ".github/release.yml"))
+release_config = YAML.load_file(repo_path(".github/release.yml"))
 categories = release_config.dig("changelog", "categories") || []
 expected_categories = {
   "Breaking Changes" => ["breaking"],

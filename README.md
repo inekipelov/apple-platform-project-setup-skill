@@ -1,35 +1,41 @@
-# Apple Platform Project Setup Skill
+# Apple Platform Project Setup Plugin
 
-[![Codex Skill](https://custom-icon-badges.demolab.com/badge/Codex-74aa9c?logo=openai&logoColor=black)](https://github.com/inekipelov/apple-platform-project-setup-skill)
+[![Codex Plugin](https://custom-icon-badges.demolab.com/badge/Codex-74aa9c?logo=openai&logoColor=black)](https://github.com/inekipelov/apple-platform-project-setup-skill)
 
-Codex skill for bootstrapping and standardizing Apple workspaces.
+Codex plugin for bootstrapping and standardizing Apple workspaces.
 
-It discovers the current Codex capability surface, interviews the user, detects existing repo structure, chooses or confirms `SPM` vs `Xcode`, supports native `xcodeproj` or `XcodeGen`-generated `xcodeproj`, configures `.codex/config.toml` and optional MCP, applies repo snippets, and generates final-state `AGENTS.md`.
+It ships one orchestration skill plus phase-based leaf skills for discovery, interview, workspace selection, capability install, `.codex/config.toml`, artifact application, `AGENTS.md`, and verification.
 
-## Install
+## Plugin Layout
 
-Recommended for Codex:
+- Plugin manifest: [plugins/apple-platform-project-setup/.codex-plugin/plugin.json](./plugins/apple-platform-project-setup/.codex-plugin/plugin.json)
+- Repo marketplace for local testing: [.agents/plugins/marketplace.json](./.agents/plugins/marketplace.json)
+- Orchestration skill: [plugins/apple-platform-project-setup/skills/apple-platform-project-setup-skill/SKILL.md](./plugins/apple-platform-project-setup/skills/apple-platform-project-setup-skill/SKILL.md)
+- Leaf skills live under [plugins/apple-platform-project-setup/skills/](./plugins/apple-platform-project-setup/skills)
 
-```bash
-npx skills add inekipelov/apple-platform-project-setup-skill -a codex
-```
+The orchestration skill is the only implicit entrypoint. The phase skills are explicit-use helpers with narrow trigger scopes.
 
-GitHub URL fallback:
+## Local Testing
 
-```bash
-npx skills add https://github.com/inekipelov/apple-platform-project-setup-skill -a codex
-```
+This repository includes a repo-local marketplace entry that points to `./plugins/apple-platform-project-setup`.
+
+Use it as follows:
+
+1. Restart Codex so it reloads `.agents/plugins/marketplace.json`.
+2. Open the plugin list and install `apple-platform-project-setup` from the local marketplace.
+3. Start a new thread and invoke either `@apple-platform-project-setup` or `$apple-platform-project-setup-skill`.
 
 ## Source Of Truth
 
-- [SKILL.md](./SKILL.md)
+- [plugins/apple-platform-project-setup/.codex-plugin/plugin.json](./plugins/apple-platform-project-setup/.codex-plugin/plugin.json)
+- [plugins/apple-platform-project-setup/skills/apple-platform-project-setup-skill/SKILL.md](./plugins/apple-platform-project-setup/skills/apple-platform-project-setup-skill/SKILL.md)
 - [catalog.yaml](./catalog.yaml)
 - [references/project-interview.md](./references/project-interview.md)
 - [snippets/common/AGENTS.bootstrap.md](./snippets/common/AGENTS.bootstrap.md)
 
 ## Notes
 
-- Project-local install path: `.codex/skills/apple-platform-project-setup-skill`
+- Vendored orchestration skill path for `[[skills.config]]`: `plugins/apple-platform-project-setup/skills/apple-platform-project-setup-skill/SKILL.md`
 - This repository enforces `type(scope): summary` commits with mandatory repo-specific scopes via root `.gitlint`
 - Advanced config and MCP guidance: [references/codex-config.md](./references/codex-config.md), [references/mcp-setup.md](./references/mcp-setup.md)
 - Maintainer release contract: short-lived `release/x.y.z` branches, stable `vX.Y.Z` tags, and GitHub Releases as the changelog. See [references/release-management.md](./references/release-management.md)
