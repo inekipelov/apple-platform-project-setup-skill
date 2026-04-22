@@ -81,8 +81,9 @@ assert(errors, plugin_manifest["skills"] == "./skills/", "plugin manifest must p
 assert(errors, plugin_manifest.dig("interface", "displayName") == "Apple Platform Setup", "plugin manifest must expose the Apple Platform Setup display name")
 
 marketplace_entry = (marketplace["plugins"] || []).find { |entry| entry["name"] == PLUGIN_NAME }
-assert(errors, marketplace["name"] == "local-apple-platform-plugins", "marketplace name must be local-apple-platform-plugins")
+assert(errors, marketplace["name"] == "apple-platform-project-setup-marketplace", "marketplace name must be apple-platform-project-setup-marketplace")
 assert(errors, !marketplace_entry.nil?, "marketplace must include the #{PLUGIN_NAME} plugin entry")
+assert(errors, marketplace.dig("interface", "displayName") == "Apple Platform Setup", "marketplace display name must be Apple Platform Setup")
 assert(errors, marketplace_entry && marketplace_entry.dig("source", "source") == "local", "marketplace plugin entry must use a local source")
 assert(errors, marketplace_entry && marketplace_entry.dig("source", "path") == "./plugins/#{PLUGIN_NAME}", "marketplace plugin entry must point to ./plugins/#{PLUGIN_NAME}")
 assert(errors, marketplace_entry && marketplace_entry.dig("policy", "installation") == "AVAILABLE", "marketplace plugin entry must set installation to AVAILABLE")
@@ -282,6 +283,8 @@ end
 readme = read_file("README.md")
 assert(errors, readme.include?("plugins/apple-platform-project-setup/.codex-plugin/plugin.json"), "README must document the plugin manifest path")
 assert(errors, readme.include?(".agents/plugins/marketplace.json"), "README must document the repo-local marketplace path")
+assert(errors, readme.include?("codex plugin marketplace add inekipelov/apple-platform-project-setup-skill --ref main"), "README must document the one-line marketplace install command")
+assert(errors, readme.include?("codex plugin marketplace add ."), "README must document the local marketplace install command")
 assert(errors, readme.include?("release/x.y.z"), "README must mention release/x.y.z branches")
 assert(errors, readme.include?("vX.Y.Z"), "README must mention vX.Y.Z tags")
 assert(errors, readme.include?("GitHub Releases"), "README must mention GitHub Releases")

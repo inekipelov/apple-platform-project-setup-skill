@@ -15,15 +15,33 @@ It ships one orchestration skill plus phase-based leaf skills for discovery, int
 
 The orchestration skill is the only implicit entrypoint. The phase skills are explicit-use helpers with narrow trigger scopes.
 
-## Local Testing
+## Install
 
-This repository includes a repo-local marketplace entry that points to `./plugins/apple-platform-project-setup`.
+For Codex, the shortest supported install path is to add this repository as a marketplace source:
 
-Use it as follows:
+```bash
+codex plugin marketplace add inekipelov/apple-platform-project-setup-skill --ref main
+```
 
-1. Restart Codex so it reloads `.agents/plugins/marketplace.json`.
-2. Open the plugin list and install `apple-platform-project-setup` from the local marketplace.
-3. Start a new thread and invoke either `@apple-platform-project-setup` or `$apple-platform-project-setup-skill`.
+This command loads [.agents/plugins/marketplace.json](./.agents/plugins/marketplace.json), which exposes the single bundled plugin at `./plugins/apple-platform-project-setup`.
+
+For a pinned install, replace `main` with a release tag:
+
+```bash
+codex plugin marketplace add inekipelov/apple-platform-project-setup-skill --ref 0.1.2
+```
+
+After adding the marketplace, open the Plugin Directory and enable `Apple Platform Setup` if your Codex build does not surface it automatically.
+
+## Local Development
+
+To test the marketplace from a local checkout instead of GitHub:
+
+```bash
+codex plugin marketplace add .
+```
+
+Then open the Plugin Directory and enable `Apple Platform Setup` from the local marketplace.
 
 ## Source Of Truth
 

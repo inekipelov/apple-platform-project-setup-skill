@@ -1,7 +1,7 @@
 {
-  "name": "local-apple-platform-plugins",
+  "name": "apple-platform-project-setup-marketplace",
   "interface": {
-    "displayName": "Local Apple Platform Plugins"
+    "displayName": "Apple Platform Setup"
   },
   "plugins": [
     {
