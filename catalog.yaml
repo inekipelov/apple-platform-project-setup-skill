@@ -271,6 +271,49 @@ artifacts:
       - Keep the config package-oriented and avoid Xcode-only asset assumptions by default.
       - For `existing_structured_repo`, compare the current `.swiftlint.yml` first and preserve repo-specific rules unless the user explicitly wants canonical replacement.
 
+  - artifact: spm-readme
+    applies_to: spm
+    snippet_paths:
+      - snippets/spm/README.md
+    target_path: README.md
+    apply_mode: generate_from_template
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - project_interview_complete
+      - workspace_shape_is_spm
+    install_strategy: generate_from_template_with_repo_specific_package_facts
+    upstream_sources:
+      - https://github.com/inekipelov/swift-json-value/blob/main/README.md
+    selection_hints:
+      - Use as the default README baseline only for library-first or package-first SwiftPM repositories.
+      - Keep the structure concise: package title, one-sentence summary, centered badge block, `Usage`, then `Installation`.
+      - Derive package name, platform minimums, installation coordinates, and the usage example from authoritative repo sources when possible.
+      - Do not infer Swift compiler support solely from `swift-tools-version`.
+      - Do not invent API examples, version numbers, or platform support claims.
+      - For CLI-first, executable-first, or app-like SwiftPM repos, adapt the structure instead of forcing the library baseline verbatim.
+      - For `existing_structured_repo`, compare the current `README.md` first and preserve project-specific documentation unless the user explicitly wants canonical replacement.
+
+  - artifact: app-readme
+    applies_to: xcode
+    snippet_paths:
+      - snippets/xcode/README.md
+    target_path: README.md
+    apply_mode: generate_from_template
+    conflict_policy: ask_before_replace_existing_nonempty
+    prerequisites:
+      - project_interview_complete
+      - workspace_shape_is_xcode
+    install_strategy: generate_from_template_with_repo_specific_app_facts
+    upstream_sources: []
+    selection_hints:
+      - Use as the default README baseline for app-first `xcode` repositories, including native `xcodeproj` and `XcodeGen`-generated repositories.
+      - Keep the structure concise: app title, short summary, centered platform badge block, App Store link when real, `Technical Stack`, then `Documentation`.
+      - Derive platform minimums, App Store URL, stack, and docs link from authoritative repo sources when possible.
+      - Never emit a placeholder App Store link.
+      - Keep the technical stack short and factual; do not list aspirational technologies.
+      - Use relative links for in-repo documentation whenever possible.
+      - For `existing_structured_repo`, compare the current `README.md` first and preserve project-specific documentation unless the user explicitly wants canonical replacement.
+
   - artifact: xcode-swiftlint-config
     applies_to: xcode
     snippet_paths:

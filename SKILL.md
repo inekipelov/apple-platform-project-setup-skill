@@ -9,7 +9,7 @@ Bootstrap Apple workspaces in a strict order so the repo gets the right foundati
 
 **Core principle:** inspect the current Codex environment first, then interview and specialize, then install only missing project-local capabilities, then generate `AGENTS.md` after the selected skills and subagents are already in place.
 
-**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/capability-discovery.md`](references/capability-discovery.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), [`references/xcodegen-setup.md`](references/xcodegen-setup.md), [`references/agents-personalization.md`](references/agents-personalization.md), and the files under [`snippets/`](snippets/).
+**Source of truth:** This skill must follow [`catalog.yaml`](catalog.yaml), [`inventory/skills.yaml`](inventory/skills.yaml), [`inventory/subagents.yaml`](inventory/subagents.yaml), [`references/source-precedence.md`](references/source-precedence.md), [`references/capability-discovery.md`](references/capability-discovery.md), [`references/codex-config.md`](references/codex-config.md), [`references/mcp-setup.md`](references/mcp-setup.md), [`references/github-actions.md`](references/github-actions.md), [`references/swiftlint-setup.md`](references/swiftlint-setup.md), [`references/spm-readme.md`](references/spm-readme.md), [`references/app-readme.md`](references/app-readme.md), [`references/xcodegen-setup.md`](references/xcodegen-setup.md), [`references/agents-personalization.md`](references/agents-personalization.md), and the files under [`snippets/`](snippets/).
 
 ## When to Use
 
@@ -85,6 +85,8 @@ Never reorder these steps.
 | Xcode strategy | after `Xcode` is chosen, default to native `xcodeproj` unless `XcodeGen` is explicitly selected or clearly justified |
 | XcodeGen policy | `XcodeGen` is an optional `Xcode` sub-mode, not a third workspace shape |
 | SwiftLint policy | choose the `SPM` or `Xcode` SwiftLint snippet after the workspace shape is known |
+| `SPM` README policy | use the concise library-first `README.md` baseline from [`references/spm-readme.md`](references/spm-readme.md); do not invent badges, versions, or API examples |
+| App README policy | use the app-first `README.md` baseline from [`references/app-readme.md`](references/app-readme.md); include only factual platform badges, App Store link when real, stack, short summary, and internal docs link |
 | GitHub Actions policy | every workflow keeps `workflow_dispatch`, least-privilege permissions, and concurrency; `SPM` uses repo-local `.build` restore/save caching with build-before-test, while `Xcode` paths keep their selected snippet strategy |
 | Global tool install policy | propose only, never auto-install |
 | Project choice | decide `SPM` vs `Xcode` after interview, not before |
@@ -154,6 +156,7 @@ Never reorder these steps.
   - priority technologies
   - typed SF Symbols policy
   - testing and CI expectations
+  - whether the `SPM` or app-first README baseline applies and the facts needed to fill it
   - project `.codex/config.toml` expectations
   - whether official multi-agent runtime should be enabled in project `.codex/config.toml`
   - whether multi-agent runtime should use the repository baseline config
@@ -188,9 +191,9 @@ If the workspace choice is `Xcode`:
 
 Then use the matching snippet set:
 
-- `SPM`: [`snippets/spm/.gitignore`](snippets/spm/.gitignore), [`snippets/spm/.swiftlint.yml`](snippets/spm/.swiftlint.yml), [`snippets/spm/workflows/build.yml`](snippets/spm/workflows/build.yml), [`snippets/spm/workflows/test.yml`](snippets/spm/workflows/test.yml)
-- `Xcode + native`: [`snippets/xcode/.gitignore`](snippets/xcode/.gitignore), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode/workflows/build.yml`](snippets/xcode/workflows/build.yml), [`snippets/xcode/workflows/test.yml`](snippets/xcode/workflows/test.yml)
-- `Xcode + XcodeGen`: [`snippets/xcode-xcodegen/.gitignore`](snippets/xcode-xcodegen/.gitignore), [`snippets/xcode-xcodegen/project.yml`](snippets/xcode-xcodegen/project.yml), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode-xcodegen/workflows/build.yml`](snippets/xcode-xcodegen/workflows/build.yml), [`snippets/xcode-xcodegen/workflows/test.yml`](snippets/xcode-xcodegen/workflows/test.yml)
+- `SPM`: [`snippets/spm/README.md`](snippets/spm/README.md), [`snippets/spm/.gitignore`](snippets/spm/.gitignore), [`snippets/spm/.swiftlint.yml`](snippets/spm/.swiftlint.yml), [`snippets/spm/workflows/build.yml`](snippets/spm/workflows/build.yml), [`snippets/spm/workflows/test.yml`](snippets/spm/workflows/test.yml)
+- `Xcode + native`: [`snippets/xcode/README.md`](snippets/xcode/README.md), [`snippets/xcode/.gitignore`](snippets/xcode/.gitignore), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode/workflows/build.yml`](snippets/xcode/workflows/build.yml), [`snippets/xcode/workflows/test.yml`](snippets/xcode/workflows/test.yml)
+- `Xcode + XcodeGen`: [`snippets/xcode/README.md`](snippets/xcode/README.md), [`snippets/xcode-xcodegen/.gitignore`](snippets/xcode-xcodegen/.gitignore), [`snippets/xcode-xcodegen/project.yml`](snippets/xcode-xcodegen/project.yml), [`snippets/xcode/.swiftlint.yml`](snippets/xcode/.swiftlint.yml), [`snippets/xcode-xcodegen/workflows/build.yml`](snippets/xcode-xcodegen/workflows/build.yml), [`snippets/xcode-xcodegen/workflows/test.yml`](snippets/xcode-xcodegen/workflows/test.yml)
 
 ### 5. Check tool prerequisites
 
@@ -279,6 +282,8 @@ If a required tool is missing:
 
 Apply or refine:
 
+- for library-first or package-first `SPM` repositories, `README.md` from [`snippets/spm/README.md`](snippets/spm/README.md) using [`references/spm-readme.md`](references/spm-readme.md)
+- for app-first `Xcode` repositories, `README.md` from [`snippets/xcode/README.md`](snippets/xcode/README.md) using [`references/app-readme.md`](references/app-readme.md)
 - [`snippets/common/.gitlint`](snippets/common/.gitlint)
 - the selected workspace SwiftLint snippet from [`references/swiftlint-setup.md`](references/swiftlint-setup.md) when Swift source is in scope
 - [`snippets/common/.swiftlint.sfsafesymbols.yml`](snippets/common/.swiftlint.sfsafesymbols.yml) only when the user chose `SFSafeSymbols`
@@ -294,6 +299,34 @@ For workflow caching strategy:
 - for `SPM`, keep the workflow package-first and use repo-local `.build` cache restore/save steps, `swift build --build-tests`, and `swift test --skip-build --parallel`
 - for native `Xcode` and `Xcode + XcodeGen`, keep the selected snippet strategy based on repo-local `DerivedData` and explicit package-resolution paths
 - do not retrofit the `SPM` `.build` cache pattern onto native `Xcode` or `XcodeGen` workflows in this repository
+
+For the `SPM` README baseline:
+
+- use it as the default only for library-first or package-first repositories where SwiftPM dependency installation is the primary onboarding path
+- keep the structure concise: package title, one-sentence summary, centered badge block, `Usage`, then `Installation`
+- derive claims from explicit repo evidence when possible:
+  - package name from `Package.swift`
+  - Apple platform minimums from `Package.swift` platform declarations or equivalent repo policy
+  - repository URL and released version from repo metadata or tags
+  - usage snippet from real public API
+- do not infer Swift compiler support solely from `swift-tools-version`
+- do not invent API examples, version numbers, or platform support claims
+- if the repo is CLI-first, executable-first, or otherwise not a good fit for the library baseline, adapt the structure instead of forcing the template verbatim
+- for `existing_structured_repo`, compare the current `README.md` first and do not replace it without explicit confirmation
+
+For the app-first README baseline:
+
+- use it as the default only for app-first repositories where the primary onboarding path is understanding the app, its supported platforms, and its documentation
+- keep the structure concise: app title, short summary, centered platform badge block, App Store link when real, `Technical Stack`, then `Documentation`
+- derive claims from explicit repo evidence when possible:
+  - minimal platform support from deployment targets in the checked-in Xcode project, `project.yml`, or equivalent source of truth
+  - App Store URL from existing release metadata, documentation, or user-confirmed production URL
+  - technical stack from actual frameworks, libraries, storage, networking, and UI technologies already used by the project
+  - internal documentation link from a real repo-local path such as `docs/`, `Documentation/`, or another maintained in-repo document
+- never emit an App Store placeholder link; omit that line entirely when no real URL exists
+- keep the technical stack short and factual; do not list aspirational or merely possible technologies
+- use relative markdown links for in-repo documentation whenever possible
+- for `existing_structured_repo`, compare the current `README.md` first and do not replace it without explicit confirmation
 
 Always apply snippet-backed artifacts using the contract in [`catalog.yaml`](catalog.yaml):
 
@@ -458,6 +491,14 @@ Wrong. The `No raw SF Symbol strings` rule only makes sense after the user accep
 
 Wrong. SwiftLint selection is shape-specific in this repository. Choose the workspace first, then apply the matching `.swiftlint.yml`.
 
+### Reusing the same library README template for every SwiftPM repository
+
+Wrong. The concise README baseline is correct for library-first or package-first repositories, not for every CLI-first or app-like SwiftPM repo.
+
+### Reusing the package README contract for app-first repositories
+
+Wrong. App-first repositories need product-facing documentation such as supported platforms, App Store presence, technical stack, and internal docs links instead of package installation-first structure.
+
 ### Applying native Xcode artifacts after choosing `XcodeGen`
 
 Wrong. Once `XcodeGen` is selected inside `Xcode`, apply the XcodeGen spec and XcodeGen workflows instead of the native Xcode project snippets.
@@ -522,6 +563,12 @@ Wrong. Prefer HTTP MCP first. The CLI is optional and should be suggested only w
 - "Using first-person voice will make the file feel more personal."
 - "I can keep the word `Report`; people will understand what it means."
 - "I can enable the SF Symbols string rule now and decide about typed symbols later."
+- "Any SwiftPM repo can use the same README shape; libraries, executables, and apps are close enough."
+- "The `swift-tools-version` line is enough evidence for the README Swift badge."
+- "A plausible API snippet is good enough even if the package does not expose it."
+- "If the repo is app-first, I can still keep the package installation section and call it done."
+- "A placeholder App Store link is better than omitting the section."
+- "The technical stack can list everything the team might use later."
 
 **All of these mean: stop and return to the mandatory order.**
 

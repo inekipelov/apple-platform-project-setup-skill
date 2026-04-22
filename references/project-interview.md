@@ -130,7 +130,33 @@ For `existing_structured_repo`:
 - dependency policy
 - for existing repos, which areas should be aligned now: config, agents, lint, CI, or targeted fixes only
 
-### 8. Agent Personalization
+### 8. Package README Inputs
+
+Ask this only when the workspace is likely `SPM` and the repository is library-first or package-first.
+
+- should the repo use the concise library-style `README.md` baseline?
+- what one-sentence summary should appear under the package title?
+- which Swift compiler support claim is explicit enough to show as a badge?
+- which Apple platform minimum versions are explicit enough to show as badges?
+- what installation example should be documented: latest stable tag or an explicit unreleased branch policy?
+- which minimal public API example should lead the `Usage` section?
+
+If the repo already exposes these facts through `Package.swift`, tags, CI, or existing docs, derive them instead of asking every question directly.
+
+### 9. App README Inputs
+
+Ask this only when the workspace is likely `Xcode` and the repository is app-first.
+
+- should the repo use the app-first `README.md` baseline?
+- what short summary should appear under the app title?
+- which minimum Apple platform versions are explicit enough to show as badges?
+- is there a real App Store URL that should be linked?
+- which technologies belong in the technical stack because the project actually uses them now?
+- which internal project docs should be linked from the README?
+
+If the repo already exposes these facts through deployment targets, existing docs, release metadata, or project structure, derive them instead of asking every question directly.
+
+### 10. Agent Personalization
 
 - which communication language should be fixed in `AGENTS.md`?
 - should the agent challenge hacks, security weaknesses, and long-term technical debt?
@@ -147,7 +173,7 @@ If the user gives no other explicit personalization answers:
 
 - keep the strict-quality baseline for the other five personalization lines
 
-### 9. Optional Tooling
+### 11. Optional Tooling
 
 - GitHub Actions required?
 - `gitlint` required?
@@ -214,6 +240,10 @@ After the interview, the skill should be able to produce:
 - the final selected skills to install, if any
 - the final selected subagents to copy, if any
 - the ordered skill instructions that should appear in `Skill Usage Order`
+- whether the concise `SPM` README baseline applies
+- the package README inputs: package name, summary, explicit Swift support claim, explicit Apple platform claims, installation coordinates, and usage example
+- whether the app-first README baseline applies
+- the app README inputs: app name, summary, minimum Apple platform claims, App Store URL if any, technical stack list, and internal documentation links
 - the final `Agent Personalization` lines
 - the common snippets to apply
 - which workspace-specific `SwiftLint` snippet applies

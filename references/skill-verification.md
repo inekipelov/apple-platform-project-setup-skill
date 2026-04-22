@@ -57,6 +57,14 @@ Because the repository had no workflow contract, each planned failure mode was e
 39. The skill could detect an existing `SPM`, native `Xcode`, or `XcodeGen` structure and still re-run bootstrap defaults as if the folder were empty.
 40. The skill could overwrite existing `.gitignore`, `.swiftlint.yml`, `.gitlint`, workflows, `.codex/config.toml`, or `AGENTS.md` without compare-and-confirm behavior.
 41. The skill could silently migrate a native `xcodeproj` repo to `XcodeGen`, or an `XcodeGen` repo back to native, just because one path is canonical for greenfield bootstrap.
+42. The skill could force one README shape onto every SwiftPM repo even when the repo is CLI-first, executable-first, or app-like.
+43. The skill could claim Swift compiler support in `README.md` just because `swift-tools-version` exists.
+44. The skill could invent a plausible public API snippet or release version while generating a package README.
+45. The skill could overwrite an existing package `README.md` without first comparing it against the baseline and confirming replacement.
+46. The skill could reuse the package-style README contract for an app-first repository and omit app-facing sections such as App Store link, technical stack, or internal docs links.
+47. The skill could emit a placeholder App Store URL just to satisfy the template.
+48. The skill could list aspirational technologies in the app technical stack instead of the technologies the project actually uses.
+49. The skill could link to non-existent internal docs just because the app README template expects a documentation section.
 
 ## GREEN Verification Targets
 
@@ -116,6 +124,16 @@ After the repo contract is present, verify that:
 52. Native `Xcode` and `Xcode + XcodeGen` workflows keep their existing `DerivedData` and package-resolution strategy rather than adopting the `SPM` `.build` cache pattern.
 53. Capability discovery names `Build iOS Apps`, `Build macOS Apps`, and `Expo` as recommended plugin capability surfaces for Apple-platform projects when they are available in the active session.
 54. Expo guidance keeps the fastest iOS simulator loop on `expo start --ios` or the matching Codex `Run iOS` path, and only escalates to dev clients when native code or Apple targets require them.
+55. `references/spm-readme.md` scopes the concise README baseline to library-first or package-first SwiftPM repositories instead of every SwiftPM repo.
+56. `catalog.yaml` contains an `spm-readme` artifact that targets `README.md` from `snippets/spm/README.md`.
+57. The SPM README contract forbids inferring Swift compiler support solely from `swift-tools-version`.
+58. The SPM README contract forbids inventing API examples, version numbers, or unsupported platform badges.
+59. The project interview records whether the SPM README baseline applies and the facts needed to fill it.
+60. `references/app-readme.md` defines the app-first README contract for `xcode` repositories.
+61. `catalog.yaml` contains an `app-readme` artifact that targets `README.md` from `snippets/xcode/README.md`.
+62. The app README contract requires minimum platform badges, real App Store URL only when it exists, technical stack, short summary, and internal docs link.
+63. The app README contract forbids placeholder App Store links and invented docs links.
+64. The project interview records whether the app-first README baseline applies and the facts needed to fill it.
 
 ## REFACTOR Watchlist
 
@@ -160,5 +178,11 @@ Look for these rationalizations in future revisions:
 - "The repo already has files, so I should replace them with the canonical snippets in one pass."
 - "Detected `XcodeGen` or native Xcode structure is only historical noise; greenfield defaults are still better."
 - "Expo on iOS means I should jump straight to `expo run:ios`, prebuild, or `eas build` instead of trying `expo start --ios` first."
+- "The same concise README works equally well for library, CLI, and app-like SwiftPM repositories."
+- "The README can claim Swift support from `swift-tools-version` even if the repo never states compiler support explicitly."
+- "An invented usage snippet is acceptable if it looks plausible."
+- "The app README can reuse the package-installation structure; users will figure it out."
+- "A fake App Store link is better than omitting the section."
+- "The technical stack can include tools the team plans to add later."
 
 If any of these reappear, add explicit counters in `SKILL.md` and update this note.
