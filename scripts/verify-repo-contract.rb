@@ -33,10 +33,14 @@ catalog = YAML.load_file(File.join(ROOT, "catalog.yaml"))
 project_codex_config = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "project-codex-config" }
 capability_discovery = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "capability-discovery" }
 agents_bootstrap = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "agents-bootstrap" }
+spm_readme = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "spm-readme" }
+app_readme = catalog.fetch("artifacts").find { |artifact| artifact["artifact"] == "app-readme" }
 
 assert(errors, !project_codex_config.nil?, "catalog.yaml must define the project-codex-config artifact")
 assert(errors, !capability_discovery.nil?, "catalog.yaml must define the capability-discovery artifact")
 assert(errors, !agents_bootstrap.nil?, "catalog.yaml must define the agents-bootstrap artifact")
+assert(errors, !spm_readme.nil?, "catalog.yaml must define the spm-readme artifact")
+assert(errors, !app_readme.nil?, "catalog.yaml must define the app-readme artifact")
 
 if project_codex_config
   config_profiles = project_codex_config["config_profiles"] || {}
@@ -69,6 +73,20 @@ if agents_bootstrap
   assert(errors, prerequisites.include?("capability_discovery_complete"), "agents-bootstrap must depend on capability_discovery_complete")
   assert(errors, required_sections.include?("Skill Usage Order"), "agents-bootstrap must require the Skill Usage Order section")
   assert(errors, rendering["skill_usage_order_line_format"] == "- Step <n>: Use $skill-name when <exact repository situation>.", "agents-bootstrap must define the exact skill usage order line format")
+end
+
+if spm_readme
+  selection_hints = spm_readme["selection_hints"] || []
+  assert(errors, spm_readme["target_path"] == "README.md", "spm-readme must target README.md")
+  assert(errors, spm_readme["apply_mode"] == "generate_from_template", "spm-readme must use generate_from_template")
+  assert(errors, selection_hints.any? { |hint| hint.include?("Do not infer Swift compiler support solely from `swift-tools-version`") }, "spm-readme must forbid inferring Swift support from swift-tools-version alone")
+end
+
+if app_readme
+  selection_hints = app_readme["selection_hints"] || []
+  assert(errors, app_readme["target_path"] == "README.md", "app-readme must target README.md")
+  assert(errors, app_readme["apply_mode"] == "generate_from_template", "app-readme must use generate_from_template")
+  assert(errors, selection_hints.any? { |hint| hint.include?("Never emit a placeholder App Store link") }, "app-readme must forbid placeholder App Store links")
 end
 
 release_doc = read_file("references/release-management.md")
@@ -122,11 +140,15 @@ project_interview_doc = read_file("references/project-interview.md")
 assert(errors, project_interview_doc.include?("setup` / `review` / `release`"), "project interview must mention the standard setup/review/release profile set")
 assert(errors, project_interview_doc.include?("discovered_plugins"), "project interview must record discovered_plugins")
 assert(errors, project_interview_doc.include?("Skill Usage Order"), "project interview must mention Skill Usage Order")
+assert(errors, project_interview_doc.include?("concise library-style `README.md` baseline"), "project interview must ask about the SPM README baseline")
+assert(errors, project_interview_doc.include?("app-first `README.md` baseline"), "project interview must ask about the app README baseline")
 
 skill_doc = read_file("SKILL.md")
 assert(errors, skill_doc.include?("references/capability-discovery.md"), "SKILL.md must reference capability-discovery.md")
 assert(errors, skill_doc.include?("Skill Usage Order"), "SKILL.md must include the Skill Usage Order contract")
 assert(errors, !skill_doc.include?("references/install-superpowers.md"), "SKILL.md must not reference install-superpowers.md")
+assert(errors, skill_doc.include?("references/spm-readme.md"), "SKILL.md must reference spm-readme.md")
+assert(errors, skill_doc.include?("references/app-readme.md"), "SKILL.md must reference app-readme.md")
 
 github_actions_doc = read_file("references/github-actions.md")
 %w[
@@ -173,6 +195,35 @@ assert(errors, readme.include?("GitHub Releases"), "README must mention GitHub R
 capability_doc = read_file("references/capability-discovery.md")
 assert(errors, capability_doc.include?("obra/superpowers"), "capability-discovery doc must mention obra/superpowers explicitly")
 assert(errors, capability_doc.include?("not a project-local skill install target"), "capability-discovery doc must forbid treating Superpowers as a project-local skill install target")
+
+spm_readme_doc = read_file("references/spm-readme.md")
+assert(errors, spm_readme_doc.include?("Do not infer Swift compiler support solely from `swift-tools-version`."), "spm-readme doc must forbid inferring Swift support from swift-tools-version")
+assert(errors, spm_readme_doc.include?("Do not invent convenience APIs"), "spm-readme doc must forbid invented API surface")
+
+spm_readme_template = read_file("snippets/spm/README.md")
+%w[
+  #\ <PackageName>
+  ##\ Usage
+  ##\ Installation
+  <SupportedPlatformBadges>
+].each do |token|
+  assert(errors, spm_readme_template.include?(token.delete("\\")), "spm README template must include #{token.delete("\\")}")
+end
+
+app_readme_doc = read_file("references/app-readme.md")
+assert(errors, app_readme_doc.include?("Never emit a placeholder App Store link."), "app-readme doc must forbid placeholder App Store links")
+assert(errors, app_readme_doc.include?("Do not include aspirational or optional future technologies."), "app-readme doc must forbid aspirational stack items")
+
+app_readme_template = read_file("snippets/xcode/README.md")
+%w[
+  #\ <AppName>
+  ##\ Technical\ Stack
+  ##\ Documentation
+  <AppStoreLink>
+  <SupportedPlatformBadges>
+].each do |token|
+  assert(errors, app_readme_template.include?(token.delete("\\")), "app README template must include #{token.delete("\\")}")
+end
 
 release_config = YAML.load_file(File.join(ROOT, ".github/release.yml"))
 categories = release_config.dig("changelog", "categories") || []
